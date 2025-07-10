@@ -17,7 +17,7 @@ class RAGEngine:
         self.index.add(np.array(self.embeddings))
 
     def load_data(self, path):
-        # Load JSON file with FAQs
+        
         with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
