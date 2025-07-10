@@ -1,13 +1,15 @@
+
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from dotenv import load_dotenv
 import google.generativeai as genai
 import os
 import uuid
-from datetime import timedelta
 
+from datetime import timedelta
+from datetime import datetime
 from rag import RAGEngine
-from db_utils import log_message, get_context
 from auth import validate_user, register_user
+from db_utils import log_message, get_context, create_session, get_all_sessions
 
 # === Load environment variables ===
 load_dotenv()
@@ -92,6 +94,7 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+
 @app.route('/chat', methods=['POST'])
 def chat():
     if 'user_id' not in session:
@@ -102,19 +105,20 @@ def chat():
     session_id = data.get('session_id') or "sess_" + uuid.uuid4().hex[:6]
     user_id = session['user_id']
 
-    # 1. Log user message
+    # 🆕 Create session if not exists
+    sessions = get_all_sessions(user_id)
+    if not any(s['session_id'] == session_id for s in sessions):
+        create_session(user_id, session_id, title="Chat on " + datetime.utcnow().strftime('%Y-%m-%d %H:%M'))
+
+    # Log message
     log_message(user_id, session_id, "user", user_input)
 
-    # 2. Use RAG to fetch relevant FAQs
+    # Retrieve FAQs + context
     retrieved_faqs = rag.retrieve_top_k(user_input, k=3)
-
-    # 3. Get context of recent messages
     context = get_context(user_id, session_id)
 
-    # 4. Generate response
+    # AI response
     ai_response = generate_gemini_response(user_input, retrieved_faqs, context)
-
-    # 5. Log bot response
     log_message(user_id, session_id, "bot", ai_response)
 
     return jsonify({
@@ -122,6 +126,48 @@ def chat():
         'session_id': session_id,
         'user_id': user_id
     })
+
+
+@app.route('/sessions')
+def get_sessions():
+    if 'user_id' not in session:
+        return jsonify([])
+
+    username = session['user_id']
+    sessions = get_all_sessions(username)
+    return jsonify(sessions)
+
+
+@app.route('/sessions', methods=['GET'])
+def sessions_api():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    sessions_data = get_all_sessions(session['user_id'])
+    # Just return session_id and title
+    result = [
+        {
+            "session_id": s["session_id"],
+            "title": s.get("title", "Untitled"),
+            "started_at": s.get("started_at")
+        }
+        for s in sessions_data
+    ]
+    return jsonify(result)
+
+@app.route('/session/<session_id>/messages', methods=['GET'])
+def session_messages(session_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user = session['user_id']
+    all_sessions = get_all_sessions(user)
+    selected = next((s for s in all_sessions if s['session_id'] == session_id), None)
+
+    if not selected:
+        return jsonify({'error': 'Session not found'}), 404
+
+    return jsonify(selected['messages'])
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

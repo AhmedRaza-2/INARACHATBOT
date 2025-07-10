@@ -6,12 +6,21 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  <div class="sidebar">
+    <h3>🗂️ Your Chats</h3>
+    <div id="chat-sessions"></div>
+
+  </div>
+  
+
   <div class="chat-container">
     <div class="header">
-      <h2>🎙️ Inara Voice Support Bot</h2>
+      <h2>🎙️ InaraBot</h2>
       <a href="/logout" class="logout-btn">🚪 Logout</a>
     </div>
+
     <div id="chat-box"></div>
+
     <div class="input-group">
       <input id="user-input" type="text" placeholder="Type or speak..." autofocus>
       <button onclick="sendMessage()">Send</button>
@@ -61,7 +70,33 @@
         appendMessage("bot", "❌ Server not responding. Try again.");
       }
     }
-  
+    
+session_id = localStorage.getItem("session_id");
+
+  // On page load, fetch and display sessions
+  window.onload = async () => {
+    await loadSessions();
+  };
+
+  async function loadSessions() {
+    const res = await fetch('/sessions');
+    const sessions = await res.json();
+
+    const container = document.getElementById("chat-sessions");
+    container.innerHTML = '';
+
+    sessions.forEach(sess => {
+      const div = document.createElement("div");
+      div.className = "chat-item";
+      div.textContent = sess.title;
+      div.onclick = () => {
+        session_id = sess.session_id;
+        localStorage.setItem("session_id", session_id);
+        document.getElementById("chat-box").innerHTML = '';
+      };
+      container.appendChild(div);
+    });
+  }
     // Append message to chat box
     function appendMessage(role, text) {
       const chatBox = document.getElementById("chat-box");
@@ -97,5 +132,12 @@
       utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
     }
+    function startNewChat() {
+  const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+  localStorage.setItem("session_id", newSessionId);
+  document.getElementById("chat-box").innerHTML = ""; // clear chat UI
+  loadSessions(); // reload sidebar
+}
+
   </script>
   
