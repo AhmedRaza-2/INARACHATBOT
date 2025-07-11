@@ -1,0 +1,7 @@
+Flask==2.3.3
+pymongo==4.6.1
+python-dotenv==1.0.1
+google-generativeai==0.3.2
+sentence-transformers==2.6.1
+faiss-cpu==1.7.4
+numpy==1.24.4
