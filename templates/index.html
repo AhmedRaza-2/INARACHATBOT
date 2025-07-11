@@ -9,64 +9,68 @@
   <div class="sidebar">
     <h3>🗂️ Your Chats</h3>
     <div id="chat-sessions"></div>
-
   </div>
-  
 
-  <div class="chat-container">
+  <div class="main-content">
+    <div class="branding-header">
+      <img src="/static/inara.png" alt="Inara Logo" class="logo">
+      <h1>Inara Voice Chatbot</h1>
+    </div>
+
     <div class="header">
-      <h2>🎙️ InaraBot</h2>
+      <h2>🤖 InaraBot</h2>
       <a href="/logout" class="logout-btn">🚪 Logout</a>
     </div>
 
     <div id="chat-box"></div>
 
+    <!-- 🔄 Spinner -->
+    <div id="loading-spinner" class="spinner" style="display: none;"></div>
+
     <div class="input-group">
       <input id="user-input" type="text" placeholder="Type or speak..." autofocus>
-      <button onclick="sendMessage()">Send</button>
+      <button onclick="sendMessage()">📤 Send</button>
       <button onclick="startVoiceInput()">🎤 Speak</button>
     </div>
   </div>
+
   <script>
-    // Handle "Enter" key
     document.getElementById("user-input").addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
         event.preventDefault();
         sendMessage();
       }
     });
-  
-    // Store user_id/session_id in localStorage
+
     if (!localStorage.getItem("user_id")) {
       const uid = "user_" + Math.random().toString(36).substring(2, 9);
       localStorage.setItem("user_id", uid);
     }
     const user_id = localStorage.getItem("user_id");
-  
+
     if (!localStorage.getItem("session_id")) {
       const sid = "sess_" + Math.random().toString(36).substring(2, 10);
       localStorage.setItem("session_id", sid);
     }
     let session_id = localStorage.getItem("session_id");
-  
+
     window.onload = async () => {
       await loadSessions();
       await loadChatHistory(session_id);
-
     };
-  
+
     async function loadSessions() {
       const res = await fetch('/sessions');
       const sessions = await res.json();
       const container = document.getElementById("chat-sessions");
       container.innerHTML = '';
-  
+
       const newBtn = document.createElement("div");
       newBtn.className = "chat-item new-chat";
       newBtn.textContent = "+ Start New Chat";
       newBtn.onclick = startNewChat;
       container.appendChild(newBtn);
-  
+
       sessions.forEach(sess => {
         const div = document.createElement("div");
         div.className = "chat-item";
@@ -76,33 +80,32 @@
           localStorage.setItem("session_id", session_id);
           document.getElementById("chat-box").innerHTML = '';
           await loadChatHistory(session_id); 
-};
-
+        };
         container.appendChild(div);
       });
     }
-  
-    // 📨 Send message
+
     async function sendMessage() {
       const input = document.getElementById("user-input");
       const message = input.value.trim();
       if (!message) return;
-  
+
       appendMessage("user", message);
       input.value = "";
-  
+
+      document.getElementById("loading-spinner").style.display = "block";
+
       try {
         const res = await fetch("/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message, session_id, user_id })
         });
-  
+
         const data = await res.json();
         appendMessage("bot", data.response);
         speakText(data.response);
-  
-        // If new session_id returned, store it
+
         if (data.session_id && data.session_id !== session_id) {
           session_id = data.session_id;
           localStorage.setItem("session_id", session_id);
@@ -111,8 +114,10 @@
       } catch (err) {
         appendMessage("bot", "❌ Server not responding.");
       }
+
+      document.getElementById("loading-spinner").style.display = "none";
     }
-  
+
     function appendMessage(role, text) {
       const chatBox = document.getElementById("chat-box");
       const div = document.createElement("div");
@@ -121,31 +126,31 @@
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-  
+
     function startVoiceInput() {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = "en-US";
       recognition.interimResults = false;
-  
+
       recognition.start();
-  
+
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         document.getElementById("user-input").value = transcript;
         sendMessage();
       };
-  
+
       recognition.onerror = (event) => {
         alert("🎤 Voice input failed: " + event.error);
       };
     }
-  
+
     function speakText(text) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
     }
-  
+
     function startNewChat() {
       const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
       localStorage.setItem("session_id", newSessionId);
@@ -153,19 +158,18 @@
       document.getElementById("chat-box").innerHTML = "";
       loadSessions();
     }
-    async function loadChatHistory(sessionId) {
-    try {
-      const res = await fetch(`/session/${sessionId}`);
-      const messages = await res.json();
-      const chatBox = document.getElementById("chat-box");
-      chatBox.innerHTML = "";
 
-      messages.forEach(msg => {
-        appendMessage(msg.sender, msg.text);
-      });
-    } catch (err) {
-      console.error("❌ Failed to load chat history:", err);
+    async function loadChatHistory(sessionId) {
+      try {
+        const res = await fetch(`/session/${sessionId}`);
+        const messages = await res.json();
+        const chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML = "";
+        messages.forEach(msg => appendMessage(msg.sender, msg.text));
+      } catch (err) {
+        console.error("❌ Failed to load chat history:", err);
+      }
     }
-  }
   </script>
-  
+</body>
+</html>

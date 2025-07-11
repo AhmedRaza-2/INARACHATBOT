@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>{% if mode == "signup" %}Sign Up{% else %}Login{% endif %} - InaraBot</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-  <div class="auth-container">
+<body class="auth-body">
+  <div class="branding-header center-header">
+    <img src="/static/inara.png" alt="Inara Logo" class="logo">
+    <h1>Inara Voice Chatbot</h1>
+  </div>
+
+  <div class="auth-card">
     <h2>{% if mode == "signup" %}🆕 Sign Up{% else %}🔐 Login to InaraBot{% endif %}</h2>
-    
+
     {% if error %}<p class="error">{{ error }}</p>{% endif %}
-    
+
     <form method="post" action="{{ url_for('login', mode=mode) }}">
-      <input type="text" name="username" placeholder="Username" required><br>
-      <input type="password" name="password" placeholder="Password" required><br>
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
       <button type="submit">{% if mode == "signup" %}Create Account{% else %}Login{% endif %}</button>
     </form>
 
