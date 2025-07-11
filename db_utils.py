@@ -6,6 +6,28 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client["inarabot"]
 users = db["users"]
 
+
+def create_session_if_missing(user_id, session_id):
+    user = users.find_one({"username": user_id})
+    if not user:
+        return
+
+    sessions = user.get("sessions", [])
+    if not any(s["session_id"] == session_id for s in sessions):
+        title = "Chat on " + datetime.utcnow().strftime("%b %d, %I:%M %p")
+        create_session(user_id, session_id, title)
+
+def get_messages_for_session(username, session_id):
+    user = users.find_one({"username": username})
+    if not user or "sessions" not in user:
+        return []
+
+    for s in user["sessions"]:
+        if s["session_id"] == session_id:
+            return s.get("messages", [])
+    
+    return []
+
 def log_message(user_id, session_id, sender, text):
     timestamp = datetime.utcnow().isoformat()
 
@@ -74,6 +96,8 @@ def get_context(user_id, session_id, limit=5):
     
     messages = user["sessions"][0].get("messages", [])[-limit:]
     return "\n".join([f"{m['sender']}: {m['text']}" for m in messages])
+
+
 def create_session(user_id, session_id, title="New Chat"):
     timestamp = datetime.utcnow().isoformat()
 

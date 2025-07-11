@@ -28,13 +28,15 @@
     </div>
   </div>
   <script>
+    // Handle "Enter" key
     document.getElementById("user-input").addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault(); // Prevent default form submit
-      sendMessage(); // Call your function
-    }
-  });
-    // Generate and store user_id and session_id in localStorage
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  
+    // Store user_id/session_id in localStorage
     if (!localStorage.getItem("user_id")) {
       const uid = "user_" + Math.random().toString(36).substring(2, 9);
       localStorage.setItem("user_id", uid);
@@ -42,12 +44,45 @@
     const user_id = localStorage.getItem("user_id");
   
     if (!localStorage.getItem("session_id")) {
-      const sessionId = "sess_" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("session_id", sessionId);
+      const sid = "sess_" + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem("session_id", sid);
     }
-    const session_id = localStorage.getItem("session_id");
+    let session_id = localStorage.getItem("session_id");
   
-    // Send message to server
+    window.onload = async () => {
+      await loadSessions();
+      await loadChatHistory(session_id);
+
+    };
+  
+    async function loadSessions() {
+      const res = await fetch('/sessions');
+      const sessions = await res.json();
+      const container = document.getElementById("chat-sessions");
+      container.innerHTML = '';
+  
+      const newBtn = document.createElement("div");
+      newBtn.className = "chat-item new-chat";
+      newBtn.textContent = "+ Start New Chat";
+      newBtn.onclick = startNewChat;
+      container.appendChild(newBtn);
+  
+      sessions.forEach(sess => {
+        const div = document.createElement("div");
+        div.className = "chat-item";
+        div.textContent = sess.title;
+        div.onclick = async () => {
+          session_id = sess.session_id;
+          localStorage.setItem("session_id", session_id);
+          document.getElementById("chat-box").innerHTML = '';
+          await loadChatHistory(session_id); 
+};
+
+        container.appendChild(div);
+      });
+    }
+  
+    // 📨 Send message
     async function sendMessage() {
       const input = document.getElementById("user-input");
       const message = input.value.trim();
@@ -66,38 +101,18 @@
         const data = await res.json();
         appendMessage("bot", data.response);
         speakText(data.response);
+  
+        // If new session_id returned, store it
+        if (data.session_id && data.session_id !== session_id) {
+          session_id = data.session_id;
+          localStorage.setItem("session_id", session_id);
+          await loadSessions();
+        }
       } catch (err) {
-        appendMessage("bot", "❌ Server not responding. Try again.");
+        appendMessage("bot", "❌ Server not responding.");
       }
     }
-    
-session_id = localStorage.getItem("session_id");
-
-  // On page load, fetch and display sessions
-  window.onload = async () => {
-    await loadSessions();
-  };
-
-  async function loadSessions() {
-    const res = await fetch('/sessions');
-    const sessions = await res.json();
-
-    const container = document.getElementById("chat-sessions");
-    container.innerHTML = '';
-
-    sessions.forEach(sess => {
-      const div = document.createElement("div");
-      div.className = "chat-item";
-      div.textContent = sess.title;
-      div.onclick = () => {
-        session_id = sess.session_id;
-        localStorage.setItem("session_id", session_id);
-        document.getElementById("chat-box").innerHTML = '';
-      };
-      container.appendChild(div);
-    });
-  }
-    // Append message to chat box
+  
     function appendMessage(role, text) {
       const chatBox = document.getElementById("chat-box");
       const div = document.createElement("div");
@@ -107,7 +122,6 @@ session_id = localStorage.getItem("session_id");
       chatBox.scrollTop = chatBox.scrollHeight;
     }
   
-    // Voice input
     function startVoiceInput() {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = "en-US";
@@ -118,7 +132,7 @@ session_id = localStorage.getItem("session_id");
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         document.getElementById("user-input").value = transcript;
-        sendMessage(); // auto send
+        sendMessage();
       };
   
       recognition.onerror = (event) => {
@@ -126,18 +140,32 @@ session_id = localStorage.getItem("session_id");
       };
     }
   
-    // Text-to-speech
     function speakText(text) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
     }
+  
     function startNewChat() {
-  const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
-  localStorage.setItem("session_id", newSessionId);
-  document.getElementById("chat-box").innerHTML = ""; // clear chat UI
-  loadSessions(); // reload sidebar
-}
+      const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem("session_id", newSessionId);
+      session_id = newSessionId;
+      document.getElementById("chat-box").innerHTML = "";
+      loadSessions();
+    }
+    async function loadChatHistory(sessionId) {
+    try {
+      const res = await fetch(`/session/${sessionId}`);
+      const messages = await res.json();
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = "";
 
+      messages.forEach(msg => {
+        appendMessage(msg.sender, msg.text);
+      });
+    } catch (err) {
+      console.error("❌ Failed to load chat history:", err);
+    }
+  }
   </script>
   

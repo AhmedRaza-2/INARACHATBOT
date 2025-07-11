@@ -10,6 +10,8 @@ from datetime import datetime
 from rag import RAGEngine
 from auth import validate_user, register_user
 from db_utils import log_message, get_context, create_session, get_all_sessions
+from db_utils import log_message, get_context, create_session_if_missing
+
 
 # === Load environment variables ===
 load_dotenv()
@@ -102,23 +104,21 @@ def chat():
 
     data = request.json
     user_input = data.get('message', '')
-    session_id = data.get('session_id') or "sess_" + uuid.uuid4().hex[:6]
+    session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
     user_id = session['user_id']
 
-    # 🆕 Create session if not exists
-    sessions = get_all_sessions(user_id)
-    if not any(s['session_id'] == session_id for s in sessions):
-        create_session(user_id, session_id, title="Chat on " + datetime.utcnow().strftime('%Y-%m-%d %H:%M'))
+    # ✅ Ensure session exists
+    create_session_if_missing(user_id, session_id)
 
     # Log message
     log_message(user_id, session_id, "user", user_input)
 
-    # Retrieve FAQs + context
+    # Retrieve FAQs
     retrieved_faqs = rag.retrieve_top_k(user_input, k=3)
     context = get_context(user_id, session_id)
 
-    # AI response
     ai_response = generate_gemini_response(user_input, retrieved_faqs, context)
+
     log_message(user_id, session_id, "bot", ai_response)
 
     return jsonify({
@@ -126,17 +126,24 @@ def chat():
         'session_id': session_id,
         'user_id': user_id
     })
-
-
 @app.route('/sessions')
 def get_sessions():
     if 'user_id' not in session:
         return jsonify([])
 
-    username = session['user_id']
-    sessions = get_all_sessions(username)
-    return jsonify(sessions)
+    from db_utils import get_all_sessions
+    user_id = session['user_id']
+    return jsonify(get_all_sessions(user_id))
 
+
+@app.route('/session/<session_id>')
+def get_session_messages(session_id):
+    if 'user_id' not in session:
+        return jsonify([])
+
+    from db_utils import get_messages_for_session
+    messages = get_messages_for_session(session['user_id'], session_id)
+    return jsonify(messages)
 
 @app.route('/sessions', methods=['GET'])
 def sessions_api():

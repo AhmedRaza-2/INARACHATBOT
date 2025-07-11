@@ -203,6 +203,10 @@ body, html {
   display: flex;
   gap: 10px;
 }
+.chat-item.active {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
 
 .input-group input {
   flex: 1;
