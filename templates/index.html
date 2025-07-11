@@ -6,31 +6,33 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <div class="sidebar">
-    <h3>🗂️ Your Chats</h3>
-    <div id="chat-sessions"></div>
-  </div>
-
-  <div class="main-content">
-    <div class="branding-header">
-      <img src="/static/inara.png" alt="Inara Logo" class="logo">
-      <h1>Inara Voice Chatbot</h1>
+  <div class="chat-layout">
+    <div class="sidebar">
+      <h3>🗂️ Your Chats</h3>
+      <div id="chat-sessions"></div>
     </div>
 
-    <div class="header">
-      <h2>🤖 InaraBot</h2>
-      <a href="/logout" class="logout-btn">🚪 Logout</a>
-    </div>
+    <div class="main-content">
+      <div class="branding-header">
+        <img src="/static/inara.png" alt="Inara Logo" class="logo">
+        <h1>Inara Voice Chatbot</h1>
+      </div>
 
-    <div id="chat-box"></div>
+      <div class="header">
+        <h2>🤖 InaraBot</h2>
+        <a href="/logout" class="logout-btn">🚪 Logout</a>
+      </div>
 
-    <!-- 🔄 Spinner -->
-    <div id="loading-spinner" class="spinner" style="display: none;"></div>
+      <div id="chat-box"></div>
 
-    <div class="input-group">
-      <input id="user-input" type="text" placeholder="Type or speak..." autofocus>
-      <button onclick="sendMessage()">📤 Send</button>
-      <button onclick="startVoiceInput()">🎤 Speak</button>
+      <!-- 🔄 Spinner -->
+      <div id="loading-spinner" class="spinner" style="display: none;"></div>
+
+      <div class="input-group">
+        <input id="user-input" type="text" placeholder="Type or speak..." autofocus>
+        <button onclick="sendMessage()">📤 Send</button>
+        <button onclick="startVoiceInput()">🎤 Speak</button>
+      </div>
     </div>
   </div>
 

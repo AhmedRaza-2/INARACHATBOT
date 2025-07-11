@@ -10,8 +10,9 @@ html, body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #121212;
   color: #eee;
-  display: flex;
+  margin: 0;
 }
+
 
 /* Sidebar */
 .sidebar {
@@ -252,3 +253,24 @@ html, body {
 .auth-card a:hover {
   text-decoration: underline;
 }
+
+.auth-body {
+  height: 100vh;
+  background-color: #121212;
+  color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat-layout {
+  display: flex;
+  height: 100vh;
+}
+
