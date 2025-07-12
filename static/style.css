@@ -73,6 +73,9 @@ html, body {
 .branding-header h1 {
   font-size: 22px;
   font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Header Bar */
@@ -86,6 +89,14 @@ html, body {
   margin-top: 10px;
   margin-bottom: 15px;
 }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f6f6f6;
+  border-bottom: 1px solid #ddd;
+}
 
 .logout-btn {
   background-color: #e74c3c;
@@ -95,10 +106,22 @@ html, body {
   text-decoration: none;
   font-weight: 600;
   transition: background 0.3s ease;
+  align-items: end;
+  justify-content: right;
 }
 
 .logout-btn:hover {
   background-color: #c0392b;
+}
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease;
 }
 
 /* Chat Box */
