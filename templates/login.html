@@ -6,29 +6,33 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="auth-body">
-  <div class="branding-header center-header">
-    <img src="/static/inara.png" alt="Inara Logo" class="logo">
-    <h1>Inara Voice Chatbot</h1>
-  </div>
+  <div class="auth-wrapper">
+    <div class="branding-header center-header">
+      <img src="/static/inara.png" alt="Inara Logo" class="logo">
+      <h1>Inara Voice Chatbot</h1>
+    </div>
 
-  <div class="auth-card">
-    <h2>{% if mode == "signup" %}🆕 Sign Up{% else %}🔐 Login to InaraBot{% endif %}</h2>
+    <div class="auth-card">
+      <h2>{% if mode == "signup" %}🆕 Sign Up{% else %}🔐 Login to InaraBot{% endif %}</h2>
 
-    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+      {% if error %}<p class="error">{{ error }}</p>{% endif %}
 
-    <form method="post" action="{{ url_for('login', mode=mode) }}">
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>
-      <button type="submit">{% if mode == "signup" %}Create Account{% else %}Login{% endif %}</button>
-    </form>
+      <form method="post" action="{{ url_for('login', mode=mode) }}">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">{% if mode == "signup" %}Create Account{% else %}Login{% endif %}</button>
+      </form>
 
-    <p>
-      {% if mode == "signup" %}
-        Already have an account? <a href="{{ url_for('login', mode='login') }}">Login here</a>
-      {% else %}
-        New user? <a href="{{ url_for('login', mode='signup') }}">Sign up</a>
-      {% endif %}
-    </p>
+      <p>
+        {% if mode == "signup" %}
+          Already have an account? <a href="{{ url_for('login', mode='login') }}">Login here</a>
+        {% else %}
+          New user? <a href="{{ url_for('login', mode='signup') }}">Sign up</a>
+        {% endif %}
+      </p>
+    </div>
   </div>
 </body>
+
+
 </html>

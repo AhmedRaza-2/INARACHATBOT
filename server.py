@@ -10,7 +10,7 @@ from datetime import datetime
 from rag import RAGEngine
 from auth import validate_user, register_user
 from db_utils import log_message, get_context, create_session, get_all_sessions
-from db_utils import log_message, get_context, create_session_if_missing
+from db_utils import log_message, get_context, create_session_if_missing, get_pakistan_time
 
 
 # === Load environment variables ===

@@ -5,5 +5,3 @@ google-generativeai
 sentence-transformers
 faiss-cpu
 numpy
-gunicorn
-pymongo[srv]

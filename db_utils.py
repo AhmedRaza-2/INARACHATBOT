@@ -1,10 +1,14 @@
 from pymongo import MongoClient
 from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 client = MongoClient(os.getenv("MONGO_URI"))
 db = client["inarabot"]
 users = db["users"]
+
+def get_pakistan_time():
+    return datetime.utcnow() + timedelta(hours=5)
 
 
 def create_session_if_missing(user_id, session_id):
@@ -14,7 +18,7 @@ def create_session_if_missing(user_id, session_id):
 
     sessions = user.get("sessions", [])
     if not any(s["session_id"] == session_id for s in sessions):
-        title = "Chat on " + datetime.utcnow().strftime("%b %d, %I:%M %p")
+        title = "Chat on " + get_pakistan_time().strftime("%b %d, %I:%M %p")
         create_session(user_id, session_id, title)
 
 def get_messages_for_session(username, session_id):
@@ -29,7 +33,7 @@ def get_messages_for_session(username, session_id):
     return []
 
 def log_message(user_id, session_id, sender, text):
-    timestamp = datetime.utcnow().isoformat()
+    timestamp = get_pakistan_time().isoformat()
 
     # check if session already exists
     user_doc = users.find_one({"username": user_id, "sessions.session_id": session_id})
@@ -38,7 +42,7 @@ def log_message(user_id, session_id, sender, text):
         # 🆕 New session
         session_data = {
             "session_id": session_id,
-            "title": f"Chat on {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}",
+            "title": f"Chat on {get_pakistan_time().strftime('%Y-%m-%d %H:%M')}",
             "started_at": timestamp,
             "messages": [{
                 "sender": sender,
@@ -99,7 +103,7 @@ def get_context(user_id, session_id, limit=5):
 
 
 def create_session(user_id, session_id, title="New Chat"):
-    timestamp = datetime.utcnow().isoformat()
+    timestamp = get_pakistan_time().isoformat()
 
     # ✅ Correctly check if session already exists
     existing = users.find_one({
