@@ -1,7 +1,9 @@
 Flask
 pymongo
 python-dotenv
+gunicorn
 google-generativeai
 sentence-transformers
 faiss-cpu
-numpy
+SpeechRecognition
+pyttsx3
