@@ -1,9 +1,12 @@
 Flask
 pymongo
 python-dotenv
+dnspython
 faiss-cpu
 sentence-transformers==2.2.2
+tokenizers==0.13.3
 huggingface_hub==0.14.1
 torch==2.2.2+cpu
 numpy<2
 --find-links https://download.pytorch.org/whl/cpu/torch_stable.html
+google-generativeai
