@@ -26,7 +26,7 @@ class RAGEngine:
         query_vec = self.model.encode([user_input])
         
         # Search top-k results
-        I = self.index.search(np.array(query_vec), k)
+        D, I = self.index.search(np.array(query_vec), k)
         
         # Collect matched FAQs
         results = [{"question": self.questions[i], "answer": self.answers[i]} for i in I[0]]
