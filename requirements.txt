@@ -1,7 +1,8 @@
 Flask
 pymongo
 python-dotenv
-google-generativeai
 faiss-cpu
 dnspython
-sentence-transformers
+sentence-transformers==2.2.2
+torch==2.1.2+cpu
+--find-links https://download.pytorch.org/whl/cpu/torch_stable.html
