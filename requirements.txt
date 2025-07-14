@@ -6,3 +6,4 @@ dnspython
 sentence-transformers==2.2.2
 torch==2.2.2+cpu
 --find-links https://download.pytorch.org/whl/cpu/torch_stable.html
+google-generativeai==0.8.5
