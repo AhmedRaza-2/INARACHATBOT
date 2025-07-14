@@ -22,7 +22,7 @@
 
     <div id="chat-box"></div>
 
-    <!-- 🔄 Spinner -->
+    <!-- Spinner -->
     <div id="loading-spinner" class="spinner" style="display: none;"></div>
 
     <div class="input-group">
@@ -50,6 +50,7 @@
       const sid = "sess_" + Math.random().toString(36).substring(2, 10);
       localStorage.setItem("session_id", sid);
     }
+    
     let session_id = localStorage.getItem("session_id");
 
     window.onload = async () => {
@@ -139,7 +140,7 @@
       };
 
       recognition.onerror = (event) => {
-        alert("🎤 Voice input failed: " + event.error);
+        alert(" Voice input failed: " + event.error);
       };
     }
 
@@ -165,7 +166,7 @@
         chatBox.innerHTML = "";
         messages.forEach(msg => appendMessage(msg.sender, msg.text));
       } catch (err) {
-        console.error("❌ Failed to load chat history:", err);
+        console.error("Failed to load chat history:", err);
       }
     }
   </script>

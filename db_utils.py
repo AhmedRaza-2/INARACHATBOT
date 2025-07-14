@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from datetime import datetime
 from datetime import datetime, timedelta
 import os
 
@@ -28,8 +27,7 @@ def get_messages_for_session(username, session_id):
 
     for s in user["sessions"]:
         if s["session_id"] == session_id:
-            return s.get("messages", [])
-    
+            return s.get("messages", [])    
     return []
 
 def log_message(user_id, session_id, sender, text):
@@ -39,7 +37,7 @@ def log_message(user_id, session_id, sender, text):
     user_doc = users.find_one({"username": user_id, "sessions.session_id": session_id})
 
     if not user_doc:
-        # 🆕 New session
+        # New session
         session_data = {
             "session_id": session_id,
             "title": f"Chat on {get_pakistan_time().strftime('%Y-%m-%d %H:%M')}",
@@ -56,7 +54,7 @@ def log_message(user_id, session_id, sender, text):
             {"$push": {"sessions": session_data}}
         )
     else:
-        # ✅ Session exists, push to messages array
+        # Session exists, push to messages array
         users.update_one(
             {"username": user_id, "sessions.session_id": session_id},
             {
@@ -105,7 +103,7 @@ def get_context(user_id, session_id, limit=5):
 def create_session(user_id, session_id, title="New Chat"):
     timestamp = get_pakistan_time().isoformat()
 
-    # ✅ Correctly check if session already exists
+    #  Correctly check if session already exists
     existing = users.find_one({
         "username": user_id,
         "sessions": {

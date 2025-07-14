@@ -19,13 +19,11 @@ def is_valid_username(username):
 def is_valid_password(password):
     if len(password) < 8:
         return False
-    if not re.search(r"[A-Z]", password):  # uppercase
+    if not re.search(r"[A-Z]", password):  
         return False
-    if not re.search(r"[a-z]", password):  # lowercase
+    if not re.search(r"[a-z]", password):  
         return False
-    if not re.search(r"[0-9]", password):  # digit
-        return False
-    if not re.search(r"[\W_]", password):  # special character
+    if not re.search(r"[0-9]", password):  
         return False
     return True
 

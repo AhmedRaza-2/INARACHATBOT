@@ -2,6 +2,5 @@ Flask
 pymongo
 python-dotenv
 google-generativeai
-sentence-transformers
 faiss-cpu
-numpy
+dnspython

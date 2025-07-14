@@ -6,10 +6,9 @@ import os
 import uuid
 
 from datetime import timedelta
-from datetime import datetime
 from rag import RAGEngine
 from auth import validate_user, register_user
-from db_utils import log_message, get_context, create_session, get_all_sessions
+from db_utils import log_message, get_context, get_all_sessions
 from db_utils import log_message, get_context, create_session_if_missing, get_pakistan_time
 
 
@@ -19,11 +18,10 @@ load_dotenv()
 # === Configure Gemini API ===
 genai.configure(api_key="AIzaSyBg2j-nmkJ7Fm63UeGRPSKJlYVjUzcdchs")
 
-# === Flask App Setup ===
+# === Initialize Flask app ===
 app = Flask(__name__, template_folder='templates')
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "super-secret-key")
-
 app.permanent_session_lifetime = timedelta(days=7)
 
 # === Load RAG Engine with your data ===
@@ -57,12 +55,11 @@ Respond helpfully:
         response = model.generate_content(prompt)
         return response.text.strip()
     except Exception as e:
-        print("🔥 Gemini API Error:", e)
+        print("Gemini API Error:", e)
         return "Sorry, I couldn’t process that. Please try again later."
 
 
 # === Routes ===
-
 @app.route('/')
 def home():
     if 'user_id' not in session:
@@ -71,7 +68,7 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    mode = request.args.get("mode", "login")  # either 'login' or 'signup'
+    mode = request.args.get("mode", "login") # Default to login mode
 
     if request.method == 'POST':
         username = request.form.get("username")
@@ -107,7 +104,7 @@ def chat():
     session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
     user_id = session['user_id']
 
-    # ✅ Ensure session exists
+    # Ensure session exists
     create_session_if_missing(user_id, session_id)
 
     # Log message
