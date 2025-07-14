@@ -4,3 +4,4 @@ python-dotenv
 google-generativeai
 faiss-cpu
 dnspython
+sentence-transformers
