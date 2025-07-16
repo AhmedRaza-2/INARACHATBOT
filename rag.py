@@ -2,19 +2,22 @@ import json
 import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
+import os
 
 class RAGEngine:
-    def __init__(self, data_path):
-        # Load dataset
+    def __init__(self, data_path, index_path="faq_index.faiss"):
         self.data = self.load_data(data_path)
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
         self.questions = [item['question'] for item in self.data]
         self.answers = [item['answer'] for item in self.data]
 
-        # Generate embeddings
-        self.embeddings = self.model.encode(self.questions, show_progress_bar=False)
-        self.index = faiss.IndexFlatL2(self.embeddings.shape[1])
-        self.index.add(np.array(self.embeddings))
+        if os.path.exists(index_path):
+            self.index = faiss.read_index(index_path)
+        else:
+            self.embeddings = self.model.encode(self.questions, show_progress_bar=True)
+            self.index = faiss.IndexFlatL2(self.embeddings.shape[1])
+            self.index.add(np.array(self.embeddings))
+            faiss.write_index(self.index, index_path)
 
     def load_data(self, path):
         
