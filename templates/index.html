@@ -160,7 +160,7 @@
 
     function startVoiceInput() {
     stopWakeWordListener();  // <-- prevent overlap
-
+    window.speechSynthesis.cancel();
     recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = "en-US";
     recognition.continuous = false;
@@ -237,11 +237,13 @@
   }
 
     document.getElementById("user-input").addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        sendMessage();
-      }
-    });
+    window.speechSynthesis.cancel();  // 🛑 stop speaking
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
+
   </script>
 </body>
 </html>
