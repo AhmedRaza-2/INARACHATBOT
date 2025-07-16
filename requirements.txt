@@ -7,7 +7,7 @@ sentence-transformers==2.2.2
 huggingface_hub==0.14.1
 tokenizers==0.13.3
 torch==2.2.2+cpu
-numpy<2
+gunicorn
 
 --extra-index-url https://download.pytorch.org/whl/cpu
 google-generativeai
