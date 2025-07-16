@@ -12,51 +12,82 @@
   </div>
 
   <div class="main-content">
-    
-      <div class="branding-header">
+    <div class="branding-header">
       <img src="/static/inara.png" alt="Inara Logo" class="logo">
-      <h2 style="position: relative;">Inara Voice Chatbot</h2>
+      <h2>Inara Voice Chatbot</h2>
       <a href="/logout" class="logout-btn">Logout</a>
     </div>
-    
 
     <div id="chat-box"></div>
-
-    <!-- Spinner -->
     <div id="loading-spinner" class="spinner" style="display: none;"></div>
 
     <div class="input-group">
       <input id="user-input" type="text" placeholder="Type or speak..." autofocus>
       <button onclick="sendMessage()">Send</button>
-      <button onclick="startVoiceInput()">🗣️Speak</button>
+      <button onclick="toggleVoiceMode()" id="voice-toggle">🎙️ Start Listening</button>
     </div>
   </div>
 
   <script>
-    document.getElementById("user-input").addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        sendMessage();
-      }
-    });
-
+    let wakeRecognizer;  
+    // Initialize session and user ID
     if (!localStorage.getItem("user_id")) {
-      const uid = "user_" + Math.random().toString(36).substring(2, 9);
-      localStorage.setItem("user_id", uid);
+      localStorage.setItem("user_id", "user_" + Math.random().toString(36).substring(2, 9));
     }
-    const user_id = localStorage.getItem("user_id");
-
     if (!localStorage.getItem("session_id")) {
-      const sid = "sess_" + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem("session_id", sid);
+      localStorage.setItem("session_id", "sess_" + Math.random().toString(36).substring(2, 10));
     }
-    
+
+    const user_id = localStorage.getItem("user_id");
     let session_id = localStorage.getItem("session_id");
 
     window.onload = async () => {
       await loadSessions();
       await loadChatHistory(session_id);
+      startWakeWordListener(); // Always listen for wake word
     };
+
+    // Chat sending
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage("user", message);
+      input.value = "";
+      document.getElementById("loading-spinner").style.display = "block";
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, session_id, user_id })
+        });
+        const data = await res.json();
+        appendMessage("bot", data.response);
+        speakText(data.response);
+
+        if (data.session_id && data.session_id !== session_id) {
+          session_id = data.session_id;
+          localStorage.setItem("session_id", session_id);
+          await loadSessions();
+        }
+      } catch (err) {
+        appendMessage("bot", "❌ Server not responding.");
+      }
+
+      document.getElementById("loading-spinner").style.display = "none";
+    }
+
+    // UI Helpers
+    function appendMessage(role, text) {
+      const chatBox = document.getElementById("chat-box");
+      const div = document.createElement("div");
+      div.className = role;
+      div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 InaraBot: ") + text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
     async function loadSessions() {
       const res = await fetch('/sessions');
@@ -78,84 +109,10 @@
           session_id = sess.session_id;
           localStorage.setItem("session_id", session_id);
           document.getElementById("chat-box").innerHTML = '';
-          await loadChatHistory(session_id); 
+          await loadChatHistory(session_id);
         };
         container.appendChild(div);
       });
-    }
-
-    async function sendMessage() {
-      const input = document.getElementById("user-input");
-      const message = input.value.trim();
-      if (!message) return;
-
-      appendMessage("user", message);
-      input.value = "";
-
-      document.getElementById("loading-spinner").style.display = "block";
-
-      try {
-        const res = await fetch("/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message, session_id, user_id })
-        });
-
-        const data = await res.json();
-        appendMessage("bot", data.response);
-        speakText(data.response);
-
-        if (data.session_id && data.session_id !== session_id) {
-          session_id = data.session_id;
-          localStorage.setItem("session_id", session_id);
-          await loadSessions();
-        }
-      } catch (err) {
-        appendMessage("bot", "❌ Server not responding.");
-      }
-
-      document.getElementById("loading-spinner").style.display = "none";
-    }
-
-    function appendMessage(role, text) {
-      const chatBox = document.getElementById("chat-box");
-      const div = document.createElement("div");
-      div.className = role;
-      div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 InaraBot: ") + text;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function startVoiceInput() {
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-
-      recognition.start();
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById("user-input").value = transcript;
-        sendMessage();
-      };
-
-      recognition.onerror = (event) => {
-        alert(" Voice input failed: " + event.error);
-      };
-    }
-
-    function speakText(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function startNewChat() {
-      const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem("session_id", newSessionId);
-      session_id = newSessionId;
-      document.getElementById("chat-box").innerHTML = "";
-      loadSessions();
     }
 
     async function loadChatHistory(sessionId) {
@@ -169,6 +126,122 @@
         console.error("Failed to load chat history:", err);
       }
     }
+
+    function startNewChat() {
+      const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem("session_id", newSessionId);
+      session_id = newSessionId;
+      document.getElementById("chat-box").innerHTML = "";
+      loadSessions();
+    }
+
+    function speakText(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Voice control
+    let recognition;
+    let isListening = false;
+
+    function toggleVoiceMode() {
+    const button = document.getElementById("voice-toggle");
+
+    if (isListening) {
+      button.textContent = "🎙️ Start Listening";  // 💡 Update immediately
+      stopVoiceInput(); // `onend` will still fire a bit later
+    } else {
+      button.textContent = "🔇 Stop Listening";   // 💡 Update immediately
+      startVoiceInput();
+    }
+  }
+
+
+    function startVoiceInput() {
+    stopWakeWordListener();  // <-- prevent overlap
+
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      isListening = true;
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      document.getElementById("user-input").value = transcript;
+      sendMessage();
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Voice input error:", event.error);
+      stopVoiceInput();
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      document.getElementById("voice-toggle").textContent = "🎙️ Start Listening";
+      startWakeWordListener();  // <-- resume wake word detection
+    };
+
+    recognition.start();
+  }
+
+
+    // Wake word listener
+    function startWakeWordListener() {
+    if (wakeRecognizer) return;  // prevent multiple instances
+
+    wakeRecognizer = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    wakeRecognizer.lang = "en-US";
+    wakeRecognizer.continuous = true;
+    wakeRecognizer.interimResults = false;
+
+    wakeRecognizer.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+      console.log("Heard:", transcript);
+
+      if (transcript.includes("hello") && !isListening) {
+        console.log("🎉 Wake word detected!");
+        document.getElementById("voice-toggle").textContent = "🔇 Stop Listening";
+        stopWakeWordListener();  // prevent conflict
+        startVoiceInput();
+      }
+    };
+
+    wakeRecognizer.onerror = (e) => {
+      console.warn("Wake listener error:", e.error);
+      stopWakeWordListener();
+      setTimeout(startWakeWordListener, 1000); // retry after short delay
+    };
+
+    wakeRecognizer.onend = () => {
+      if (!wakeRecognizer._manuallyStopped) {
+        setTimeout(startWakeWordListener, 500); // ensure it keeps listening
+      }
+    };
+  
+    wakeRecognizer.start();
+    wakeRecognizer._manuallyStopped = false
+  }
+
+  function stopWakeWordListener() {
+    if (wakeRecognizer) {
+      wakeRecognizer._manuallyStopped = true;
+      wakeRecognizer.stop();
+      wakeRecognizer = null;
+    }
+  }
+
+    document.getElementById("user-input").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
   </script>
 </body>
 </html>
