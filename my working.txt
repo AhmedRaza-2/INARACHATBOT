@@ -1,3 +1,0 @@
-loaded data set 
-download  dependency --> pip install sentence-transformers faiss-cpu
-pip install pymongo python-dotenv
