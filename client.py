@@ -7,15 +7,23 @@ from bs4 import BeautifulSoup
 import time
 import os
 import json
+import re
 import google.generativeai as genai
 
 # === SETUP GEMINI ===
-genai.configure(api_key="AIzaSyBg2j-nmkJ7Fm63UeGRPSKJlYVjUzcdchs")
+genai.configure(api_key="AIzaSyBg2j-nmkJ7Fm63UeGRPSKJlYVjUzcdchs")  # Replace with your key
 
 app = Flask(__name__)
 visited = set()
 
-# === Setup Selenium driver
+# === Clean domain name for folder ===
+def clean_domain_name(url):
+    domain = urlparse(url).netloc
+    domain = re.sub(r'\s+', '', domain)
+    domain = domain.replace("www.", "").replace(".", "_").lower()
+    return domain
+
+# === Setup Selenium driver ===
 def setup_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -23,12 +31,12 @@ def setup_driver():
     chrome_options.add_argument("--log-level=3")
     return webdriver.Chrome(options=chrome_options)
 
-# === Check if URL is valid and belongs to base domain
+# === Check if URL is valid and belongs to base domain ===
 def is_valid(url, base_domain):
     parsed = urlparse(url)
     return parsed.scheme in {"http", "https"} and base_domain in parsed.netloc
 
-# === Extract all internal links from a page
+# === Extract all internal links from a page ===
 def extract_links(driver, base_url, base_domain):
     soup = BeautifulSoup(driver.page_source, "html.parser")
     links = set()
@@ -39,7 +47,7 @@ def extract_links(driver, base_url, base_domain):
             links.add(href)
     return links
 
-# === Get visible body text of the page
+# === Get visible body text of the page ===
 def extract_visible_text(driver):
     try:
         body = driver.find_element(By.TAG_NAME, "body")
@@ -47,12 +55,22 @@ def extract_visible_text(driver):
     except:
         return ""
 
-# === Crawl entire site up to `max_pages`
+# === Extract website <title> from the homepage ===
+def extract_title(driver):
+    try:
+        title_element = driver.find_element(By.TAG_NAME, "title")
+        title = title_element.get_attribute("innerText")
+        return title.replace("-", " ").strip()
+    except:
+        return "No title found"
+
+# === Crawl entire site up to `max_pages` ===
 def crawl_site(start_url, max_pages=30):
     driver = setup_driver()
     base_domain = urlparse(start_url).netloc
     to_visit = [start_url]
     all_text = {}
+    extracted_title = ""
 
     while to_visit and len(visited) < max_pages:
         url = to_visit.pop(0)
@@ -62,6 +80,8 @@ def crawl_site(start_url, max_pages=30):
         try:
             driver.get(url)
             time.sleep(2)
+            if not extracted_title:
+                extracted_title = extract_title(driver)
 
             text = extract_visible_text(driver)
             all_text[url] = text
@@ -75,9 +95,9 @@ def crawl_site(start_url, max_pages=30):
             continue
 
     driver.quit()
-    return all_text
+    return all_text, extracted_title
 
-# === Generate Q&A pairs using Gemini
+# === Generate Q&A pairs using Gemini ===
 def convert_to_qa(text):
     prompt = f'''
 You are a domain-agnostic AI assistant specialized in transforming raw text into structured knowledge.
@@ -92,7 +112,7 @@ Instructions:
 - Format the output as a JSON array:
 
 [
-  {{"question": "...", "answer": "..."}} ,
+  {{"question": "...", "answer": "..."}},
   ...
 ]
 
@@ -102,12 +122,21 @@ Text:
     try:
         model = genai.GenerativeModel("models/gemini-2.0-flash")
         response = model.generate_content(prompt)
-        return response.text.strip()
+        raw = response.text.strip()
+
+        if raw.startswith("```json"):
+            raw = raw[7:]
+        if raw.endswith("```"):
+            raw = raw[:-3]
+
+        json_data = json.loads(raw)
+        return json_data
+
     except Exception as e:
         print("Gemini API Error (QA):", e)
-        return "[]"
+        return []
 
-# === Generate a short 3–5 sentence summary of the website
+# === Generate website summary ===
 def generate_website_context(text):
     prompt = f'''
 You are an assistant summarizer.
@@ -125,7 +154,7 @@ Text:
         print("Gemini API Error (Context):", e)
         return "No summary available."
 
-# === Main route to handle form submission and processing
+# === Main route ===
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -133,39 +162,45 @@ def index():
         if not url:
             return "Please provide a valid URL."
 
-        website_text = crawl_site(url)
+        website_text, website_title = crawl_site(url)
         all_combined = "\n\n".join(website_text.values())
 
-        # === Generate outputs
-        qa_output = convert_to_qa(all_combined)
+        qa_list = convert_to_qa(all_combined)
         summary_context = generate_website_context(all_combined)
 
-        # === Save files
-        base_name = urlparse(url).netloc.replace('.', '_')
-        os.makedirs("outputs", exist_ok=True)
+        # === Clean name for this website and prepare folder ===
+        base_name = clean_domain_name(url)
+        folder_path = os.path.join("outputs", base_name)
+        os.makedirs(folder_path, exist_ok=True)
 
-        qa_path = os.path.join("outputs", f"{base_name}_qa.json")
-        context_path = os.path.join("outputs", f"{base_name}_summary.txt")
+        qa_path = os.path.join(folder_path, f"{base_name}_qa.json")
+        context_path = os.path.join(folder_path, f"{base_name}_summary.txt")
+        title_path = os.path.join(folder_path, f"{base_name}_title.txt")
 
         with open(qa_path, "w", encoding="utf-8") as f:
-            f.write(qa_output)
+            json.dump(qa_list, f, indent=2, ensure_ascii=False)
 
         with open(context_path, "w", encoding="utf-8") as f:
             f.write(summary_context)
 
+        with open(title_path, "w", encoding="utf-8") as f:
+            f.write(website_title)
+
         return f'''
-        ✅ Q&A saved as <code>{qa_path}</code><br>
-        ✅ Summary saved as <code>{context_path}</code>
+        ✅ Q&A saved in: <code>{qa_path}</code><br>
+        ✅ Summary saved in: <code>{context_path}</code><br>
+        ✅ Title saved in: <code>{title_path}</code><br>
+        Folder name for chatbot/db use: <code>{base_name}</code>
         '''
 
     return '''
         <form method="post">
             <label>Website URL:</label>
             <input type="text" name="url" placeholder="https://example.com" required>
-            <input type="submit" value="Generate Q&A + Summary">
+            <input type="submit" value="Generate Q&A + Summary + Title">
         </form>
     '''
 
-# === Run the Flask app
+# === Run the Flask app ===
 if __name__ == "__main__":
     app.run(debug=True)
