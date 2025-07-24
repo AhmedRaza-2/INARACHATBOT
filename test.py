@@ -170,24 +170,34 @@ def index():
         url = request.form.get("url")
         if not url:
             return "Please provide a valid URL."
-        
+
+        base_name = clean_domain_name(url)
+        session['base_name'] = base_name  # ✅ Always set this!
+
+        folder_path = os.path.join("outputs", base_name)
+        os.makedirs(folder_path, exist_ok=True)
+
+        qa_path = os.path.join(folder_path, f"{base_name}_qa.json")
+        summary_path = os.path.join(folder_path, f"{base_name}_summary.txt")
+        title_path = os.path.join(folder_path, f"{base_name}_title.txt")
+
+        if os.path.exists(qa_path) and os.path.exists(summary_path) and os.path.exists(title_path):
+            print(f"✅ Skipping crawl: data already exists for {url}")
+            return redirect(url_for('login'))
+
+        # Crawl + generate data
         website_text, website_title = crawl_site(url)
         all_combined = "\n\n".join(website_text.values())
         qa_list = convert_to_qa(all_combined)
         summary_context = generate_website_context(all_combined)
-        base_name = clean_domain_name(url)
-        session['base_name'] = base_name
-        folder_path = os.path.join("outputs", base_name)
-        os.makedirs(folder_path, exist_ok=True)
 
-
-        with open(os.path.join(folder_path, f"{base_name}_qa.json"), "w", encoding="utf-8") as f:
+        with open(qa_path, "w", encoding="utf-8") as f:
             json.dump(qa_list, f, indent=2)
-        with open(os.path.join(folder_path, f"{base_name}_summary.txt"), "w", encoding="utf-8") as f:
+        with open(summary_path, "w", encoding="utf-8") as f:
             f.write(summary_context)
-        with open(os.path.join(folder_path, f"{base_name}_title.txt"), "w", encoding="utf-8") as f:
+        with open(title_path, "w", encoding="utf-8") as f:
             f.write(website_title)
-        
+
         return redirect(url_for('login'))
 
     return '''
@@ -232,9 +242,9 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
         if mode == "signup":
-            success, msg = register_user(base_name, username, password)
+            success, msg = register_user(base_nam, username, password)
         else:
-            success, msg = validate_user(base_name, username, password)
+            success, msg = validate_user(base_nam, username, password)
 
         if success:
             session.permanent = True

@@ -7,7 +7,8 @@ import os
 class RAGEngine:
     def __init__(self, data_path, index_path="faq_index.faiss"):
         self.data = self.load_data(data_path)
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        device = "cpu"
+        self.model = SentenceTransformer('all-MiniLM-L6-v2',device=device)
         self.questions = [item['question'] for item in self.data]
         self.answers = [item['answer'] for item in self.data]
 

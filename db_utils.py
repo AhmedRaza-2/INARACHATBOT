@@ -1,27 +1,18 @@
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 import os
-
 client = MongoClient(os.getenv("MONGO_URI"))
-
 import re
-
 def sanitize_db_name(name):
     return re.sub(r"[^\w\-]", "_", name)  # keeps alphanumerics, _ and -
-
-
 def get_users_collection(base_name):
     """
     Returns the users collection for the given base_name (used as database name).
     """
-
     db = client[sanitize_db_name(base_name)]
-
     return db["users"]
-
 def get_pakistan_time():
     return datetime.utcnow() + timedelta(hours=5)
-
 def create_session_if_missing(base_name, user_id, session_id):
     users = get_users_collection(base_name)
     user = users.find_one({"username": user_id})
@@ -63,7 +54,6 @@ def log_message(base_name, user_id, session_id, sender, text):
                 "timestamp": timestamp
             }]
         }
-
         users.update_one(
             {"username": user_id},
             {"$push": {"sessions": session_data}}
@@ -134,7 +124,6 @@ def create_session(user_id, session_id, base_name=None, title="New Chat"):
     if existing:
         return  # Session already exists
 
-    # ✅ Push new session into sessions array
     users.update_one(
         { "username": user_id },
         {
