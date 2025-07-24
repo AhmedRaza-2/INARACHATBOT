@@ -3,38 +3,25 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import os
 import uuid
-import glob
+
 from datetime import timedelta
 from rag import RAGEngine
 from auth import validate_user, register_user
 from db_utils import get_all_sessions, log_message, get_context, create_session_if_missing
-
 # === Load environment variables ===
 load_dotenv()
 genai.configure(api_key="AIzaSyBg2j-nmkJ7Fm63UeGRPSKJlYVjUzcdchs")
 
-# === Auto-detect context and QA dataset ===
-def find_first_qa_and_summary():
-    qa_files = glob.glob("outputs/*_qa.json")
-    summary_files = glob.glob("outputs/*_summary.txt")
-
-    if not qa_files or not summary_files:
-        print("❌ No QA or summary files found in 'outputs/' folder.")
-        return "", ""
-
-    # Match files based on prefix
-    qa_prefixes = {os.path.basename(f).replace("_qa.json", ""): f for f in qa_files}
-    summary_prefixes = {os.path.basename(f).replace("_summary.txt", ""): f for f in summary_files}
-
-    for prefix in qa_prefixes:
-        if prefix in summary_prefixes:
-            return qa_prefixes[prefix], summary_prefixes[prefix]
-
-    print("❌ Could not find matching QA and summary file pair.")
+def find_qa_and_summary_for_domain(base_name):
+    qa_path = f"outputs/{base_name}/{base_name}_qa.json"
+    summary_path = f"outputs/{base_name}/{base_name}_summary.txt"
+    print("Looking for:", qa_path, summary_path)  # Debug line
+    if os.path.exists(qa_path) and os.path.exists(summary_path):
+        return qa_path, summary_path
     return "", ""
 
 # === Load the context and init RAG ===
-qa_dataset_path, summary_path = find_first_qa_and_summary()
+qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
 
 if summary_path and os.path.exists(summary_path):
     with open(summary_path, "r", encoding="utf-8") as f:
@@ -79,6 +66,16 @@ Respond in a clear, concise, and professional manner:
 # === Routes ===
 @app.route('/')
 def home():
+    domain = request.args.get("domain", "")
+    qa_dataset_path, summary_path = find_qa_and_summary_for_domain(domain)
+    if summary_path and os.path.exists(summary_path):
+        with open(summary_path, "r", encoding="utf-8") as f:
+            company_context = f.read().strip()
+    else:
+        company_context = ""
+
+    rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
+
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('index.html', username=session['user_id'])
@@ -116,6 +113,17 @@ def chat():
     user_input = data.get('message', '')
     session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
     user_id = session['user_id']
+    domain = data.get('domain', '')  # <-- Accept domain from client
+
+    # Load domain-specific QA and summary
+    qa_dataset_path, summary_path = find_qa_and_summary_for_domain(domain)
+    if summary_path and os.path.exists(summary_path):
+        with open(summary_path, "r", encoding="utf-8") as f:
+            company_context = f.read().strip()
+    else:
+        company_context = ""
+
+    rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
 
     create_session_if_missing(user_id, session_id)
     log_message(user_id, session_id, "user", user_input)
@@ -134,7 +142,6 @@ def chat():
         'session_id': session_id,
         'user_id': user_id
     })
-
 @app.route('/sessions')
 def get_sessions():
     if 'user_id' not in session:

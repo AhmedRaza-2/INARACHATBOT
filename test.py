@@ -58,9 +58,34 @@ def extract_title(driver):
     except:
         return "No Title"
 
-def crawl_site(start_url, max_pages=30):
-    driver = setup_driver()
+def crawl_site(start_url, max_pages=100):
     base_domain = urlparse(start_url).netloc
+    visited.clear()  # Clear visited before new crawl
+    
+    output_dir = os.path.join("outputs", base_domain)
+    qa_path = os.path.join(output_dir, f"{base_domain}_qa.json")
+    summary_path = os.path.join(output_dir, f"{base_domain}_summary.txt")
+    title_path = os.path.join(output_dir, f"{base_domain}_title.txt")
+
+    if os.path.exists(qa_path) and os.path.exists(summary_path):
+        print(f"✅ Skipping crawl: data already exists for {start_url}")
+
+        # Load saved data
+        with open(qa_path, "r", encoding="utf-8") as f:
+            qa_data = json.load(f)
+
+        with open(summary_path, "r", encoding="utf-8") as f:
+            summary_text = f.read()
+
+        with open(title_path, "r", encoding="utf-8") as f:
+            title = f.read()
+
+        # Convert back to raw site text (simulate for downstream code)
+        combined_text = "\n\n".join([item["answer"] for item in qa_data])
+        return {start_url: combined_text}, title
+
+    # 👇 Normal crawling flow
+    driver = setup_driver()
     to_visit, all_text = [start_url], {}
     extracted_title = ""
 
@@ -78,14 +103,16 @@ def crawl_site(start_url, max_pages=30):
             text = extract_visible_text(driver)
             all_text[url] = text
             visited.add(url)
-            to_visit.extend(link for link in extract_links(driver, url, base_domain)
-                            if link not in visited and link not in to_visit)
-        except:
+            to_visit.extend(
+                link for link in extract_links(driver, url, base_domain)
+                if link not in visited and link not in to_visit
+            )
+        except Exception as e:
+            print(f"⚠️ Error visiting {url}: {e}")
             continue
 
     driver.quit()
     return all_text, extracted_title
-
 def convert_to_qa(text):
     prompt = f'''
 You are a domain-agnostic AI assistant specialized in transforming raw text into structured knowledge.
@@ -93,7 +120,7 @@ You are a domain-agnostic AI assistant specialized in transforming raw text into
 Your task is to read the following input and generate a clean, diverse set of Question-Answer (Q&A) pairs.
 
 Instructions:
-- Generate at least 50 meaningful Q&A pairs.
+- Generate at least 200 meaningful Q&A pairs.
 - Cover all important points, facts, sections, or ideas in the text, including numbers.
 - Rephrase questions naturally.
 - Avoid vague or repetitive questions.
@@ -171,39 +198,45 @@ def index():
     '''
 @app.route('/homee')
 def homee():
-    # 🔐 Check user authentication
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # 🏢 Get the company/domain base_name from session
+    # If base_name not in session, recover it from available folders
     base_name = session.get('base_name')
     if not base_name:
-        return "No website data found. Please generate data first."
+        # 🔍 Try recovering latest one from outputs/
+        existing_folders = os.listdir('outputs')
+        if existing_folders:
+            base_name = existing_folders[-1]  # use most recent
+            session['base_name'] = base_name
+        else:
+            return "No website data found. Please generate data first."
 
-    # 🗂️ Load the paths to the QA and Summary files
     qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
 
-    # 📄 Load the company-specific context/summary
     if summary_path and os.path.exists(summary_path):
         with open(summary_path, "r", encoding="utf-8") as f:
             company_context = f.read().strip()
     else:
         company_context = ""
 
-    # 🧠 Load the RAG engine only if Q&A dataset exists
     rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
 
     # 🖥️ Render chatbot UI
+    
     return render_template(
         "index.html",
         username=session['user_id'],
         company_context=company_context,
-        rag_available=rag is not None
+        rag_available=rag is not None,
+        bot_name=base_name
     )
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     mode = request.args.get("mode", "login")
+    base_name = session.get("base_name")
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
@@ -217,8 +250,8 @@ def login():
             session["user_id"] = username
             return redirect(url_for('homee'))
         else:
-            return render_template("login.html", error=msg, mode=mode)
-    return render_template("login.html", mode=mode)
+            return render_template("login.html", error=msg, mode=mode, bot_name=base_name)
+    return render_template("login.html", mode=mode, bot_name=base_name)
 
 @app.route('/logout')
 def logout():

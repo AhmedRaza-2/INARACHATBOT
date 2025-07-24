@@ -1,0 +1,258 @@
+[
+  {
+    "question": "What is pandas?",
+    "answer": "Pandas is a fast, powerful, flexible, and easy-to-use open-source data analysis and manipulation tool built on top of the Python programming language."
+  },
+  {
+    "question": "What is pandas built on top of?",
+    "answer": "The Python programming language."
+  },
+  {
+    "question": "What is the latest version of pandas mentioned in the text?",
+    "answer": "2.3.1"
+  },
+  {
+    "question": "What is the release date for pandas version 2.3.1?",
+    "answer": "July 07, 2025"
+  },
+  {
+    "question": "Where can I find the full list of companies supporting pandas?",
+    "answer": "On the sponsors page."
+  },
+  {
+    "question": "Where can I find previous versions of pandas?",
+    "answer": "pandas.pydata.org"
+  },
+  {
+    "question": "When did pandas development begin?",
+    "answer": "2008"
+  },
+  {
+    "question": "Where did pandas development begin?",
+    "answer": "AQR Capital Management"
+  },
+  {
+    "question": "When was pandas open-sourced?",
+    "answer": "End of 2009"
+  },
+  {
+    "question": "When did pandas become a NumFOCUS sponsored project?",
+    "answer": "2015"
+  },
+  {
+    "question": "What is one of the library highlights of pandas?",
+    "answer": "A fast and efficient DataFrame object for data manipulation with integrated indexing."
+  },
+  {
+    "question": "Name some of the formats that pandas can read and write data to.",
+    "answer": "CSV, text files, Microsoft Excel, SQL databases, and the fast HDF5 format."
+  },
+  {
+    "question": "What kind of data alignment does pandas offer?",
+    "answer": "Intelligent data alignment and integrated handling of missing data, with automatic label-based alignment in computations."
+  },
+  {
+    "question": "What data manipulation feature does pandas provide?",
+    "answer": "Flexible reshaping and pivoting of data sets."
+  },
+  {
+    "question": "What kind of indexing does pandas offer?",
+    "answer": "Intelligent label-based slicing, fancy indexing, and subsetting of large data sets, as well as hierarchical axis indexing."
+  },
+  {
+    "question": "What operations can be performed on data sets using the pandas group by engine?",
+    "answer": "Aggregating or transforming data with a powerful group by engine allowing split-apply-combine operations."
+  },
+  {
+    "question": "What type of merging does pandas support?",
+    "answer": "High performance merging and joining of data sets."
+  },
+  {
+    "question": "What is the goal of pandas with its time series functionality?",
+    "answer": "To enable date range generation and frequency conversion, moving window statistics, date shifting and lagging, and create domain-specific time offsets and join time series without losing data."
+  },
+  {
+    "question": "What languages is the critical code of pandas written in for performance?",
+    "answer": "Cython or C."
+  },
+  {
+    "question": "In what domains is Python with pandas used?",
+    "answer": "Finance, Neuroscience, Economics, Statistics, Advertising, Web Analytics, and more."
+  },
+  {
+    "question": "What is pandas' mission?",
+    "answer": "To be the fundamental high-level building block for doing practical, real world data analysis in Python and to become the most powerful and flexible open source data analysis/manipulation tool available in any language."
+  },
+  {
+    "question": "List some of the aspects of the vision for data analytics and manipulation software according to pandas.",
+    "answer": "Accessible to everyone, Free for users to use and modify, Flexible, Powerful, Easy to use, Fast."
+  },
+  {
+    "question": "What is in the core values of pandas?",
+    "answer": "To be respectful and welcoming with everybody, users, contributors and the broader community. Regardless of level of experience, gender, gender identity and expression, sexual orientation, disability, personal appearance, body size, race, ethnicity, age, religion, or nationality."
+  },
+  {
+    "question": "What are benchmarks used for in pandas?",
+    "answer": "Benchmarks are tests to measure the performance of pandas."
+  },
+  {
+    "question": "What are the two different kinds of benchmarks relevant to pandas?",
+    "answer": "Internal pandas benchmarks to measure speed and memory usage over time, and Community benchmarks comparing the speed or memory usage of different tools at doing the same job."
+  },
+  {
+    "question": "Where are pandas benchmarks implemented?",
+    "answer": "In the asv_bench directory of the repository."
+  },
+  {
+    "question": "What framework are pandas benchmarks implemented for?",
+    "answer": "The airspeed velocity (asv) framework."
+  },
+  {
+    "question": "How can pandas developers use benchmarks locally?",
+    "answer": "With the asv run command to detect if local changes have an impact in performance."
+  },
+  {
+    "question": "What affects the result of benchmarks?",
+    "answer": "Hardware, stress levels, and even minor condition differences can produce significant differences."
+  },
+  {
+    "question": "What is the purpose of the asv-runner repository?",
+    "answer": "It automatically runs the pandas asv benchmark suite for every commit to the main branch."
+  },
+  {
+    "question": "Where can the results of the automated benchmark runner be found?",
+    "answer": "https://pandas-dev.github.io/asv-runner/"
+  },
+  {
+    "question": "Name some of the main benchmarks comparing dataframe tools that include pandas.",
+    "answer": "DuckDB benchmarks and TPCH benchmarks."
+  },
+  {
+    "question": "When was version 2.0.3 of the pandas documentation released?",
+    "answer": "Jun 28, 2023"
+  },
+  {
+    "question": "Where can one download the documentation for pandas?",
+    "answer": "As a Zipped HTML file."
+  },
+  {
+    "question": "Where can one find the documentation for previous pandas versions?",
+    "answer": "pandas.pydata.org"
+  },
+  {
+    "question": "What license is pandas released under?",
+    "answer": "BSD"
+  },
+  {
+    "question": "What should new users of pandas check out to get started?",
+    "answer": "The getting started guides which contain an introduction to pandas' main concepts and links to additional tutorials."
+  },
+  {
+    "question": "Where can one find in-depth information on the key concepts of pandas?",
+    "answer": "The user guide."
+  },
+  {
+    "question": "What does the API reference contain?",
+    "answer": "A detailed description of the pandas API."
+  },
+  {
+    "question": "Where can one find information on contributing to pandas?",
+    "answer": "The development guide."
+  },
+  {
+    "question": "What Sphinx version was used to create the documentation?",
+    "answer": "Sphinx 4.5.0."
+  },
+  {
+    "question": "What are some key steps in creating a development environment for pandas?",
+    "answer": "Install a C compiler, create an isolated environment, and build and install pandas."
+  },
+  {
+    "question": "What is the pre-commit tool used for in pandas development?",
+    "answer": "To run code formatting checks and other styling checks before committing code."
+  },
+  {
+    "question": "Where can you find commonly used types specific to pandas?",
+    "answer": "pandas._typing"
+  },
+  {
+    "question": "What tools are used to statically analyze pandas' codebase and type hints?",
+    "answer": "mypy and pyright"
+  },
+  {
+    "question": "Where are the pandas tests located?",
+    "answer": "tests subdirectory of the specific package."
+  },
+  {
+    "question": "What is the pytest framework used for?",
+    "answer": "Testing pandas code in a functional style."
+  },
+  {
+    "question": "What is the purpose of the tm.assert_series_equal() function?",
+    "answer": "To compare Series and DataFrame results in tests."
+  },
+  {
+    "question": "What is test-driven development?",
+    "answer": "A development process where you write the test before actually writing any code."
+  },
+  {
+    "question": "How can you check that a block of code raises a warning?",
+    "answer": "Using tm.assert_produces_warning as a context manager."
+  },
+  {
+    "question": "What is the purpose of the temp_file pytest fixture?",
+    "answer": "To create a temporary file Pathlib object for testing."
+  },
+  {
+    "question": "How can you simulate network connectivity in tests?",
+    "answer": "Using the httpserver fixture from the pytest-localserver plugin with synthetic data."
+  },
+  {
+    "question": "What's the purpose of Hypothesis?",
+    "answer": "It's a library for property-based testing, describing valid inputs and letting Hypothesis find failing inputs."
+  },
+  {
+    "question": "What is the purpose of the asv benchmarks?",
+    "answer": "To enable easy monitoring of the performance of critical pandas operations."
+  },
+  {
+    "question": "What's the purpose of pre-commit?",
+    "answer": "Automating code style checks."
+  },
+  {
+    "question": "What is the filename containing ongoing changelog for each release?",
+    "answer": "vx.y.z.rst in doc/source/whatsnew/"
+  },
+  {
+    "question": "Where is the code of conduct?",
+    "answer": "The project governance page of the pandas website."
+  },
+  {
+    "question": "What is the email address for reporting issues related to the code of conduct?",
+    "answer": "pandas-coc@googlegroups.com"
+  },
+  {
+    "question": "What version of the Contributor Covenant is the Code of Conduct adapted from?",
+    "answer": "Version 1.3.0"
+  },
+  {
+    "question": "What is the release date of pandas 2.0.3?",
+    "answer": "June 28, 2023"
+  },
+  {
+    "question": "What date was pandas version 1.5.3 released?",
+    "answer": "January 18, 2023"
+  },
+  {
+    "question": "When are community meetings for pandas held?",
+    "answer": "The second and fourth Wednesdays of each month at 18:00 UTC."
+  },
+  {
+    "question": "What topics are covered in the pandas User Guide?",
+    "answer": "All of pandas by topic area such as working with missing data or reshaping data."
+  },
+  {
+    "question": "When was pandas version 1.0 released?",
+    "answer": "January 29, 2020"
+  }
+]
