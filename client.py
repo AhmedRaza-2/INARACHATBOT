@@ -8,10 +8,14 @@ import time
 import os
 import json
 import re
-import google.generativeai as genai
+import requests
 
-# === SETUP GEMINI ===
-genai.configure(api_key="AIzaSyBg2j-nmkJ7Fm63UeGRPSKJlYVjUzcdchs")  # Replace with your key
+from server import find_qa_and_summary_for_domain
+from ollama import Client
+
+# === SETUP OLLAMA ===
+ollama_client = Client(host='http://localhost:11434')
+ollama_model = "mistral"  # Change to llama3 or other if needed
 
 app = Flask(__name__)
 visited = set()
@@ -55,12 +59,11 @@ def extract_visible_text(driver):
     except:
         return ""
 
-# === Extract website <title> from the homepage ===
+# === Extract website <title> ===
 def extract_title(driver):
     try:
         title_element = driver.find_element(By.TAG_NAME, "title")
-        title = title_element.get_attribute("innerText")
-        return title.replace("-", " ").strip()
+        return title_element.get_attribute("innerText").replace("-", " ").strip()
     except:
         return "No title found"
 
@@ -76,7 +79,6 @@ def crawl_site(start_url, max_pages=30):
         url = to_visit.pop(0)
         if url in visited:
             continue
-
         try:
             driver.get(url)
             time.sleep(2)
@@ -97,61 +99,55 @@ def crawl_site(start_url, max_pages=30):
     driver.quit()
     return all_text, extracted_title
 
-# === Generate Q&A pairs using Gemini ===
+# === Generate Q&A pairs using Ollama ===
 def convert_to_qa(text):
-    prompt = f'''
-You are a domain-agnostic AI assistant specialized in transforming raw text into structured knowledge.
+    prompt = f"""
+You are a helpful assistant. Read the input text below and generate at least 50 meaningful question-answer (Q&A) pairs.
 
-Your task is to read the following input and generate a clean, diverse set of Question-Answer (Q&A) pairs.
-
-Instructions:
-- Generate at least 50 meaningful Q&A pairs.
-- Cover all important points, facts, sections, or ideas in the text, including numbers.
-- Rephrase questions naturally.
-- Avoid vague or repetitive questions.
-- Format the output as a JSON array:
-
+Format:
 [
-  {{"question": "...", "answer": "..."}},
+  {{ "question": "...", "answer": "..." }},
   ...
 ]
 
 Text:
-"""{text}"""
-'''
+\"\"\"{text}\"\"\"
+"""
     try:
-        model = genai.GenerativeModel("models/gemini-2.0-flash")
-        response = model.generate_content(prompt)
-        raw = response.text.strip()
+        response = ollama_client.chat(
+            model=ollama_model,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        raw = response['message']['content']
 
+        # Cleanup for JSON
         if raw.startswith("```json"):
             raw = raw[7:]
         if raw.endswith("```"):
             raw = raw[:-3]
 
-        json_data = json.loads(raw)
-        return json_data
+        return json.loads(raw)
 
     except Exception as e:
-        print("Gemini API Error (QA):", e)
+        print("Ollama QA generation error:", e)
         return []
 
-# === Generate website summary ===
+# === Generate website summary using Ollama ===
 def generate_website_context(text):
-    prompt = f'''
-You are an assistant summarizer.
-
-Summarize what this website is about in 3–5 concise sentences. Mention key offerings, services, target users, industries, and any unique points.
+    prompt = f"""
+Summarize the following website content in 3–5 short sentences. Include its offerings, target audience, services, and anything unique.
 
 Text:
-"""{text[:8000]}"""
-'''
+\"\"\"{text[:8000]}\"\"\"
+"""
     try:
-        model = genai.GenerativeModel("models/gemini-2.0-flash")
-        response = model.generate_content(prompt)
-        return response.text.strip()
+        response = ollama_client.chat(
+            model=ollama_model,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response['message']['content'].strip()
     except Exception as e:
-        print("Gemini API Error (Context):", e)
+        print("Ollama summary error:", e)
         return "No summary available."
 
 # === Main route ===
@@ -163,15 +159,16 @@ def index():
             return "Please provide a valid URL."
 
         website_text, website_title = crawl_site(url)
-        all_combined = "\n\n".join(website_text.values())
+        combined_text = "\n\n".join(website_text.values())
 
-        qa_list = convert_to_qa(all_combined)
-        summary_context = generate_website_context(all_combined)
+        qa_list = convert_to_qa(combined_text)
+        summary_context = generate_website_context(combined_text)
 
-        # === Clean name for this website and prepare folder ===
         base_name = clean_domain_name(url)
         folder_path = os.path.join("outputs", base_name)
         os.makedirs(folder_path, exist_ok=True)
+
+        find_qa_and_summary_for_domain(base_name)
 
         qa_path = os.path.join(folder_path, f"{base_name}_qa.json")
         context_path = os.path.join(folder_path, f"{base_name}_summary.txt")
@@ -179,12 +176,22 @@ def index():
 
         with open(qa_path, "w", encoding="utf-8") as f:
             json.dump(qa_list, f, indent=2, ensure_ascii=False)
-
         with open(context_path, "w", encoding="utf-8") as f:
             f.write(summary_context)
-
         with open(title_path, "w", encoding="utf-8") as f:
             f.write(website_title)
+
+        # Optional: send to chatbot
+        try:
+            chat_url = "http://localhost:5001/chat"
+            payload = {
+                "message": "Hello, what does this company do?",
+                "domain": base_name
+            }
+            response = requests.post(chat_url, json=payload)
+            print("Chatbot response:", response.json())
+        except Exception as e:
+            print("Error sending to chatbot:", e)
 
         return f'''
         ✅ Q&A saved in: <code>{qa_path}</code><br>
