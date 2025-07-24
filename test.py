@@ -95,8 +95,14 @@ Your task is to read the following input and generate a clean, diverse set of Qu
 Instructions:
 - Generate at least 50 meaningful Q&A pairs.
 - Cover all important points, facts, sections, or ideas in the text, including numbers.
-- Format the output as a JSON array.
+- Rephrase questions naturally.
+- Avoid vague or repetitive questions.
+- Format the output as a JSON array:
 
+[
+  {{"question": "...", "answer": "..."}},
+  ...
+]
 Text:
 """{text}"""
 '''
