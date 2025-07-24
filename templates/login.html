@@ -2,18 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{% if mode == "signup" %}Sign Up{% else %}Login{% endif %} - InaraBot</title>
+  <title>{% if mode == "signup" %}Sign Up{% else %}Login{% endif %} - </title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="auth-body">
   <div class="auth-wrapper">
-    <div class="branding-header center-header">
-      <img src="/static/inara.png" alt="Inara Logo" class="logo">
-      <h1>Inara Voice Chatbot</h1>
-    </div>
+
 
     <div class="auth-card">
-      <h2>{% if mode == "signup" %}🆕 Sign Up{% else %}🔐 Login to InaraBot{% endif %}</h2>
+      <h2>{% if mode == "signup" %}🆕 Sign Up{% else %}🔐 Login to  {% endif %}</h2>
 
       {% if error %}<p class="error">{{ error }}</p>{% endif %}
 

@@ -3,12 +3,9 @@ import os
 import hashlib
 import re
 from dotenv import load_dotenv
+from db_utils import get_users_collection  # ✅ Use dynamic DB
 
 load_dotenv()
-
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client["inarabot"]
-users = db["users"]
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -27,7 +24,8 @@ def is_valid_password(password):
         return False
     return True
 
-def validate_user(username, password):
+def validate_user(base_name, username, password):  # ✅ added base_name
+    users = get_users_collection(base_name)
     user = users.find_one({"username": username})
     if not user:
         return False, "❌ User not found"
@@ -35,18 +33,21 @@ def validate_user(username, password):
         return False, "❌ Incorrect password"
     return True, str(user["_id"])
 
-def register_user(username, password):
+def register_user(base_name, username, password):  # ✅ added base_name
+    users = get_users_collection(base_name)
+    
     if not is_valid_username(username):
         return False, "❌ Invalid username (3-20 chars, no spaces, no digits at start)"
     
     if not is_valid_password(password):
-        return False, "❌ Weak password (min 8 chars, must include uppercase, lowercase, digit, symbol)"
-
+        return False, "❌ Weak password (min 8 chars, must include uppercase, lowercase, digit)"
+    
     if users.find_one({"username": username}):
         return False, "❌ Username already taken"
     
     users.insert_one({
         "username": username,
         "password": hash_password(password),
+        "sessions": []
     })
     return True, "✅ Signup successful"

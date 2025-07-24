@@ -1,0 +1,746 @@
+[
+  {
+    "question": "What is the primary function of pub.dev?",
+    "answer": "To facilitate the sharing of Dart packages through publication."
+  },
+  {
+    "question": "Why are published packages generally not unpublished or deleted?",
+    "answer": "To ensure consumers can trust that their dependencies won't suddenly disappear."
+  },
+  {
+    "question": "What should a publisher do with a package that is no longer relevant?",
+    "answer": "Mark the package as discontinued to make it disappear from searches while keeping it available to those who already depend on it."
+  },
+  {
+    "question": "Under what circumstances might pub.dev moderators grant exceptions to the policy of not unpublishing packages?",
+    "answer": "If a package was published by mistake and the publisher files a request within 48 hours, or if the package violates naming, content, or copyright policies."
+  },
+  {
+    "question": "What is 'name squatting' in the context of pub.dev?",
+    "answer": "Publishing packages solely to reserve a name for future use, without a genuinely useful purpose."
+  },
+  {
+    "question": "What should you do if you believe a package is engaged in name squatting?",
+    "answer": "Request a pub.dev moderator review to potentially transfer the package to you."
+  },
+  {
+    "question": "What are the steps to request a package transfer if you believe it's name squatting and the package has a publisher?",
+    "answer": "Email the publisher and copy support@pub.dev, politely asking them to explain their purpose or transfer ownership."
+  },
+  {
+    "question": "What is the process for trademark infringement complaints on pub.dev?",
+    "answer": "Trademark owners can report complaints using the 'report package' link, providing necessary information such as trademark registration details and URLs of infringing packages."
+  },
+  {
+    "question": "What kind of content must be included in pub.dev packages?",
+    "answer": "Dart source code, assets directly related to the main function of the source code, and possibly additional source code in other programming languages with which the Dart code interfaces."
+  },
+  {
+    "question": "What happens to content that violates pub.dev policy?",
+    "answer": "It may be subject to moderation, including removal or limited visibility, at the discretion of pub.dev moderators."
+  },
+  {
+    "question": "What information is considered during content moderation?",
+    "answer": "Package information, publisher and account information, and other information provided through reporting mechanisms."
+  },
+  {
+    "question": "What actions can pub.dev take if an account or content is found to be in violation of their policies?",
+    "answer": "Remove or limit the visibility of the material, temporarily or permanently suspend access to pub.dev, or report illegal materials to law enforcement."
+  },
+  {
+    "question": "How can someone appeal a content moderation decision?",
+    "answer": "By submitting an appeal through a link provided in the notification about the enforcement action, explaining why the decision was a mistake."
+  },
+  {
+    "question": "What options are available to users covered by the European Union\u2019s Digital Services Act (DSA) regarding content moderation decisions?",
+    "answer": "The option to refer their complaint to a certified out-of-court dispute settlement body may be available."
+  },
+  {
+    "question": "What is the copyright policy on pub.dev?",
+    "answer": "Pub.dev respects the rights of copyright holders and does not allow packages that are unauthorized to use copyrighted content. Publishers are solely responsible for their packages."
+  },
+  {
+    "question": "What trademarks are owned by Google that relate to Dart and Flutter?",
+    "answer": "The 'Dart' name and logo, and the 'Flutter' name and logo."
+  },
+  {
+    "question": "What factors influence search rankings on pub.dev?",
+    "answer": "Relevance, engagement, and quality, with the weighting of each factor depending on search parameters."
+  },
+  {
+    "question": "What three scoring dimensions are displayed for each package on pub.dev?",
+    "answer": "Likes, Pub Points, and Download Count."
+  },
+  {
+    "question": "What do 'Likes' measure on pub.dev?",
+    "answer": "How many developers have liked a package."
+  },
+  {
+    "question": "How do you like a package on pub.dev?",
+    "answer": "By locating the thumbs up button located in the upper-right corner of a package page."
+  },
+  {
+    "question": "How can you view packages you have liked on pub.dev?",
+    "answer": "By using the My pub.dev > My liked packages menu option."
+  },
+  {
+    "question": "What do 'Download Counts' on pub.dev measure?",
+    "answer": "How often a package is downloaded."
+  },
+  {
+    "question": "Are displayed download counts on pub.dev a direct measure of how many users a package has?",
+    "answer": "No, it's an indicator of popularity, but is not a perfect metric."
+  },
+  {
+    "question": "What is the purpose of 'Pub Points' on pub.dev?",
+    "answer": "It is pub.dev's measure of quality, awarded in six categories."
+  },
+  {
+    "question": "What are the six categories used to award Pub Points?",
+    "answer": "Follow Dart file conventions, provide documentation, platform support, pass static analysis, support up-to-date dependencies."
+  },
+  {
+    "question": "What file conventions are Dart packages expected to follow?",
+    "answer": "Provide a pubspec.yaml, LICENSE, README.md, and CHANGELOG.md file."
+  },
+  {
+    "question": "What two areas measure if a package has adequate documentation?",
+    "answer": "The package has an illustrative code example, and at least 20% of the public API members contain API documentation."
+  },
+  {
+    "question": "What platforms are packages encouraged to support?",
+    "answer": "Dart's native and web platforms, and Flutter's mobile, web, and desktop targets."
+  },
+  {
+    "question": "How is platform support detected by pub.dev?",
+    "answer": "By analyzing the transitive import graph of the top-level libraries and finding what core libraries are used."
+  },
+  {
+    "question": "How can the detected platform support be overridden?",
+    "answer": "With a platform declaration in the pubspec.yaml file."
+  },
+  {
+    "question": "What does static analysis determine about a package?",
+    "answer": "If the package contains any errors, warnings, and lints (code style issues)."
+  },
+  {
+    "question": "What should you run to validate a package prior to publishing?",
+    "answer": "dart analyze (Dart SDK) / flutter analyze (Flutter SDK)."
+  },
+  {
+    "question": "How do you determine if your package supports the latest versions of dependencies prior to publishing?",
+    "answer": "Run the pub outdated command (Dart SDK) or flutter pub outdated command (Flutter SDK)."
+  },
+  {
+    "question": "What tool is used to calculate pub points?",
+    "answer": "The analysis tool pana."
+  },
+  {
+    "question": "How can you run pana locally?",
+    "answer": "dart pub global activate pana, then dart pub global run pana ~/tmp/mypkg (after making a copy of your package)."
+  },
+  {
+    "question": "What is the official package repository for Dart and Flutter apps?",
+    "answer": "Pub.dev"
+  },
+  {
+    "question": "Who selects Flutter Favorites?",
+    "answer": "The Flutter Ecosystem Committee."
+  },
+  {
+    "question": "What is json_serializable used for?",
+    "answer": "Automatically generate code for converting to and from JSON by annotating Dart classes."
+  },
+  {
+    "question": "What does the macos_ui package provide?",
+    "answer": "Flutter widgets and themes implementing the current macOS design language."
+  },
+  {
+    "question": "What are trending packages?",
+    "answer": "Top trending packages in the last 30 days."
+  },
+  {
+    "question": "What does the xterm package provide?",
+    "answer": "A fast and fully-featured terminal emulator for Flutter applications, with support for mobile and desktop platforms."
+  },
+  {
+    "question": "What is the purpose of the zmodem package?",
+    "answer": "A state machine based, bring-your-own-io style implementation of the ZMODEM protocol in pure Dart"
+  },
+  {
+    "question": "What does the gsettings package provide?",
+    "answer": "A client to access GSettings - a settings database used for storing user preferences on Linux."
+  },
+  {
+    "question": "What is datadog_gql_link used for?",
+    "answer": "A package for tracking GraphQL calls in Datadog compatible with gql_link"
+  },
+  {
+    "question": "What is the purpose of the geoclue package?",
+    "answer": "GeoClue: The Geolocation Service"
+  },
+  {
+    "question": "What does syncfusion_pdfviewer_linux provide?",
+    "answer": "Linux platform implementation of the Flutter PDF Viewer library that lets you view PDF documents."
+  },
+  {
+    "question": "What are Top Flutter packages?",
+    "answer": "Some of the top packages that extend Flutter with new features."
+  },
+  {
+    "question": "What is the use of the image_picker package?",
+    "answer": "Flutter plugin for selecting images from the Android and iOS image library, and taking new pictures with the camera."
+  },
+  {
+    "question": "What does the auto_route package do?",
+    "answer": "AutoRoute is a declarative routing solution, where everything needed for navigation is automatically generated for you."
+  },
+  {
+    "question": "What functionality does the animations package offer?",
+    "answer": "Fancy pre-built animations that can easily be integrated into any Flutter application."
+  },
+  {
+    "question": "What does the retrofit package do?",
+    "answer": "retrofit.dart is an dio client generator using source_gen and inspired by Chopper and Retrofit."
+  },
+  {
+    "question": "What is the purpose of the flutter_map package?",
+    "answer": "Flutter's \u21161 non-commercially aimed map client: it's easy-to-use, versatile, vendor-free, fully cross-platform, and 100% pure-Flutter"
+  },
+  {
+    "question": "What is the function of the connectivity_plus package?",
+    "answer": "Flutter plugin for discovering the state of the network (WiFi & mobile/cellular) connectivity on Android and iOS."
+  },
+  {
+    "question": "What are Top Dart packages?",
+    "answer": "Some of the top packages for any Dart-based app or program."
+  },
+  {
+    "question": "What does the mocktail package provide?",
+    "answer": "A Dart mock library which simplifies mocking with null safety support and no manual mocks or code generation."
+  },
+  {
+    "question": "What is the characters package used for?",
+    "answer": "String replacement with operations that are Unicode/grapheme cluster aware."
+  },
+  {
+    "question": "What is the purpose of the cron package?",
+    "answer": "A time-based job scheduler similar to cron. Run tasks periodically at fixed times or intervals."
+  },
+  {
+    "question": "What is the faker package used for?",
+    "answer": "A library for generating fake data."
+  },
+  {
+    "question": "What is the function of the mason package?",
+    "answer": "A Dart template generator which helps teams generate files quickly and consistently."
+  },
+  {
+    "question": "What problem does the slang package solve?",
+    "answer": "Localization / Internationalization (i18n) solution. Use JSON, YAML, CSV, or ARB files to create typesafe translations via source generation."
+  },
+  {
+    "question": "What is 'Package of the Week'?",
+    "answer": "A series of quick, animated videos, each of which covers a particular package."
+  },
+  {
+    "question": "What is floodfill_image_ihux?",
+    "answer": "Flutter widget that can use paint bucket functionality on the provided image."
+  },
+  {
+    "question": "What is emkore?",
+    "answer": ":emko core | A Clean Architecture-inspired Dart library by :emko"
+  },
+  {
+    "question": "What is common_components?",
+    "answer": "A Flutter package that provides reusable UI components and utilities for Flutter applications."
+  },
+  {
+    "question": "What is adseye_ad_plugin?",
+    "answer": "Adseye Flutter Plugin Project."
+  },
+  {
+    "question": "What is danthor_route_transitions?",
+    "answer": "Custom package to test create a package"
+  },
+  {
+    "question": "What is nefta_sdk_flutter?",
+    "answer": "Nefta SDK for flutter projects."
+  },
+  {
+    "question": "What is echat_platform_flutter_sdk?",
+    "answer": "A new EChat Platform Flutter SDK."
+  },
+  {
+    "question": "What is flutter_dial_knob?",
+    "answer": "A customizable, rotatable dial knob widget for Flutter."
+  },
+  {
+    "question": "What is flutter_pitel_voip?",
+    "answer": "flutter_pitel_voip is package support for voice-over-IP (VoIP) call. Support VoIP call between 2 extension or outgoing call mobile phone number."
+  },
+  {
+    "question": "What is cx_flutter_plugin?",
+    "answer": "The Coralogix SDK for Flutter is designed to support various Flutter targets by leveraging the numerous platforms supported by Coralogix's native SDKs."
+  },
+  {
+    "question": "What is purchases_ui_flutter?",
+    "answer": "Flutter plugin that integrates RevenueCat Paywalls. This plugin supports iOS and Android."
+  },
+  {
+    "question": "What is purchases_flutter?",
+    "answer": "Flutter in-app purchases and subscriptions made easy. The plugin supports iOS, macOS and Android."
+  },
+  {
+    "question": "What is readotp?",
+    "answer": "A flutter plugin that reads incoming SMS on device as a broadcast stream."
+  },
+  {
+    "question": "What is ory_client?",
+    "answer": "OpenAPI API client for Ory Network, Ory&#39;s web-scale API for identity and access control."
+  },
+  {
+    "question": "What is liquidglass_container?",
+    "answer": "A beautiful Apple-26 style container with glass distortion (not just Gaussian blur) and light effects. It supports smooth corners and shadows. Supports WEB and ANDROID."
+  },
+  {
+    "question": "What is token_interceptor?",
+    "answer": "A Flutter Dio interceptor for handling JWT token authentication with automatic refresh."
+  },
+  {
+    "question": "What is theme_tailor_toolbox?",
+    "answer": "Theming utilities and additional annotations for ThemeTailor code generator"
+  },
+  {
+    "question": "What is theme_tailor_annotation?",
+    "answer": "Annotations for the Theme Tailor code-generator. This package does nothing without Theme Tailor."
+  },
+  {
+    "question": "What is theme_tailor?",
+    "answer": "Code generator for Flutter&#39;s 3.0 ThemeExtension classes. The generator can create themes and extensions on BuildContext or ThemeData based on the lists of the theme properties"
+  },
+  {
+    "question": "What is contactos?",
+    "answer": "Android and iOS implementation of the contactos plugin."
+  },
+  {
+    "question": "What is flutter_callkit_incoming_timer?",
+    "answer": "Flutter Callkit Incoming to show callkit screen in your Flutter app."
+  },
+  {
+    "question": "What is healthrian_visualization_support?",
+    "answer": "Healthrian visualization support library"
+  },
+  {
+    "question": "What is healthrian_utility_support?",
+    "answer": "Healthrian utility support library"
+  },
+  {
+    "question": "What is healthrian_usb_support?",
+    "answer": "Healthrian usb support library for connecting health monitoring devices via USB"
+  },
+  {
+    "question": "What is sharesdk_plugin_ohos?",
+    "answer": "ShareSDK is a social sharing component that provides social functions for apps, like authorization and share, and has social statistical analysis management background."
+  },
+  {
+    "question": "What is healthrian_uart_support?",
+    "answer": "Healthrian library for supporting UART connector manager"
+  },
+  {
+    "question": "What is healthrian_simulator_support?",
+    "answer": "healthrian_simulator_support"
+  },
+  {
+    "question": "What is healthrian_printer_support?",
+    "answer": "This library for printing via USB on PCL-m printers (e.g., HP printers)."
+  },
+  {
+    "question": "What is zolozkit_for_flutter?",
+    "answer": "The plugin for inject to zoloz sdk"
+  },
+  {
+    "question": "What is ditto_live?",
+    "answer": "The Ditto Flutter SDK is an edge sync platform allowing devices to synchronize data with or without an internet connection."
+  },
+  {
+    "question": "What is masamune_ai_firebase?",
+    "answer": "Plug-in to make Firebase Vertex AI available on Masamune Framework."
+  },
+  {
+    "question": "What is masamune_app_review?",
+    "answer": "Plug-in for Masamune that provides a app review function."
+  },
+  {
+    "question": "What is masamune_animate?",
+    "answer": "A package for animation that runs on the Masamune framework."
+  },
+  {
+    "question": "What is masamune_ads_google?",
+    "answer": "Masamune plugin package for GoogleAd. Plug-in package for displaying interstitial, native, and reward ads."
+  },
+  {
+    "question": "What is masamune_ai_openai?",
+    "answer": "Plug-in to make OpenAI API available on Masamune Framework. API key registration is required separately."
+  },
+  {
+    "question": "What is masamune_ai?",
+    "answer": "This package is designed to interact with generative AI within the Masamune framework."
+  },
+  {
+    "question": "What is masamune_auth_apple?",
+    "answer": "Authentication plugin for Masamune that can implement Apple sign-in, works only on IOS."
+  },
+  {
+    "question": "What is masamune_agora?",
+    "answer": "Plug-in for Masamune framework to use Agora.io. Includes support for recording."
+  },
+  {
+    "question": "What is masamune_auth_apple_firebase?",
+    "answer": "Authentication plugin for Masamune that can implement Apple sign-in on Firebase."
+  },
+  {
+    "question": "What is masamune_auth_github_firebase?",
+    "answer": "Authentication plugin for Masamune that can implement Github sign-in on Firebase."
+  },
+  {
+    "question": "What is masamune_auth_firebase?",
+    "answer": "Plug-in package for server-side integration of Firebase Authentication."
+  },
+  {
+    "question": "What is masamune_auth_facebook?",
+    "answer": "Authentication plugin for Masamune that can implement Facebook(Meta) sign-in."
+  },
+  {
+    "question": "What is masamune_auth_google_firebase?",
+    "answer": "Authentication plugin for Masamune that can implement Google sign-in on Firebase."
+  },
+  {
+    "question": "What is masamune_calendar?",
+    "answer": "Masamune plugin to provide calendar functionality. The masamune framework is assumed to be used."
+  },
+  {
+    "question": "What is masamune_firebase_app_check?",
+    "answer": "Plug-in to make Firebase App Check available on Masamune Framework."
+  },
+  {
+    "question": "What is healthrian_mqtt_support?",
+    "answer": "A Very Good Project created by Very Good CLI."
+  },
+  {
+    "question": "What is affinidi_tdk_vault_edge_provider?",
+    "answer": "The Affinidi TDK - Vault Edge Provider manages files and credentials in a local storage."
+  },
+  {
+    "question": "What is epos_frontend_shared?",
+    "answer": "A flutter package project."
+  },
+  {
+    "question": "What is darturbation?",
+    "answer": "An advanced, context-aware, and behavioral mock data generator for Dart & Flutter."
+  },
+  {
+    "question": "What is didcomm?",
+    "answer": "A Dart package for implementing secure and private communication on your app using DIDComm v2 Messaging protocol."
+  },
+  {
+    "question": "What is banking_reports?",
+    "answer": "A Flutter application for generating and printing banking reports with PDF support."
+  },
+  {
+    "question": "What is camellia?",
+    "answer": "This is a simple and easy-to-use Flutter component library that can be seamlessly integrated into applications, whether they are mobile or desktop-based."
+  },
+  {
+    "question": "What is healthrian_db_support?",
+    "answer": "Healthrian db support library"
+  },
+  {
+    "question": "What is healthrian_ble_support?",
+    "answer": "Healthrian BLE support library"
+  },
+  {
+    "question": "What is force_graph?",
+    "answer": "Forge2D based force graph with multiple graph layout algorithms (MDS, Spring Embedder, Distance based) and realistic physics."
+  },
+  {
+    "question": "What is healthrian_ble_support_for_wearcardiot?",
+    "answer": "Healthrian BLE support library for WearCardioT"
+  },
+  {
+    "question": "What is swirl_icons?",
+    "answer": "Swirl Design System Icons package for Flutter."
+  },
+  {
+    "question": "What is healthrian_ble_support_for_cardioclick?",
+    "answer": "Healthrian BLE support library for CardioClick"
+  },
+  {
+    "question": "What is healthrian_ble_support_for_wearecg12?",
+    "answer": "Healthrian BLE support library for WearECG12"
+  },
+  {
+    "question": "What is el_kit?",
+    "answer": "EL Kit is a Flutter package that helps you to create UIs without material package."
+  },
+  {
+    "question": "What is healthrian_ble_interface?",
+    "answer": "Healthrian BLE interface for multiple devices"
+  },
+  {
+    "question": "What is flutter_octicons?",
+    "answer": "Easily integrate GitHub&#39;s Octicons in your own Flutter project."
+  },
+  {
+    "question": "What is healthrian_common_support?",
+    "answer": "Healthrian common support library"
+  },
+  {
+    "question": "What is riverpod_toast?",
+    "answer": "A Riverpod-based toast notification system with overlay support, localization, and adaptive theming."
+  },
+  {
+    "question": "What is masamune_deeplink_firebase?",
+    "answer": "Masamune plugin library for using Firebase DynamicLinks to launch applications from URLs and launch internal pages."
+  },
+  {
+    "question": "What is masamune_camera?",
+    "answer": "Masamune plug-in package for simple use of the camera."
+  },
+  {
+    "question": "What is masamune_force_updater?",
+    "answer": "Plug-in for Masamune that provides a forced update function and displays dialogs according to conditions."
+  },
+  {
+    "question": "What is masamune_auth_google?",
+    "answer": "Authentication plugin for Masamune that can implement Google sign-in."
+  },
+  {
+    "question": "What is masamune_deeplink?",
+    "answer": "Masamune plugin library to handle Deeplink. Launch the application from the URL to launch the internal page."
+  },
+  {
+    "question": "What is masamune_introduction?",
+    "answer": "Masamune plugin package for displaying an introduction description screen."
+  },
+  {
+    "question": "What is masamune_markdown?",
+    "answer": "Masamune package that allows for displaying and editing Markdown."
+  },
+  {
+    "question": "What is masamune_logger_firebase?",
+    "answer": "Plug-in package to easily add Firebase Analytics, Performance and Crashlytics on Masamune Framework."
+  },
+  {
+    "question": "What is masamune_location_geocoding?",
+    "answer": "Masamune plugin for using Google Map Geocoding API with Firebase Functions."
+  },
+  {
+    "question": "What is masamune_location_background?",
+    "answer": "Masamune plugin library for handling background location information in apps."
+  },
+  {
+    "question": "What is masamune_model_algolia?",
+    "answer": "Masamune plugin package that includes a model adapter to retrieve data from Algolia."
+  },
+  {
+    "question": "What is masamune_location_google?",
+    "answer": "Masamune plugin library for displaying GoogleMap including location information."
+  },
+  {
+    "question": "What is zego_express_engine?",
+    "answer": "ZegoExpressEngine Flutter SDK is a flutter plugin wrapper based on ZEGO Express RTC SDK (Native &amp; Web), providing live video and real-time audio&#47;video services."
+  },
+  {
+    "question": "What is masamune_mail?",
+    "answer": "Plug-in for sending emails via Sendgrid, Gmail, etc. from servers, etc. using Functions."
+  },
+  {
+    "question": "What is masamune_location?",
+    "answer": "Masamune plugin library for handling location information in apps."
+  },
+  {
+    "question": "What is masamune_location_platform_interface?",
+    "answer": "Masamune plugin library for handling location information in apps."
+  },
+  {
+    "question": "What is masamune_model_docs_builder?",
+    "answer": "A builder package to generate table and schema definitions for Firebase and databases from Masamune model definitions, output in Markdown tabular format."
+  },
+  {
+    "question": "What is masamune_model_firebase_remote_config?",
+    "answer": "Package that allows remote configurations to be retrieved as a Masamune framework documentation model."
+  },
+  {
+    "question": "What is masamune_model_firebase_data_connect?",
+    "answer": "Automatically generates GraphQL files for Firebase Data Connect from Collection and Document data schemes so that they can be used in applications."
+  },
+  {
+    "question": "What is masamune_model_firebase_data_connect_builder?",
+    "answer": "Builder package to automatically generate GraphQL code for Firebase Data Connect."
+  },
+  {
+    "question": "What is masamune_model_firestore?",
+    "answer": "A model adapter plugin that applies and expands on `katana_model_firestore` to retrieve data from Firestore."
+  },
+  {
+    "question": "What is katana_model_firestore?",
+    "answer": "Firestore plugin for katana_model. A package that models data into documents and collections and allows Firestore, local DB, and data mocks to be handled in the same interface."
+  },
+  {
+    "question": "What is masamune_model_firestore_builder?",
+    "answer": "Define a builder to describe Firestore rules; build using the masamune_annotation annotation."
+  },
+  {
+    "question": "What is masamune_notification_local?",
+    "answer": "Masamune plugin library for local PUSH notification. Only mobile can handle."
+  },
+  {
+    "question": "What is masamune_model_github?",
+    "answer": "Masamune plugin package that includes a model adapter to retrieve data from Github."
+  },
+  {
+    "question": "What is masamune_picker?",
+    "answer": "Package for retrieving files such as images and videos from terminal storage, cameras, etc."
+  },
+  {
+    "question": "What should you do before publishing a Dart package?",
+    "answer": "Consult the general Dart publishing documentation and the guidelines listed there."
+  },
+  {
+    "question": "Where can you find out more about how your published package will be assessed?",
+    "answer": "The pub.dev package scoring documentation."
+  },
+  {
+    "question": "What is the difference between publishing a package with a verified publisher and with uploaders?",
+    "answer": "A verified publisher represents an organization or individual that has been verified by pub.dev, while uploaders are simply individuals who have permission to upload packages."
+  },
+  {
+    "question": "Where can uploaders see a list of the packages they are an uploader on?",
+    "answer": "My pub.dev > My packages."
+  },
+  {
+    "question": "Where can members of a publisher see a list of those publishers?",
+    "answer": "My pub.dev > My publishers."
+  },
+  {
+    "question": "What happens when you mark a package as discontinued?",
+    "answer": "It will disappear from pub.dev search."
+  },
+  {
+    "question": "What does pub.dev strive to support?",
+    "answer": "The publication of packages in a manner that is trustworthy, and works for our users."
+  },
+  {
+    "question": "What does the Pub.dev Policy describe?",
+    "answer": "Our policies around acceptable use of our services."
+  },
+  {
+    "question": "What should be done to report illegal content and policy violations?",
+    "answer": "Please use the \"Report package\" link at the bottom of each package page."
+  },
+  {
+    "question": "What is the timeline for appealing a content moderation decision?",
+    "answer": "Appeals must be submitted within six months of the content moderation decision."
+  },
+  {
+    "question": "What should you do when submitting an appeal?",
+    "answer": "Be sure to include sufficient facts and evidence necessary to show why our decision was in error."
+  },
+  {
+    "question": "What could happen if you abuse the appeals process?",
+    "answer": "We reserve the right to take action against users who abuse our appeals processes, including temporarily or permanently suspending a user's ability to submit further appeals."
+  },
+  {
+    "question": "Where will changes to the officially supported pub.dev API be announced?",
+    "answer": "At Dart announce."
+  },
+  {
+    "question": "What does pub.dev implement?",
+    "answer": "The Hosted Pub Repository Specification V2, used by the pub command line client application."
+  },
+  {
+    "question": "What is the GET endpoint for package names for name completion?",
+    "answer": "https://pub.dev/api/package-name-completion-data"
+  },
+  {
+    "question": "How long should the response for package name completion data be cached?",
+    "answer": "At least 8 hours."
+  },
+  {
+    "question": "What is the GET endpoint for package names for archiving and mirrors?",
+    "answer": "https://pub.dev/api/package-names"
+  },
+  {
+    "question": "How long should the response for package names for archiving and mirrors be cached?",
+    "answer": "At least 2 hours."
+  },
+  {
+    "question": "What should you do if you want to implement search?",
+    "answer": "Please use the package names for name completion data to fetch the list of package names, and implement search in your app based on that list."
+  },
+  {
+    "question": "What requirements are must have for an API endpoint to be considered as official?",
+    "answer": "The data must be public, The API must be without side effects (e.g. read-only) and the response must be cacheable."
+  },
+  {
+    "question": "What implementations are included in the crypto package?",
+    "answer": "Implementations of SHA, MD5, and HMAC cryptographic functions."
+  },
+  {
+    "question": "Which platforms does the webcrypto package target?",
+    "answer": "Cross-platform implementation of Web Cryptography APIs for Flutter."
+  },
+  {
+    "question": "What is the pointycastle package modeled on?",
+    "answer": "A Dart library implementing cryptographic algorithms and primitives, modeled on the BouncyCastle library."
+  },
+  {
+    "question": "What does the pem package provide?",
+    "answer": "PEM encoding/decoding of textual keys following RFC 7468."
+  },
+  {
+    "question": "What protocol does libsignal_protocol_dart implement?",
+    "answer": "Signal Protocol libray for Dart native and Flutter, pure Dart implementation of the the Signal Protocol."
+  },
+  {
+    "question": "When is the canonical_json format useful?",
+    "answer": "Encoder and decoder for a canonical JSON format, useful when cryptographically hashing or signing JSON objects."
+  },
+  {
+    "question": "What performance improvement can be made with cryptography_flutter_plus?",
+    "answer": "Makes 'package:cryptography_plus' use platform APIs in Android, iOS, and Mac OS X. The package can make performance up to 100 times better."
+  },
+  {
+    "question": "What does the fernet package do?",
+    "answer": "A Dart library for encrypting and decrypting messages using the Fernet scheme."
+  },
+  {
+    "question": "What algorithms are supported by cryptography_plus?",
+    "answer": "Cryptographic algorithms for encryption, digital signatures, key agreement, authentication, and hashing. AES, Chacha20, ED25519, X25519, Argon2, and more."
+  },
+  {
+    "question": "What message type does pkcs7 parse and verify?",
+    "answer": "Pkcs7 message parser and verification library Can parse and generate x509 certificates, request Timestamp, build and verify an s-mime PKCS #7 message."
+  },
+  {
+    "question": "What areas does image_picker handle?",
+    "answer": "Flutter plugin for selecting images from the Android and iOS image library, and taking new pictures with the camera."
+  },
+  {
+    "question": "What is the purpose of the android_intent_plus?",
+    "answer": "This plugin allows Flutter apps to launch arbitrary intents when the platform is Android."
+  },
+  {
+    "question": "What does json_serializable do?",
+    "answer": "Automatically generate code for converting to and from JSON by annotating Dart classes."
+  },
+  {
+    "question": "What does path_provider allow you to access?",
+    "answer": "A Flutter plugin for finding commonly used locations on the filesystem."
+  },
+  {
+    "question": "What does http provide?",
+    "answer": "A composable, multi-platform, Future-based API for HTTP requests."
+  }
+]
