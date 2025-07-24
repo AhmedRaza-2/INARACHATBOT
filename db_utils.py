@@ -3,14 +3,27 @@ from datetime import datetime, timedelta
 import os
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["inarabot"]
-users = db["users"]
+
+import re
+
+def sanitize_db_name(name):
+    return re.sub(r"[^\w\-]", "_", name)  # keeps alphanumerics, _ and -
+
+
+def get_users_collection(base_name):
+    """
+    Returns the users collection for the given base_name (used as database name).
+    """
+
+    db = client[sanitize_db_name(base_name)]
+
+    return db["users"]
 
 def get_pakistan_time():
     return datetime.utcnow() + timedelta(hours=5)
 
-
-def create_session_if_missing(user_id, session_id):
+def create_session_if_missing(base_name, user_id, session_id):
+    users = get_users_collection(base_name)
     user = users.find_one({"username": user_id})
     if not user:
         return
@@ -18,9 +31,10 @@ def create_session_if_missing(user_id, session_id):
     sessions = user.get("sessions", [])
     if not any(s["session_id"] == session_id for s in sessions):
         title = "Chat on " + get_pakistan_time().strftime("%b %d, %I:%M %p")
-        create_session(user_id, session_id, title)
+        create_session(user_id, session_id, title, base_name)
 
-def get_messages_for_session(username, session_id):
+def get_messages_for_session(base_name, username, session_id):
+    users = get_users_collection(base_name)
     user = users.find_one({"username": username})
     if not user or "sessions" not in user:
         return []
@@ -30,7 +44,8 @@ def get_messages_for_session(username, session_id):
             return s.get("messages", [])    
     return []
 
-def log_message(user_id, session_id, sender, text):
+def log_message(base_name, user_id, session_id, sender, text):
+    users = get_users_collection(base_name)
     timestamp = get_pakistan_time().isoformat()
 
     # check if session already exists
@@ -67,7 +82,9 @@ def log_message(user_id, session_id, sender, text):
                 }
             }
         )
-def get_all_sessions(username):
+
+def get_all_sessions(base_name, username):
+    users = get_users_collection(base_name)
     user = users.find_one({"username": username})
     if not user or "sessions" not in user:
         return []
@@ -88,7 +105,8 @@ def get_all_sessions(username):
         for i, s in enumerate(sorted_sessions)
     ]
 
-def get_context(user_id, session_id, limit=5):
+def get_context(base_name, user_id, session_id, limit=5):
+    users = get_users_collection(base_name)
     user = users.find_one(
         {"username": user_id, "sessions.session_id": session_id},
         {"sessions.$": 1}
@@ -99,8 +117,8 @@ def get_context(user_id, session_id, limit=5):
     messages = user["sessions"][0].get("messages", [])[-limit:]
     return "\n".join([f"{m['sender']}: {m['text']}" for m in messages])
 
-
-def create_session(user_id, session_id, title="New Chat"):
+def create_session(user_id, session_id, base_name=None, title="New Chat"):
+    users = get_users_collection(base_name)
     timestamp = get_pakistan_time().isoformat()
 
     #  Correctly check if session already exists

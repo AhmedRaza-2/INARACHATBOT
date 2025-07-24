@@ -16,7 +16,7 @@ from db_utils import (
 from auth import validate_user, register_user
 
 # === Gemini Configuration ===
-genai.configure(api_key="AIzaSyBg2j-nmkJ7Fm63UeGRPSKJlYVjUzcdchs")
+genai.configure(api_key="AIzaSyAtJoxVJxwbkW1qpyCNOC4Ld38F1Zzi65E")
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -25,8 +25,12 @@ visited = set()
 # === Utility Functions ===
 
 def clean_domain_name(url):
-    domain = urlparse(url).netloc
-    return domain.replace("www.", "").replace(".", "_").strip().lower()
+    parsed_url = urlparse(url)
+    domain = parsed_url.netloc or parsed_url.path  # handles malformed URLs
+    domain = domain.replace("www.", "")
+    cleaned = re.sub(r'[^a-zA-Z0-9]', '_', domain)  # remove all non-alphanum chars
+    return cleaned.strip('_').lower()
+
 
 def setup_driver():
     options = Options()
@@ -171,29 +175,23 @@ def index():
     '''
 @app.route('/homee')
 def homee():
-    # 🔐 Check user authentication
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # 🏢 Get the company/domain base_name from session
     base_name = session.get('base_name')
     if not base_name:
         return "No website data found. Please generate data first."
 
-    # 🗂️ Load the paths to the QA and Summary files
     qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
 
-    # 📄 Load the company-specific context/summary
     if summary_path and os.path.exists(summary_path):
         with open(summary_path, "r", encoding="utf-8") as f:
             company_context = f.read().strip()
     else:
         company_context = ""
 
-    # 🧠 Load the RAG engine only if Q&A dataset exists
     rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
 
-    # 🖥️ Render chatbot UI
     return render_template(
         "index.html",
         username=session['user_id'],
@@ -204,13 +202,14 @@ def homee():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     mode = request.args.get("mode", "login")
+    base_name = session.get('base_name')
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
         if mode == "signup":
-            success, msg = register_user(username, password)
+            success, msg = register_user(base_name, username, password)
         else:
-            success, msg = validate_user(username, password)
+            success, msg = validate_user(base_name, username, password)
 
         if success:
             session.permanent = True
@@ -245,44 +244,49 @@ def chat():
     rag = RAGEngine(qa_dataset_path)
     company_context = open(summary_path, encoding="utf-8").read() if os.path.exists(summary_path) else ""
     retrieved_faqs = rag.retrieve_top_k(user_input, k=3)
-    context = get_context(user_id, session_id)
+    context = get_context(base_name, user_id, session_id)
     prompt = f"Company: {company_context}\nFAQs: {retrieved_faqs}\nContext: {context}\nUser: {user_input}"
 
     try:
         model = genai.GenerativeModel("models/gemini-2.0-flash")
         ai_response = model.generate_content(prompt).text.strip()
-        create_session_if_missing(user_id, session_id)
-        log_message(user_id, session_id, "user", user_input)
-        log_message(user_id, session_id, "bot", ai_response)
+        create_session_if_missing(base_name, user_id, session_id)
+        log_message(base_name, user_id, session_id, "user", user_input)
+        log_message(base_name, user_id, session_id, "bot", ai_response)
 
         return jsonify({'response': ai_response, 'session_id': session_id, 'user_id': user_id})
     except Exception as e:
+        print("Gemini error:", e)  # Show the actual error in logs
         return jsonify({'response': 'Gemini error occurred.'})
+
 
 @app.route('/sessions')
 def get_sessions():
     if 'user_id' not in session:
         return jsonify([])
-    return jsonify(get_all_sessions(session['user_id']))
+    base_name = session.get('base_name')
+    return jsonify(get_all_sessions(base_name, session['user_id']))
 
 @app.route('/session/<session_id>')
 def get_session_messages(session_id):
     if 'user_id' not in session:
         return jsonify([])
-    return jsonify(get_messages_for_session(session['user_id'], session_id))
+    base_name = session.get('base_name')
+    return jsonify(get_messages_for_session(base_name, session['user_id'], session_id))
 
 @app.route('/session/<session_id>/messages', methods=['GET'])
 def session_messages(session_id):
     if 'user_id' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
 
+    base_name = session.get('base_name')
     user = session['user_id']
-    sessions = get_all_sessions(user)
+    sessions = get_all_sessions(base_name, user)
     session_data = next((s for s in sessions if s['session_id'] == session_id), None)
     if not session_data:
         return jsonify({'error': 'Session not found'}), 404
 
-    return jsonify(session_data['messages'])
+    return jsonify(session_data.get('messages', []))
 
 # === Run App ===
 if __name__ == "__main__":
