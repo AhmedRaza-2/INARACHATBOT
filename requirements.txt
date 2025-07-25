@@ -3,13 +3,11 @@ pymongo
 python-dotenv
 dnspython
 faiss-cpu
-huggingface_hub==0.14.1
-torch==2.2.2+cpu
+huggingface_hub
+torch
 gunicorn
 google-generativeai
-sentence-transformers==2.2.2
-transformers==4.36.2
-tokenizers==0.13.3
-flask-cors
-
+sentence-transformers
+transformers
+tokenizers
 --extra-index-url https://download.pytorch.org/whl/cpu
