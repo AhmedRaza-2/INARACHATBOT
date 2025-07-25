@@ -10,4 +10,5 @@ google-generativeai
 sentence-transformers
 transformers
 tokenizers
+selenium
 --extra-index-url https://download.pytorch.org/whl/cpu
