@@ -5,9 +5,9 @@ dnspython
 faiss-cpu
 sentence-transformers==2.2.2
 huggingface_hub==0.14.1
-tokenizers
+tokenizers==0.13.3
 torch==2.2.2+cpu
 gunicorn
+google-generativeai
 
 --extra-index-url https://download.pytorch.org/whl/cpu
-google-generativeai
