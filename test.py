@@ -9,6 +9,7 @@ import os, time, json, re, uuid
 from auth import validate_user, register_user
 from rag import RAGEngine
 global  base_name
+
 from db_utils import (
     get_context, log_message, create_session_if_missing,
     get_all_sessions, get_messages_for_session,
