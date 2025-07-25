@@ -8,6 +8,7 @@ import google.generativeai as genai
 import os, time, json, re, uuid
 from auth import validate_user, register_user
 from rag import RAGEngine
+from email.mime.text import MIMEText
 global  base_name
 
 from db_utils import (
@@ -259,6 +260,27 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route('/greet', methods=['POST'])
+def greet():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    base_name = session.get('base_name')
+    user_id = session['user_id']
+    session_id = request.json.get("session_id") or f"sess_{uuid.uuid4().hex[:8]}"
+
+    is_new = create_session_if_missing(base_name, user_id, session_id)
+    if is_new:
+        greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?"
+        log_message(base_name, user_id, session_id, "bot", greeting)
+        return jsonify({
+            'message': greeting,
+            'session_id': session_id,
+            'greeted': True
+        })
+
+    return jsonify({'greeted': False, 'session_id': session_id})
+
 @app.route('/chat', methods=['POST'])
 def chat():
     if 'user_id' not in session:
@@ -267,6 +289,7 @@ def chat():
     base_name = session.get('base_name')
     if not base_name:
         return jsonify({'error': 'No base_name found in session'}), 400
+
     data = request.json
     user_input = data.get('message', '')
     session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
@@ -282,18 +305,56 @@ def chat():
     context = get_context(base_name, user_id, session_id)
     prompt = f"Company: {company_context}\nFAQs: {retrieved_faqs}\nContext: {context}\nUser: {user_input}"
 
+    # 🔥 Check if session is new and log greeting message
+    is_new = create_session_if_missing(base_name, user_id, session_id)
+    if is_new:
+        greeting_msg = "👋 Hi! I'm your assistant for this website. How may I help you today?"
+        log_message(base_name, user_id, session_id, "bot", greeting_msg)
+
     try:
         model = genai.GenerativeModel("models/gemini-2.0-flash")
         ai_response = model.generate_content(prompt).text.strip()
-        create_session_if_missing(base_name, user_id, session_id)
+
         log_message(base_name, user_id, session_id, "user", user_input)
         log_message(base_name, user_id, session_id, "bot", ai_response)
 
-        return jsonify({'response': ai_response, 'session_id': session_id, 'user_id': user_id})
+        return jsonify({
+            'response': ai_response,
+            'session_id': session_id,
+            'user_id': user_id,
+            'greeted': is_new  # optional flag if frontend wants to know
+        })
     except Exception as e:
-        print("Gemini error:", e)  # Show the actual error in logs
+        print("Gemini error:", e)
         return jsonify({'response': 'Gemini error occurred.'})
 
+@app.route('/get_faqs', methods=['POST'])
+def get_faqs():
+    try:
+        data = request.get_json()
+        domain = data.get("domain")
+
+        # 🛠 Fallback for localhost or missing domain
+        if not domain or domain in ["127.0.0.1", "localhost"]:
+            domain = session.get("base_name")
+
+        if not domain:
+            return jsonify({"faqs": [], "error": "Missing domain"}), 400
+
+        # ✅ FIXED: Use correct filename
+        faq_path = os.path.join("outputs", domain, f"{domain}_qa.json")
+
+        if not os.path.exists(faq_path):
+            return jsonify({"faqs": [], "error": f"FAQ file not found: {faq_path}"}), 404
+
+        with open(faq_path, 'r', encoding='utf-8') as f:
+            faqs = json.load(f)
+            top_faqs = [item['question'] for item in faqs[:3]]
+            return jsonify({"faqs": top_faqs})
+
+    except Exception as e:
+        print("❌ Error in /get_faqs:", str(e))
+        return jsonify({"faqs": [], "error": str(e)}), 500
 
 @app.route('/sessions')
 def get_sessions():

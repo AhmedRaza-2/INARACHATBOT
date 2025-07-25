@@ -1,8 +1,7 @@
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-import os
+import time, json,os,re
 client = MongoClient(os.getenv("MONGO_URI"))
-import re
 def sanitize_db_name(name):
     return re.sub(r"[^\w\-]", "_", name)  # keeps alphanumerics, _ and -
 def get_users_collection(base_name):
@@ -14,15 +13,27 @@ def get_users_collection(base_name):
 def get_pakistan_time():
     return datetime.utcnow() + timedelta(hours=5)
 def create_session_if_missing(base_name, user_id, session_id):
-    users = get_users_collection(base_name)
-    user = users.find_one({"username": user_id})
-    if not user:
-        return
+    # check if session exists
+    existing_sessions = get_all_sessions(base_name, user_id)
+    for sess in existing_sessions:
+        if sess['session_id'] == session_id:
+            return False  # already exists
 
-    sessions = user.get("sessions", [])
-    if not any(s["session_id"] == session_id for s in sessions):
-        title = "Chat on " + get_pakistan_time().strftime("%b %d, %I:%M %p")
-        create_session(user_id, session_id, title, base_name)
+    # if not, create new session
+    new_session = {
+        'session_id': session_id,
+        'messages': [],
+        'created_at': time.time()
+    }
+    user_sessions = existing_sessions
+    user_sessions.append(new_session)
+
+    path = f"conversations/{base_name}_{user_id}.json"
+    os.makedirs("conversations", exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(user_sessions, f, indent=2)
+
+    return True  # session was newly created
 
 def get_messages_for_session(base_name, username, session_id):
     users = get_users_collection(base_name)

@@ -62,10 +62,39 @@ box-sizing: border-box;
     let session_id = localStorage.getItem("session_id");
 
     window.onload = async () => {
-      await loadSessions();
-      await loadChatHistory(session_id);
-      startWakeWordListener(); // Always listen for wake word
-    };
+  // Ensure session_id exists
+  if (!localStorage.getItem("session_id")) {
+    const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem("session_id", newSessionId);
+    session_id = newSessionId;
+  } else {
+    session_id = localStorage.getItem("session_id");
+  }
+
+  // Greet the user on first visit
+  try {
+    const greetRes = await fetch("/greet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id })
+    });
+    const greetData = await greetRes.json();
+    if (greetData.greeted && greetData.message) {
+      appendMessage("bot", greetData.message);
+      speakText(greetData.message);
+    }
+  } catch (e) {
+    console.warn("Greeting fetch failed:", e);
+  }
+
+  // Load session list and history
+  await loadSessions();
+  await loadChatHistory(session_id);
+
+  // Start wake word detection
+  startWakeWordListener();
+};
+
 
     // Chat sending
     async function sendMessage() {
@@ -108,7 +137,7 @@ box-sizing: border-box;
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
+    const domain = "{{ base_name }}";
     async function loadSessions() {
       const res = await fetch('/sessions');
       const sessions = await res.json();
@@ -148,12 +177,41 @@ box-sizing: border-box;
     }
 
     function startNewChat() {
-      const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem("session_id", newSessionId);
-      session_id = newSessionId;
-      document.getElementById("chat-box").innerHTML = "";
-      loadSessions();
-    }
+  const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+  localStorage.setItem("session_id", newSessionId);
+  session_id = newSessionId;
+  document.getElementById("chat-box").innerHTML = "";
+
+  // Show greeting message immediately
+  const greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?";
+  appendMessage("bot", greeting);
+  speakText(greeting);  // Optional voice
+  fetch('/get_faqs', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ domain: base_name })
+})
+
+.then(res => res.json())
+.then(data => {
+  if (data.faqs && data.faqs.length > 0) {
+    appendMessage("bot", "Here are some common questions you can ask:");
+
+    data.faqs.forEach(faq => {
+      const faqBtn = document.createElement("button");
+      faqBtn.innerText = faq;
+      faqBtn.classList.add("faq-button");
+      faqBtn.onclick = () => sendMessage(faq);
+      document.getElementById("chat-box").appendChild(faqBtn);
+    });
+  }
+  console.log("Sending domain:", window.location.hostname);
+
+});
+
+  loadSessions();
+}
+
 
     function speakText(text) {
       const utterance = new SpeechSynthesisUtterance(text);
