@@ -11,4 +11,6 @@ sentence-transformers
 transformers
 tokenizers
 selenium
+beautifulsoup4
+requests
 --extra-index-url https://download.pytorch.org/whl/cpu
