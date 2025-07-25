@@ -1,188 +1,389 @@
-# from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-# from dotenv import load_dotenv
-# import google.generativeai as genai
-# import os
-# import uuid
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from urllib.parse import urlparse, urljoin
+from bs4 import BeautifulSoup
+import google.generativeai as genai
+import os, time, json, re, uuid
+from auth import validate_user, register_user
+from rag import RAGEngine
+from email.mime.text import MIMEText
+global  base_name
 
-# from datetime import timedelta
-# from rag import RAGEngine
-# from auth import validate_user, register_user
-# from db_utils import get_all_sessions, log_message, get_context, create_session_if_missing
-# # === Load environment variables ===
-# load_dotenv()
-# genai.configure(api_key="AIzaSyBg2j-nmkJ7Fm63UeGRPSKJlYVjUzcdchs")
+from db_utils import (
+    get_context, log_message, create_session_if_missing,
+    get_all_sessions, get_messages_for_session,
+)
+from auth import validate_user, register_user
 
-# def find_qa_and_summary_for_domain(base_name):
-#     qa_path = f"outputs/{base_name}/{base_name}_qa.json"
-#     summary_path = f"outputs/{base_name}/{base_name}_summary.txt"
-#     print("Looking for:", qa_path, summary_path)  # Debug line
-#     if os.path.exists(qa_path) and os.path.exists(summary_path):
-#         return qa_path, summary_path
-#     return "", ""
+genai.configure(api_key="AIzaSyAtJoxVJxwbkW1qpyCNOC4Ld38F1Zzi65E")
 
-# # === Load the context and init RAG ===
-# qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
+app = Flask(__name__)
+app.secret_key = "supersecretkey"
+visited = set()
 
-# if summary_path and os.path.exists(summary_path):
-#     with open(summary_path, "r", encoding="utf-8") as f:
-#         company_context = f.read().strip()
-# else:
-#     company_context = ""
+# === Utility Functions ===
 
-# rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
+def clean_domain_name(url):
+    parsed_url = urlparse(url)
+    domain = parsed_url.netloc or parsed_url.path  # handles malformed URLs
+    domain = domain.replace("www.", "")
+    cleaned = re.sub(r'[^a-zA-Z0-9]', '_', domain)  # remove all non-alphanum chars
+    return cleaned.strip('_').lower()
 
-# # === Flask App ===
-# app = Flask(__name__, template_folder='templates')
-# app.secret_key = os.getenv("FLASK_SECRET_KEY", "super-secret-key")
-# app.permanent_session_lifetime = timedelta(days=7)
 
-# # === Gemini generation ===
-# def generate_gemini_response(user_query, retrieved_faqs, context):
-#     faqs_text = "\n".join([f"Q: {faq['question']}\nA: {faq['answer']}" for faq in retrieved_faqs])
-#     prompt = f"""
-# You are a helpful AI customer assistant for the company.
+def setup_driver():
+    options = Options()
+    options.add_argument("--headless")
+    return webdriver.Chrome(options=options)
 
-# Company Overview:
-# {company_context}
+def is_valid(url, base_domain):
+    parsed = urlparse(url)
+    return parsed.scheme in ["http", "https"] and base_domain in parsed.netloc
 
-# Recent Conversation:
-# {context}
+def extract_links(driver, base_url, base_domain):
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    links = set()
+    for a in soup.find_all("a", href=True):
+        href = urljoin(base_url, a["href"])
+        if is_valid(href, base_domain):
+            links.add(href.split("#")[0].rstrip("/"))
+    return links
 
-# Relevant FAQs:
-# {faqs_text}
+def extract_visible_text(driver):
+    try:
+        return driver.find_element(By.TAG_NAME, "body").text
+    except:
+        return ""
 
-# User: "{user_query}"
+def extract_title(driver):
+    try:
+        return driver.find_element(By.TAG_NAME, "title").get_attribute("innerText").replace("-", " ").strip()
+    except:
+        return "No Title"
 
-# Respond in a clear, concise, and professional manner:
-# """
-#     try:
-#         model = genai.GenerativeModel("models/gemini-2.0-flash")
-#         response = model.generate_content(prompt)
-#         return response.text.strip()
-#     except Exception as e:
-#         print("Gemini API Error:", e)
-#         return "Sorry, I couldn’t process that. Please try again later."
+def crawl_site(start_url, max_pages=300):
+    base_domain = urlparse(start_url).netloc
+    visited.clear()  # Clear visited before new crawl
+    
+    output_dir = os.path.join("outputs", base_domain)
+    qa_path = os.path.join(output_dir, f"{base_domain}_qa.json")
+    summary_path = os.path.join(output_dir, f"{base_domain}_summary.txt")
+    title_path = os.path.join(output_dir, f"{base_domain}_title.txt")
 
-# # === Routes ===
-# @app.route('/')
-# def home():
-#     domain = request.args.get("domain", "")
-#     qa_dataset_path, summary_path = find_qa_and_summary_for_domain(domain)
-#     if summary_path and os.path.exists(summary_path):
-#         with open(summary_path, "r", encoding="utf-8") as f:
-#             company_context = f.read().strip()
-#     else:
-#         company_context = ""
+    if os.path.exists(qa_path) and os.path.exists(summary_path):
+        print(f"✅ Skipping crawl: data already exists for {start_url}")
 
-#     rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
+        # Load saved data
+        with open(qa_path, "r", encoding="utf-8") as f:
+            qa_data = json.load(f)
 
-#     if 'user_id' not in session:
-#         return redirect(url_for('login'))
-#     return render_template('index.html', username=session['user_id'])
+        with open(summary_path, "r", encoding="utf-8") as f:
+            summary_text = f.read()
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     mode = request.args.get("mode", "login")
-#     if request.method == 'POST':
-#         username = request.form.get("username")
-#         password = request.form.get("password")
-#         if mode == "signup":
-#             success, msg = register_user(username, password)
-#         else:
-#             success, msg = validate_user(username, password)
+        with open(title_path, "r", encoding="utf-8") as f:
+            title = f.read()
 
-#         if success:
-#             session.permanent = True
-#             session["user_id"] = username
-#             return redirect(url_for('home'))
-#         else:
-#             return render_template("login.html", error=msg, mode=mode)
-#     return render_template("login.html", mode=mode)
+        # Convert back to raw site text (simulate for downstream code)
+        combined_text = "\n\n".join([item["answer"] for item in qa_data])
+        return {start_url: combined_text}, title
+    driver = setup_driver()
+    base_domain = urlparse(start_url).netloc
+    to_visit, all_text = [start_url], {}
+    extracted_title = ""
 
-# @app.route('/logout')
-# def logout():
-#     session.clear()
-#     return redirect(url_for('login'))
+    while to_visit and len(visited) < max_pages:
+        url = to_visit.pop(0)
+        if url in visited:
+            continue
 
-# @app.route('/chat', methods=['POST'])
-# def chat():
-#     if 'user_id' not in session:
-#         return jsonify({'error': 'Unauthorized'}), 401
+        try:
+            driver.get(url)
+            time.sleep(2)
+            if not extracted_title:
+                extracted_title = extract_title(driver)
 
-#     data = request.json
-#     user_input = data.get('message', '')
-#     session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
-#     user_id = session['user_id']
-#     domain = data.get('domain', '')  # <-- Accept domain from client
+            text = extract_visible_text(driver)
+            all_text[url] = text
+            visited.add(url)
+            to_visit.extend(link for link in extract_links(driver, url, base_domain)
+                            if link not in visited and link not in to_visit)
+        except:
+            continue
 
-#     # Load domain-specific QA and summary
-#     qa_dataset_path, summary_path = find_qa_and_summary_for_domain(domain)
-#     if summary_path and os.path.exists(summary_path):
-#         with open(summary_path, "r", encoding="utf-8") as f:
-#             company_context = f.read().strip()
-#     else:
-#         company_context = ""
+    driver.quit()
+    return all_text, extracted_title
 
-#     rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
+def convert_to_qa(text):
+    prompt = f'''
+You are a domain-agnostic AI assistant specialized in transforming raw text into structured knowledge.
 
-#     create_session_if_missing(user_id, session_id)
-#     log_message(user_id, session_id, "user", user_input)
+Your task is to read the following input and generate a clean, diverse set of Question-Answer (Q&A) pairs.
 
-#     if not rag:
-#         return jsonify({'response': "RAG engine not loaded. Please try again later."})
+Instructions:
+- Generate at least 50 meaningful Q&A pairs.
+- Cover all important points, facts, sections, or ideas in the text, including numbers.
+- Rephrase questions naturally.
+- Avoid vague or repetitive questions.
+- Format the output as a JSON array:
 
-#     retrieved_faqs = rag.retrieve_top_k(user_input, k=3)
-#     context = get_context(user_id, session_id)
+[
+  {{"question": "...", "answer": "..."}},
+  ...
+]
+Text:
+"""{text}"""
+'''
+    try:
+        model = genai.GenerativeModel("models/gemini-2.0-flash")
+        res = model.generate_content(prompt)
+        raw = res.text.strip()
+        if raw.startswith("```json"):
+            raw = raw[7:]
+        if raw.endswith("```"):
+            raw = raw[:-3]
+        return json.loads(raw)
+    except Exception as e:
+        print("Gemini error:", e)
+        return []
 
-#     ai_response = generate_gemini_response(user_input, retrieved_faqs, context)
-#     log_message(user_id, session_id, "bot", ai_response)
+def generate_website_context(text):
+    prompt = f"Summarize this website in 3–5 concise sentences: {text[:8000]}"
+    try:
+        model = genai.GenerativeModel("models/gemini-2.0-flash")
+        return model.generate_content(prompt).text.strip()
+    except:
+        return "No summary available."
 
-#     return jsonify({
-#         'response': ai_response,
-#         'session_id': session_id,
-#         'user_id': user_id
-#     })
-# @app.route('/sessions')
-# def get_sessions():
-#     if 'user_id' not in session:
-#         return jsonify([])
-#     user_id = session['user_id']
-#     return jsonify(get_all_sessions(user_id))
+def find_qa_and_summary_for_domain(base_name):
+    folder = os.path.join("outputs", base_name)
+    return (
+        os.path.join(folder, f"{base_name}_qa.json") if os.path.exists(os.path.join(folder, f"{base_name}_qa.json")) else "",
+        os.path.join(folder, f"{base_name}_summary.txt") if os.path.exists(os.path.join(folder, f"{base_name}_summary.txt")) else ""
+    )
 
-# @app.route('/session/<session_id>')
-# def get_session_messages(session_id):
-#     if 'user_id' not in session:
-#         return jsonify([])
-#     from db_utils import get_messages_for_session
-#     return jsonify(get_messages_for_session(session['user_id'], session_id))
+# === ROUTES ===
 
-# @app.route('/sessions', methods=['GET'])
-# def sessions_api():
-#     if 'user_id' not in session:
-#         return jsonify({'error': 'Unauthorized'}), 401
-#     sessions_data = get_all_sessions(session['user_id'])
-#     return jsonify([
-#         {
-#             "session_id": s["session_id"],
-#             "title": s.get("title", "Untitled"),
-#             "started_at": s.get("started_at")
-#         }
-#         for s in sessions_data
-#     ])
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        url = request.form.get("url")
+        if not url:
+            return "Please provide a valid URL."
 
-# @app.route('/session/<session_id>/messages', methods=['GET'])
-# def session_messages(session_id):
-#     if 'user_id' not in session:
-#         return jsonify({'error': 'Unauthorized'}), 401
+        base_name = clean_domain_name(url)
+        session['base_name'] = base_name  
 
-#     user = session['user_id']
-#     all_sessions = get_all_sessions(user)
-#     selected = next((s for s in all_sessions if s['session_id'] == session_id), None)
+        folder_path = os.path.join("outputs", base_name)
+        os.makedirs(folder_path, exist_ok=True)
 
-#     if not selected:
-#         return jsonify({'error': 'Session not found'}), 404
+        qa_path = os.path.join(folder_path, f"{base_name}_qa.json")
+        summary_path = os.path.join(folder_path, f"{base_name}_summary.txt")
+        title_path = os.path.join(folder_path, f"{base_name}_title.txt")
 
-#     return jsonify(selected['messages'])
+        if os.path.exists(qa_path) and os.path.exists(summary_path) and os.path.exists(title_path):
+            print(f"✅ Skipping crawl: data already exists for {url}")
+            return redirect(url_for('login'))
 
-# if __name__ == '__main__':
-#     app.run(debug=True, port=5001)
+        # Crawl + generate data
+        website_text, website_title = crawl_site(url)
+        all_combined = "\n\n".join(website_text.values())
+        qa_list = convert_to_qa(all_combined)
+        summary_context = generate_website_context(all_combined)
+
+        with open(qa_path, "w", encoding="utf-8") as f:
+            json.dump(qa_list, f, indent=2)
+        with open(summary_path, "w", encoding="utf-8") as f:
+            f.write(summary_context)
+        with open(title_path, "w", encoding="utf-8") as f:
+            f.write(website_title)
+
+        return redirect(url_for('login'))
+
+    return '''
+        <form method="post">
+            <label>Website URL:</label>
+            <input type="text" name="url" placeholder="https://example.com" required>
+            <input type="submit" value="Generate Q&A + Summary + Title">
+        </form>
+    '''
+@app.route('/homee')
+def homee():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    base_name = session.get('base_name')
+    if not base_name:
+        return "No website data found. Please generate data first."
+
+    qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
+
+    if summary_path and os.path.exists(summary_path):
+        with open(summary_path, "r", encoding="utf-8") as f:
+            company_context = f.read().strip()
+    else:
+        company_context = ""
+
+    rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
+
+    return render_template(
+        "index.html",
+        username=session['user_id'],
+        company_context=company_context,
+        rag_available=rag is not None,
+        bot_name=base_name
+    )
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    mode = request.args.get("mode", "login")
+    base_nam = session.get("base_name")
+    if request.method == 'POST':
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if mode == "signup":
+            success, msg = register_user(base_nam, username, password)
+        else:
+            success, msg = validate_user(base_nam, username, password)
+
+        if success:
+            session.permanent = True
+            session["user_id"] = username
+            return redirect(url_for('homee'))
+        else:
+            return render_template("login.html", error=msg, mode=mode,bot_name=base_nam)
+    return render_template("login.html", mode=mode,bot_name=base_nam)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/greet', methods=['POST'])
+def greet():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    base_name = session.get('base_name')
+    user_id = session['user_id']
+    session_id = request.json.get("session_id") or f"sess_{uuid.uuid4().hex[:8]}"
+
+    is_new = create_session_if_missing(base_name, user_id, session_id)
+    if is_new:
+        greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?"
+        log_message(base_name, user_id, session_id, "bot", greeting)
+        return jsonify({
+            'message': greeting,
+            'session_id': session_id,
+            'greeted': True
+        })
+
+    return jsonify({'greeted': False, 'session_id': session_id})
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    base_name = session.get('base_name')
+    if not base_name:
+        return jsonify({'error': 'No base_name found in session'}), 400
+
+    data = request.json
+    user_input = data.get('message', '')
+    session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
+    user_id = session['user_id']
+
+    qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
+    if not qa_dataset_path:
+        return jsonify({'response': 'No data found for this domain.'}), 404
+
+    rag = RAGEngine(qa_dataset_path)
+    company_context = open(summary_path, encoding="utf-8").read() if os.path.exists(summary_path) else ""
+    retrieved_faqs = rag.retrieve_top_k(user_input, k=3)
+    context = get_context(base_name, user_id, session_id)
+    prompt = f"Company: {company_context}\nFAQs: {retrieved_faqs}\nContext: {context}\nUser: {user_input}"
+
+    # 🔥 Check if session is new and log greeting message
+    is_new = create_session_if_missing(base_name, user_id, session_id)
+    if is_new:
+        greeting_msg = "👋 Hi! I'm your assistant for this website. How may I help you today?"
+        log_message(base_name, user_id, session_id, "bot", greeting_msg)
+
+    try:
+        model = genai.GenerativeModel("models/gemini-2.0-flash")
+        ai_response = model.generate_content(prompt).text.strip()
+
+        log_message(base_name, user_id, session_id, "user", user_input)
+        log_message(base_name, user_id, session_id, "bot", ai_response)
+
+        return jsonify({
+            'response': ai_response,
+            'session_id': session_id,
+            'user_id': user_id,
+            'greeted': is_new  # optional flag if frontend wants to know
+        })
+    except Exception as e:
+        print("Gemini error:", e)
+        return jsonify({'response': 'Gemini error occurred.'})
+
+@app.route('/get_faqs', methods=['POST'])
+def get_faqs():
+    try:
+        data = request.get_json()
+        domain = data.get("domain")
+
+        # 🛠 Fallback for localhost or missing domain
+        if not domain or domain in ["127.0.0.1", "localhost"]:
+            domain = session.get("base_name")
+
+        if not domain:
+            return jsonify({"faqs": [], "error": "Missing domain"}), 400
+
+        # ✅ FIXED: Use correct filename
+        faq_path = os.path.join("outputs", domain, f"{domain}_qa.json")
+
+        if not os.path.exists(faq_path):
+            return jsonify({"faqs": [], "error": f"FAQ file not found: {faq_path}"}), 404
+
+        with open(faq_path, 'r', encoding='utf-8') as f:
+            faqs = json.load(f)
+            top_faqs = [item['question'] for item in faqs[:3]]
+            return jsonify({"faqs": top_faqs})
+
+    except Exception as e:
+        print("❌ Error in /get_faqs:", str(e))
+        return jsonify({"faqs": [], "error": str(e)}), 500
+
+@app.route('/sessions')
+def get_sessions():
+    if 'user_id' not in session:
+        return jsonify([])
+    base_name = session.get('base_name')
+    return jsonify(get_all_sessions(base_name, session['user_id']))
+
+@app.route('/session/<session_id>')
+def get_session_messages(session_id):
+    if 'user_id' not in session:
+        return jsonify([])
+    base_name = session.get('base_name')
+    return jsonify(get_messages_for_session(base_name, session['user_id'], session_id))
+
+@app.route('/session/<session_id>/messages', methods=['GET'])
+def session_messages(session_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    base_name = session.get('base_name')
+    user = session['user_id']
+    sessions = get_all_sessions(base_name, user)
+    session_data = next((s for s in sessions if s['session_id'] == session_id), None)
+    if not session_data:
+        return jsonify({'error': 'Session not found'}), 404
+
+    return jsonify(session_data.get('messages', []))
+
+# === Run App ===
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
