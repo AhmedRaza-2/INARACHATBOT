@@ -15,7 +15,6 @@ from db_utils import (
 )
 from auth import validate_user, register_user
 
-# === Gemini Configuration ===
 genai.configure(api_key="AIzaSyAtJoxVJxwbkW1qpyCNOC4Ld38F1Zzi65E")
 
 app = Flask(__name__)
@@ -172,7 +171,7 @@ def index():
             return "Please provide a valid URL."
 
         base_name = clean_domain_name(url)
-        session['base_name'] = base_name  # ✅ Always set this!
+        session['base_name'] = base_name  
 
         folder_path = os.path.join("outputs", base_name)
         os.makedirs(folder_path, exist_ok=True)
