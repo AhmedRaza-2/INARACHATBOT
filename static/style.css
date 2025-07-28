@@ -213,10 +213,12 @@ html, body {
 }
 
 .auth-card {
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.05);
   padding: 40px 30px;
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  color: #000000;
   width: 100%;
   max-width: 420px;
   text-align: center;
@@ -224,7 +226,7 @@ html, body {
 
 .auth-card h2 {
   margin-bottom: 25px;
-  color: #4caf50;
+  color: #000000;
 }
 
 .auth-card input {
@@ -247,6 +249,7 @@ html, body {
   font-size: 16px;
   cursor: pointer;
   transition: background 0.3s ease;
+  box-shadow: 0 0 10px #00bcd4, 0 0 20px #00bcd4;
 }
 
 .auth-card button:hover {
@@ -270,3 +273,16 @@ html, body {
 .auth-card a:hover {
   text-decoration: underline;
 }
+
+.gradient-body {
+  background: linear-gradient(135deg, #2e3d32, #4caf50);
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+
+

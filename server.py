@@ -169,11 +169,32 @@ def find_qa_and_summary_for_domain(base_name):
 def index():
     if request.method == "POST":
         url = request.form.get("url")
-        if not url:
-            return "Please provide a valid URL."
+        email = request.form.get("email")
 
+        if not url or not email:
+            return "❌ Please provide both the website URL and your work email."
+
+        # Extract domain from URL
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc.replace("www.", "").lower()
+
+        # Extract domain from email
+        email_domain = email.split('@')[-1].lower()
+
+        # Optional: handle subdomains in email (e.g., students.example.com → example.com)
+        if email_domain.endswith(domain) or domain.endswith(email_domain):
+            pass  # allow
+        else:
+            return f"""
+                ❌ You must use an email from the same domain as the website.<br>
+                Your email domain: <b>{email_domain}</b><br>
+                Website domain: <b>{domain}</b>
+            """
+
+        # Email verified successfully
         base_name = clean_domain_name(url)
-        session['base_name'] = base_name  
+        session['base_name'] = base_name
+        session['user_email'] = email
 
         folder_path = os.path.join("outputs", base_name)
         os.makedirs(folder_path, exist_ok=True)
@@ -201,13 +222,9 @@ def index():
 
         return redirect(url_for('login'))
 
-    return '''
-        <form method="post">
-            <label>Website URL:</label>
-            <input type="text" name="url" placeholder="https://example.com" required>
-            <input type="submit" value="Generate Q&A + Summary + Title">
-        </form>
-    '''
+    return render_template("url_input.html", bot_name="Bot")
+
+
 @app.route('/homee')
 def homee():
     if 'user_id' not in session:
