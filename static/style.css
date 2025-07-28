@@ -284,5 +284,23 @@ html, body {
   font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.faq-button {
+  display: inline-block;
+  margin: 6px 6px 0 0;
+  padding: 8px 14px;
+  background-color: #e0f2f1;
+  color: #2e3d32;
+  border: 1px solid #b2dfdb;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.faq-button:hover {
+  background-color: #b2dfdb;
+}
+
+
 
 
