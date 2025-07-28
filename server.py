@@ -347,18 +347,18 @@ def chat():
 
 @app.route('/get_faqs', methods=['POST'])
 def get_faqs():
+    print("✅ /get_faqs endpoint was hit!")
     try:
         data = request.get_json()
         domain = data.get("domain")
 
-        # 🛠 Fallback for localhost or missing domain
+        # Fallback
         if not domain or domain in ["127.0.0.1", "localhost"]:
             domain = session.get("base_name")
 
         if not domain:
             return jsonify({"faqs": [], "error": "Missing domain"}), 400
 
-        # ✅ FIXED: Use correct filename
         faq_path = os.path.join("outputs", domain, f"{domain}_qa.json")
 
         if not os.path.exists(faq_path):
@@ -372,6 +372,8 @@ def get_faqs():
     except Exception as e:
         print("❌ Error in /get_faqs:", str(e))
         return jsonify({"faqs": [], "error": str(e)}), 500
+
+
 
 @app.route('/sessions')
 def get_sessions():

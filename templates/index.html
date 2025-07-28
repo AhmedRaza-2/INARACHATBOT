@@ -97,9 +97,10 @@ box-sizing: border-box;
 
 
     // Chat sending
-    async function sendMessage() {
+    async function sendMessage(optionalMessage = null) {
       const input = document.getElementById("user-input");
-      const message = input.value.trim();
+      const message = optionalMessage || input.value.trim();
+
       if (!message) return;
 
       appendMessage("user", message);
@@ -177,39 +178,47 @@ box-sizing: border-box;
     }
 
     function startNewChat() {
-  const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
-  localStorage.setItem("session_id", newSessionId);
-  session_id = newSessionId;
-  document.getElementById("chat-box").innerHTML = "";
+      console.log("✅ startNewChat called");
+      const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem("session_id", newSessionId);
+      session_id = newSessionId;
+      document.getElementById("chat-box").innerHTML = "";
 
-  // Show greeting message immediately
-  const greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?";
-  appendMessage("bot", greeting);
-  speakText(greeting);  // Optional voice
-  fetch('/get_faqs', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ domain: base_name })
-})
+      // Show greeting message immediately
+      const greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?";
+      appendMessage("bot", greeting);
+      speakText(greeting);  // Optional voice
+      console.log("Fetching FAQs for:", domain);
+      fetch('/get_faqs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ domain })
 
-.then(res => res.json())
-.then(data => {
-  if (data.faqs && data.faqs.length > 0) {
-    appendMessage("bot", "Here are some common questions you can ask:");
+    })
 
-    data.faqs.forEach(faq => {
-      const faqBtn = document.createElement("button");
-      faqBtn.innerText = faq;
-      faqBtn.classList.add("faq-button");
-      faqBtn.onclick = () => sendMessage(faq);
-      document.getElementById("chat-box").appendChild(faqBtn);
+    .then(res => res.json())
+    .then(data => {
+      if (data.faqs && data.faqs.length > 0) {
+        appendMessage("bot", "Here are some common questions you can ask:");
+
+        const faqContainer = document.createElement("div");
+        faqContainer.className = "bot";
+        faqContainer.innerHTML = `<strong>🔍 Choose a question:</strong><br><br>`;
+        data.faqs.forEach(faq => {
+          const faqBtn = document.createElement("button");
+          faqBtn.innerText = faq;
+          faqBtn.className = "faq-button";
+          faqBtn.onclick = () => sendMessage(faq);
+          faqContainer.appendChild(faqBtn);
+        });
+        document.getElementById("chat-box").appendChild(faqContainer);
+
+      }
+      console.log("Sending domain:", window.location.hostname);
+
     });
-  }
-  console.log("Sending domain:", window.location.hostname);
 
-});
-
-  loadSessions();
+      loadSessions();
 }
 
 
