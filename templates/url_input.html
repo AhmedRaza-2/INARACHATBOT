@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ bot_name }} – Crawl a Site</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    /* Spinner Styles */
+    #loading-spinner {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    .loading-text {
+      margin-top: 10px;
+      font-weight: bold;
+      color: white;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="gradient-body">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <h2>🌐 Chatbot Generator</h2>
+      <p style="margin-bottom: 20px;">Enter a URL and your work email to begin generating your free chatbot.</p>
+      <form method="POST" onsubmit="showSpinner()">
+        <input type="text" name="url" placeholder="https://example.com" required>
+        <input type="email" name="email" placeholder="you@example.com" required>
+        <button type="submit">🚀 Generate Chatbot</button>
+      </form>
+      <div id="loading-spinner">
+        <div class="spinner"></div>
+        <div class="loading-text">Generating Chatbot...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showSpinner() {
+      document.getElementById("loading-spinner").style.display = "block";
+    }
+  </script>
+</body>
+</html>
