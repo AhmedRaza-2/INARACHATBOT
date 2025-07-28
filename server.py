@@ -233,15 +233,7 @@ def index():
 
         return redirect(url_for('login'))
 
-    return '''
-        <form method="post">
-            <label>Website URL:</label>
-            <input type="text" name="url" placeholder="https://example.com" required><br><br>
-            <label>Work Email:</label>
-            <input type="email" name="email" placeholder="you@students.example.com" required><br><br>
-            <input type="submit" value="Generate Bot">
-        </form>
-    '''
+    return render_template("url_input.html", bot_name="bot")
 
 @app.route('/homee')
 def homee():
@@ -379,18 +371,18 @@ def chat():
 
 @app.route('/get_faqs', methods=['POST'])
 def get_faqs():
-    print("✅ /get_faqs endpoint was hit!")
     try:
         data = request.get_json()
         domain = data.get("domain")
 
-        # Fallback
+        # 🛠 Fallback for localhost or missing domain
         if not domain or domain in ["127.0.0.1", "localhost"]:
             domain = session.get("base_name")
 
         if not domain:
             return jsonify({"faqs": [], "error": "Missing domain"}), 400
 
+        # ✅ FIXED: Use correct filename
         faq_path = os.path.join("outputs", domain, f"{domain}_qa.json")
 
         if not os.path.exists(faq_path):
@@ -404,8 +396,6 @@ def get_faqs():
     except Exception as e:
         print("❌ Error in /get_faqs:", str(e))
         return jsonify({"faqs": [], "error": str(e)}), 500
-
-
 
 @app.route('/sessions')
 def get_sessions():

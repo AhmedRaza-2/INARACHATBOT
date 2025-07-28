@@ -1,5 +1,45 @@
 [
   {
+    "session_id": "sess_nbvz0u96",
+    "title": "Chat on 2025-07-28 13:09",
+    "started_at": "2025-07-28T13:09:03.891253"
+  },
+  {
+    "session_id": "sess_b7ny4xxh",
+    "title": "Chat on 2025-07-28 13:07",
+    "started_at": "2025-07-28T13:07:56.499963"
+  },
+  {
+    "session_id": "sess_lau50lch",
+    "title": "Chat on 2025-07-28 12:59",
+    "started_at": "2025-07-28T12:59:35.890076"
+  },
+  {
+    "session_id": "sess_ioc663p5",
+    "title": "Chat on 2025-07-28 12:58",
+    "started_at": "2025-07-28T12:58:43.316103"
+  },
+  {
+    "session_id": "sess_xp8w696d",
+    "title": "Chat on 2025-07-28 12:57",
+    "started_at": "2025-07-28T12:57:42.524576"
+  },
+  {
+    "session_id": "sess_uxi9kdm4",
+    "title": "Chat on 2025-07-28 12:55",
+    "started_at": "2025-07-28T12:55:56.403512"
+  },
+  {
+    "session_id": "sess_b6p58s52",
+    "title": "Chat on 2025-07-28 12:53",
+    "started_at": "2025-07-28T12:53:49.910941"
+  },
+  {
+    "session_id": "sess_x5xx8ld0",
+    "title": "Chat on 2025-07-28 12:37",
+    "started_at": "2025-07-28T12:37:06.548655"
+  },
+  {
     "session_id": "sess_xi2ngai9",
     "title": "Chat on 2025-07-28 12:24",
     "started_at": "2025-07-28T12:24:34.472134"
@@ -60,8 +100,8 @@
     "started_at": "2025-07-25T10:14:56.281253"
   },
   {
-    "session_id": "sess_x5xx8ld0",
+    "session_id": "sess_rlo5tfk9",
     "messages": [],
-    "created_at": 1753688226.5469775
+    "created_at": 1753691607.758991
   }
 ]

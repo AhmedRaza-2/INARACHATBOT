@@ -82,6 +82,7 @@ box-sizing: border-box;
     if (greetData.greeted && greetData.message) {
       appendMessage("bot", greetData.message);
       speakText(greetData.message);
+      
     }
   } catch (e) {
     console.warn("Greeting fetch failed:", e);
@@ -134,7 +135,7 @@ box-sizing: border-box;
       const chatBox = document.getElementById("chat-box");
       const div = document.createElement("div");
       div.className = role;
-      div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 InaraBot: ") + text;
+      div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 Bot: ") + text;
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -166,16 +167,39 @@ box-sizing: border-box;
     }
 
     async function loadChatHistory(sessionId) {
-      try {
-        const res = await fetch(`/session/${sessionId}`);
-        const messages = await res.json();
-        const chatBox = document.getElementById("chat-box");
-        chatBox.innerHTML = "";
-        messages.forEach(msg => appendMessage(msg.sender, msg.text));
-      } catch (err) {
-        console.error("Failed to load chat history:", err);
-      }
+  try {
+    const res = await fetch(`/session/${sessionId}`);
+    const messages = await res.json();
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML = "";
+    messages.forEach(msg => appendMessage(msg.sender, msg.text));
+
+    // ✅ Fetch and display FAQs even on session load
+    const faqRes = await fetch('/get_faqs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ domain })
+    });
+
+    const faqData = await faqRes.json();
+    if (faqData.faqs && faqData.faqs.length > 0) {
+      const faqContainer = document.createElement("div");
+      faqContainer.className = "bot";
+      faqContainer.innerHTML = `<strong>🔍 Choose a question:</strong><br><br>`;
+      faqData.faqs.forEach(faq => {
+        const faqBtn = document.createElement("button");
+        faqBtn.innerText = faq;
+        faqBtn.className = "faq-button";
+        faqBtn.onclick = () => sendMessage(faq);
+        faqContainer.appendChild(faqBtn);
+      });
+      chatBox.appendChild(faqContainer);
     }
+
+  } catch (err) {
+    console.error("Failed to load chat history:", err);
+  }
+}
 
     function startNewChat() {
       console.log("✅ startNewChat called");
@@ -199,7 +223,6 @@ box-sizing: border-box;
     .then(res => res.json())
     .then(data => {
       if (data.faqs && data.faqs.length > 0) {
-        appendMessage("bot", "Here are some common questions you can ask:");
 
         const faqContainer = document.createElement("div");
         faqContainer.className = "bot";
