@@ -1,0 +1,706 @@
+[
+  {
+    "question": "What is ClickHouse primarily known for?",
+    "answer": "It's known as the fastest and most resource efficient real-time data warehouse and open-source database, excelling at high-performance analytics."
+  },
+  {
+    "question": "What applications is ClickHouse well-suited for?",
+    "answer": "It's suited for mission-critical and time-sensitive applications that need ultimate query performance."
+  },
+  {
+    "question": "How does ClickHouse ensure ease of use for developers?",
+    "answer": "It ensures ease of use by being built to ensure that even the most sophisticated data analysis can be done intuitively, using simple SQL."
+  },
+  {
+    "question": "How does ClickHouse achieve cost effectiveness?",
+    "answer": "It achieves cost effectiveness with best-in-class compression ratios that reduce storage and accelerate performance."
+  },
+  {
+    "question": "What connector for ClickHouse is now in Public Beta, facilitating fast MySQL to ClickHouse CDC?",
+    "answer": "The Blazing-fast MySQL to ClickHouse CDC with ClickPipe connector is now in Public Beta."
+  },
+  {
+    "question": "Name some companies that trust ClickHouse.",
+    "answer": "Companies such as Sony, Lyft, Cisco and GitLab are among those that trust ClickHouse."
+  },
+  {
+    "question": "What benefits do companies gain by using ClickHouse Cloud?",
+    "answer": "They gain scale, efficiency and ease of use."
+  },
+  {
+    "question": "What are some of the applications of ClickHouse?",
+    "answer": "Real-time analytics and observability are among its applications."
+  },
+  {
+    "question": "According to a testimonial, what did ClickHouse play an instrumental role in helping Anthropic do?",
+    "answer": "It played an instrumental role in helping them develop and ship Claude 4."
+  },
+  {
+    "question": "According to a testimonial, what availability, speed, and durability aspects are satisfied by ClickHouse for Tesla?",
+    "answer": "It has availability, speed, and durability that Tesla needs."
+  },
+  {
+    "question": "According to a testimonial, what performance benefits and cost savings did Lyft experience using ClickHouse?",
+    "answer": "Lyft experienced a lot of performance benefits and huge cost savings for the organization."
+  },
+  {
+    "question": "What are the three database orientations?",
+    "answer": "The three database orientations are real-time analytics, observability, and business intelligence."
+  },
+  {
+    "question": "What is a key characteristic of OLAP scenarios for which column-oriented databases are suited?",
+    "answer": "Column-oriented databases are better suited to OLAP scenarios."
+  },
+  {
+    "question": "By how much are column-oriented databases faster than row-oriented ones for most queries?",
+    "answer": "They are at least 100x faster in processing most queries."
+  },
+  {
+    "question": "What does ClickHouse utilize to maximize the processing speed of analytical queries?",
+    "answer": "ClickHouse uses all available system resources to their full potential."
+  },
+  {
+    "question": "What happens to data in row-oriented databases?",
+    "answer": "Data is stored in rows, with all the values related to a row physically stored next to each other."
+  },
+  {
+    "question": "How is data stored in column-oriented databases like ClickHouse?",
+    "answer": "Data is stored in columns, with values from the same columns stored together."
+  },
+  {
+    "question": "Besides running in the cloud, where else can ClickHouse run?",
+    "answer": "ClickHouse runs in every environment, whether it\u2019s on your machine or in the cloud."
+  },
+  {
+    "question": "What is ClickHouse Cloud described as being?",
+    "answer": "It's described as the best way to use ClickHouse."
+  },
+  {
+    "question": "On what platforms is ClickHouse Cloud available?",
+    "answer": "It is available on AWS, GCP, Azure and on their respective marketplaces."
+  },
+  {
+    "question": "Besides ClickHouse Cloud, what other ClickHouse product is available for download?",
+    "answer": "The open-source ClickHouse database server is available for download."
+  },
+  {
+    "question": "Is the open-source ClickHouse database server always free to use?",
+    "answer": "Yes, the open-source ClickHouse database server is always free."
+  },
+  {
+    "question": "What is ClickHouse Local used for?",
+    "answer": "It's used to run fast queries on local files without a server."
+  },
+  {
+    "question": "Name three file types that ClickHouse Local can run queries on.",
+    "answer": "CSV, TSV, and Parquet are among the file types it can run queries on."
+  },
+  {
+    "question": "Approximately how many developers use ClickHouse?",
+    "answer": "Over 100,000 developers use ClickHouse."
+  },
+  {
+    "question": "What is the number of contributors to ClickHouse?",
+    "answer": "There are more than 2,500 contributors."
+  },
+  {
+    "question": "What is the approximate number of pull requests?",
+    "answer": "There are more than 58,800 pull requests."
+  },
+  {
+    "question": "How many stars does ClickHouse have on GitHub?",
+    "answer": "ClickHouse has over 41,900 stars on GitHub."
+  },
+  {
+    "question": "For what operating systems can ClickHouse be installed?",
+    "answer": "ClickHouse can be installed for MacOS, Linux, and FreeBSD."
+  },
+  {
+    "question": "Name three additional platforms for which ClickHouse can be installed.",
+    "answer": "Windows, Docker, and FreeBSD."
+  },
+  {
+    "question": "What can be learned from the getting started video?",
+    "answer": "The getting started video teaches more about ClickHouse."
+  },
+  {
+    "question": "Where are the headquarters of ClickHouse, Inc. located?",
+    "answer": "The headquarters are located in the Bay Area, CA and Amsterdam, NL."
+  },
+  {
+    "question": "What topics are covered in the 'Products' section of the website?",
+    "answer": "The 'Products' section covers ClickHouse Cloud, ClickHouse, Bring Your Own Cloud, ClickHouse Government, ClickHouse Keeper, ClickStack, and ClickPipes."
+  },
+  {
+    "question": "Where can users find more information about pricing?",
+    "answer": "Users can find more information at the 'Pricing' section of the website."
+  },
+  {
+    "question": "What type of resources are located in the 'Resources' section of the website?",
+    "answer": "The 'Resources' section includes Documentation, Training, Support, Benchmarks, Use cases, Videos, and Demos."
+  },
+  {
+    "question": "Name some platforms that ClickHouse can be compared to, listed on the website.",
+    "answer": "BigQuery, PostgreSQL, Redshift, and Snowflake are listed for comparisons."
+  },
+  {
+    "question": "What are ClickHouse's partner platforms?",
+    "answer": "AWS and Azure"
+  },
+  {
+    "question": "Where can users find information on ClickHouse's feature releases and cloud offerings?",
+    "answer": "Users can stay informed by loading the form that's displayed and joining the community by starring the project on Github."
+  },
+  {
+    "question": "What is a use case for migrating to ClickHouse, according to the 'User Stories' section?",
+    "answer": "Companies are using ClickHouse to speed up their workloads and lower costs."
+  },
+  {
+    "question": "What do companies gain by speeding up their workloads and lowering their costs with ClickHouse?",
+    "answer": "Companies discover how to get real-time analytics."
+  },
+  {
+    "question": "What performance improvements did Memorial Sloan Kettering Cancer Center achieve using ClickHouse?",
+    "answer": "They achieved a 10 times faster performance than their legacy MySQL system."
+  },
+  {
+    "question": "How does SEON utilize ClickHouse?",
+    "answer": "SEON achieves 80% faster database performance for anti-fraud platform with ClickHouse on AWS"
+  },
+  {
+    "question": "What does the 'sh' command install for MacOS, Linux, and FreeBSD?",
+    "answer": "It installs ClickHouse."
+  },
+  {
+    "question": "What is the announced deal value for ClickHouse?",
+    "answer": "$6.35 Billion."
+  },
+  {
+    "question": "What are the stated headquarters of ClickHouse, Inc.?",
+    "answer": "Bay Area, CA and Amsterdam, NL."
+  },
+  {
+    "question": "What platforms is ClickHouse Cloud available on?",
+    "answer": "AWS, GCP, and Azure."
+  },
+  {
+    "question": "What is the Public Beta status of ClickPipe?",
+    "answer": "Public Beta"
+  },
+  {
+    "question": "What anti-fraud platform achieved 80% faster database performance with ClickHouse on AWS?",
+    "answer": "SEON"
+  },
+  {
+    "question": "Who is the Vice President of Architecture for SEON?",
+    "answer": "Adam Berkecz"
+  },
+  {
+    "question": "How much did Property Finder reduce costs by with ClickHouse on AWS?",
+    "answer": "50%"
+  },
+  {
+    "question": "Who is the Director of Data Engineering for Property Finder?",
+    "answer": "Khaled Thabit"
+  },
+  {
+    "question": "What did Lansweeper lead developer Juan Carlos Lloret Hern\u00e1ndez say about ClickHouse's performance?",
+    "answer": "ClickHouse outperformed Elastic in every single test. Sometimes it was 10 times faster\u2014even on slower hardware, because we were testing ClickHouse on our laptops and Elastic on production machines."
+  },
+  {
+    "question": "Who is the Senior Engineering Manager at Braze?",
+    "answer": "Caleb Severn"
+  },
+  {
+    "question": "What did Clemens Rawert, Co-founder of Langfuse, say about choosing ClickHouse?",
+    "answer": "We had to decide whether to continue with Postgres and try to make it work with extensions and optimizations, or go for an OLAP database straight away. We went with ClickHouse and haven\u2019t regretted it."
+  },
+  {
+    "question": "What migration did Cloud CIRCUS do?",
+    "answer": "Migrated from Athena to ClickHouse to save time and costs."
+  },
+  {
+    "question": "Who is an engineer at LINE MANGA?",
+    "answer": "Kazuki Matsuda"
+  },
+  {
+    "question": "What does Wallarm's API security platform rely on to detect and block attacks?",
+    "answer": "ClickHouse Cloud"
+  },
+  {
+    "question": "Who is the Vice President of Engineering for Wallarm?",
+    "answer": "Slava Yudanov"
+  },
+  {
+    "question": "What does Flock Safety use ClickHouse for?",
+    "answer": "Real-time vehicle traffic analytics"
+  },
+  {
+    "question": "Who is the Data Engineering Manager for Flock Safety?",
+    "answer": "Leon Kozlowski"
+  },
+  {
+    "question": "For the Dutch Police, which database is faster for high-performance workloads, ClickHouse or Snowflake?",
+    "answer": "ClickHouse"
+  },
+  {
+    "question": "Who is the CEO for Anlytic.com?",
+    "answer": "Martijn Witteveen"
+  },
+  {
+    "question": "How many rows can Poizon write per second with ClickHouse?",
+    "answer": "Up to 20 million"
+  },
+  {
+    "question": "What metric enhancements did Longbridge Technology achieve by migrating to ClickHouse?",
+    "answer": "10x performance boost"
+  },
+  {
+    "question": "What percentage have Solarwinds cut query times by using ClickHouse?",
+    "answer": "60%"
+  },
+  {
+    "question": "Who is the CTO of Astronomer?",
+    "answer": "Julian LaNeve"
+  },
+  {
+    "question": "How long did it take to migrate 120TB of data to ClickHouse Cloud in one use case?",
+    "answer": "3 Months"
+  },
+  {
+    "question": "How much was BigQuery more expensive compared to ClickHouse Cloud for seller analytics?",
+    "answer": "2x"
+  },
+  {
+    "question": "For storing trade data, how long has Deutsche Bank been using ClickHouse as an internal data warehouse?",
+    "answer": "Since 2017"
+  },
+  {
+    "question": "What is Cognitiv using ClickHouse to build better?",
+    "answer": "ML Models for AdTech"
+  },
+  {
+    "question": "Who is a Principal Software Engineer at Electrum?",
+    "answer": "Andi Pangeran"
+  },
+  {
+    "question": "According to an engineer, what happens to monitoring and automation with ClickHouse Cloud?",
+    "answer": "Clickhouse Cloud has awesome monitoring and automatic updates, so you never get stuck with a database version that\u2019s three years out of date."
+  },
+  {
+    "question": "Who is the Vice President Of Engineering for m3ter?",
+    "answer": "Jonathan Hill"
+  },
+  {
+    "question": "What solution is offered by IBM Instana for monitoring ClickHouse performance?",
+    "answer": "OpenTelemetry"
+  },
+  {
+    "question": "With ClickHouse Cloud, about how many records can Increff handle?",
+    "answer": "Around a billion"
+  },
+  {
+    "question": "Who is the Co-Founder and CEO of Gumlet?",
+    "answer": "Aditya Patadia"
+  },
+  {
+    "question": "What has Attentive's Larry Finn said about ClickHouse?",
+    "answer": "Confoudingly Fast"
+  },
+  {
+    "question": "What did the Head of Data for Skool say about migrating to ClickHouse?",
+    "answer": "We went from minutes for analytic queries down to seconds without really any optimization effort at all."
+  },
+  {
+    "question": "What does Huntress Co-Founder and CTO Chris Bisnett say about ClickHouse?",
+    "answer": "There's zero maintenance required [for ClickHouse]. We ingest a ton of data, it\u2019s super efficient and way cheaper than other solutions. It checks all the boxes."
+  },
+  {
+    "question": "What is Tydo known for delivering with ClickHouse?",
+    "answer": "Lightning-fast customer analytics"
+  },
+  {
+    "question": "Weights & Biases uses ClickHouse to help teams scale what?",
+    "answer": "AI development"
+  },
+  {
+    "question": "According to a co-founder, what advantage does ClickHouse give?",
+    "answer": "ClickHouse\u2019s ability to handle a high volume of concurrent queries without performance degradation is another big advantage"
+  },
+  {
+    "question": "What was beehiiv able to build using ClickHouse?",
+    "answer": "A new system from the ground up, to scale not only beehiiv\u2019s data platform, but ideally the business as a whole"
+  },
+  {
+    "question": "What is ClickHouse Cloud helping LoopMe drive with better efficiency?",
+    "answer": "Better advertising outcomes"
+  },
+  {
+    "question": "What data does Corsearch replace MySQL with ClickHouse for?",
+    "answer": "Content and brand protection"
+  },
+  {
+    "question": "What performance was noted by ClickHouse with scaling Graphite?",
+    "answer": "Blazing fast"
+  },
+  {
+    "question": "What has ClickHouse enabled Braintrust to build faster for AI products?",
+    "answer": "Real-time data analysis"
+  },
+  {
+    "question": "Tekion had what reduced from 27TB to 2.5TB with ClickHouse?",
+    "answer": "Storage needs"
+  },
+  {
+    "question": "What does ClickHouse power with 10-million-member records?",
+    "answer": "Real-time analytics"
+  },
+  {
+    "question": "ClickHouse has become the backbone for what at some companies?",
+    "answer": "All of our data applications"
+  },
+  {
+    "question": "OpenMeter has developed a metering system capable of handling millions of billable events per second built on top of what?",
+    "answer": "ClickHouse Cloud"
+  },
+  {
+    "question": "Where is Trip.com building a 50PB logging solution?",
+    "answer": "With ClickHouse"
+  },
+  {
+    "question": "ClickHouse is integral to Prefect for what?",
+    "answer": "Event-driven workflow orchestration"
+  },
+  {
+    "question": "ClickHouse improved query performance by at least 18x and up to what?",
+    "answer": "137x"
+  },
+  {
+    "question": "ClickHouse provides fast answers in what kind of research?",
+    "answer": "Cancer"
+  },
+  {
+    "question": "What analytics can be learned about with ClickHouse?",
+    "answer": "Funnel analytics and distributed queries"
+  },
+  {
+    "question": "ClickHouse can provide almost no lag when playing your favorite what?",
+    "answer": "Online game"
+  },
+  {
+    "question": "ClickHouse is a key component in what two IBM products?",
+    "answer": "Instana and QRadar"
+  },
+  {
+    "question": "How many big data systems were evaluated before settling on ClickHouse in one account?",
+    "answer": "More than a dozen"
+  },
+  {
+    "question": "ClickHouse enables what kind of write design pattern?",
+    "answer": "A simpler"
+  },
+  {
+    "question": "ClickHouse Cloud delivers fast and reliable what?",
+    "answer": "Data management"
+  },
+  {
+    "question": "What was more cost effective than Elasticsearch?",
+    "answer": "11x"
+  },
+  {
+    "question": "ClickHouse is widely used where?",
+    "answer": "Across Instacart"
+  },
+  {
+    "question": "ClickHouse enables what kind of write design pattern?",
+    "answer": "Simpler"
+  },
+  {
+    "question": "ClickHouse Cloud delivers what kind of data management?",
+    "answer": "Fast and reliable"
+  },
+  {
+    "question": "With the Ongage's Strategic Shift to ClickHouse, reports generated at what speed?",
+    "answer": "In a blink of an eye"
+  },
+  {
+    "question": "How many daily payment transactions does ClickHouse handle in real-time for one use case?",
+    "answer": "50 Million"
+  },
+  {
+    "question": "ClickHouse collects tens of thousands of data points from what?",
+    "answer": "Customers' phones and other more traditional sources."
+  },
+  {
+    "question": "ClickHouse improved query times by how much for some users?",
+    "answer": "10x"
+  },
+  {
+    "question": "ClickHouse allows performing reads of how many GBs per second for one user?",
+    "answer": "10s"
+  },
+  {
+    "question": "Where has Sony LIV ingested millions of video streaming events?",
+    "answer": "ClickHouse Cloud"
+  },
+  {
+    "question": "Migrating to ClickHouse allowed what to be reduced when using ClickHouse as a logging solution?",
+    "answer": "Costs"
+  },
+  {
+    "question": "How many requests per second is ClickHouse handling in one example?",
+    "answer": "6M"
+  },
+  {
+    "question": "How did ClickHouse help Lyft with infrastructure costs?",
+    "answer": "Lyft cut infrastructure costs using ClickHouse"
+  },
+  {
+    "question": "In one example, ClickHouse emerged as the unrivalled frontrunner for what?",
+    "answer": "Post-evaluation against criteria, from query performance to cost"
+  },
+  {
+    "question": "What types of solutions are provided by products in the ClickHouse product line?",
+    "answer": "ClickHouse Cloud, ClickHouse, Bring Your Own Cloud, ClickHouse Government, ClickHouse Keeper, ClickStack, ClickPipes, Integrations, chDB, and Trust center"
+  },
+  {
+    "question": "What are the potential results of using ClickHouse?",
+    "answer": "Speed up workloads and lower costs"
+  },
+  {
+    "question": "How did Tesla build a quadrillion-scale observability platform?",
+    "answer": "By using ClickHouse."
+  },
+  {
+    "question": "What does Anthropic use ClickHouse for?",
+    "answer": "Scale observability for the AI era"
+  },
+  {
+    "question": "What benefits does Microsoft Clarity receive from ClickHouse?",
+    "answer": "Heat map generation became an instantaneous task to do, and it was even orders of magnitude cheaper to run."
+  },
+  {
+    "question": "How did Memorial Sloan Kettering Cancer Center accelerate cancer research using ClickHouse?",
+    "answer": "ClickHouse proved to be 10 times faster than our legacy MySQL system."
+  },
+  {
+    "question": "What Anti-Fraud Platform uses ClickHouse on AWS?",
+    "answer": "SEON"
+  },
+  {
+    "question": "What performance boost did Longbridge Technology achieve with ClickHouse?",
+    "answer": "10x"
+  },
+  {
+    "question": "What messages are used by Solarwinds, processing 300 million per second, with ClickHouse for real-time observability at scale?",
+    "answer": "Real-time observability for 300K+ customers"
+  },
+  {
+    "question": "How is Gumlet using ClickHouse Cloud?",
+    "answer": "Processing billions of video and image requests daily"
+  },
+  {
+    "question": "What has Skool transformed with ClickHouse?",
+    "answer": "Their analytics from minutes to seconds"
+  },
+  {
+    "question": "What is ClickHouse called by Coinhall with blockchain data?",
+    "answer": "Clear Winner"
+  },
+  {
+    "question": "What performance did Rockset provide and then was improved using ClickHouse for Lens?",
+    "answer": "Faster and More Efficient"
+  },
+  {
+    "question": "ClickHouse helps loopme do what with brand?",
+    "answer": "Measuring brand impact"
+  },
+  {
+    "question": "What performance does ClickHouse provide for OpenMeter?",
+    "answer": "Scalable, robust, metering system"
+  },
+  {
+    "question": "What did Trip.com build with ClickHouse?",
+    "answer": "A 50PB logging solution"
+  },
+  {
+    "question": "Prefect delivers seamless what powered by ClickHouse?",
+    "answer": "Seamless Observability"
+  },
+  {
+    "question": "How did Vantage cut cost?",
+    "answer": "Redshift to ClickHouse Cloud Migration"
+  },
+  {
+    "question": "How much can a company save in costs according to Vantage?",
+    "answer": "50%"
+  },
+  {
+    "question": "What platform can stream data into Clickhouse with ClickPipes?",
+    "answer": "MySQL"
+  },
+  {
+    "question": "What compliance does ClickHouse BYOC on AWS align with?",
+    "answer": "SOC 2 and ISO 27001"
+  },
+  {
+    "question": "In what way does ClickHouse improve query performance by at least 18x?",
+    "answer": "Up to 137x"
+  },
+  {
+    "question": "Where did Klaviyo learn how to use ClickHouse with Funnel analytics?",
+    "answer": "Meetup"
+  },
+  {
+    "question": "Where did Lockwood learn about ClickHouse's lightning-fast speed for almost no lag?",
+    "answer": "Online game"
+  },
+  {
+    "question": "ClickHouse is a key component for both what IBM products?",
+    "answer": "Instana and QRadar"
+  },
+  {
+    "question": "What use case saw more than a dozen different big data systems evaluated before settling on ClickHouse?",
+    "answer": "For settling on ClickHouse"
+  },
+  {
+    "question": "ClickHouse enables what simpler design pattern?",
+    "answer": "A simpler write"
+  },
+  {
+    "question": "ClickHouse Cloud delivers what kind of data management?",
+    "answer": "Fast and reliable"
+  },
+  {
+    "question": "ClickHouse enabled instacart to create what?",
+    "answer": "Real-time fraud detection"
+  },
+  {
+    "question": "What does ongaze create with the strategic shift to ClickHouse?",
+    "answer": "Reports"
+  },
+  {
+    "question": "How many payment transactions did the move to ClickHouse accommodate in real time?",
+    "answer": "50 million"
+  },
+  {
+    "question": "What kind of data points does ClickHouse collect in some use cases?",
+    "answer": "Tens of thousands"
+  },
+  {
+    "question": "Clearbit experienced how much cost reduction with ClickHouse?",
+    "answer": "10x"
+  },
+  {
+    "question": "What is ingested tens of millions of into ClickHouse Cloud and runs queries to generate complex dashboards for analysis?",
+    "answer": "video streaming events"
+  },
+  {
+    "question": "What performance does ClickHouse provide?",
+    "answer": "Billions of rows and tens of gigabytes of data processed per server per second"
+  },
+  {
+    "question": "ClickHouse can reduce cost by migrating from what platform?",
+    "answer": "ElasticSearch"
+  },
+  {
+    "question": "How many Internet requests is ClickHouse able to analyze logs across to identify malicious traffic and provide customers with rich analytics?",
+    "answer": "Trillions"
+  },
+  {
+    "question": "How did ClickHouse help Lyft?",
+    "answer": "Cut infrastructure costs"
+  },
+  {
+    "question": "ClickHouse excels across the board against criteria, especially what?",
+    "answer": "Cost efficiency"
+  },
+  {
+    "question": "What is needed for AI and GenAI?",
+    "answer": "The fastest analytical database"
+  },
+  {
+    "question": "What's needed to unlock faster queries?",
+    "answer": "Unlock faster queries without skyrocketing costs."
+  },
+  {
+    "question": "Who chose ClickHouse Cloud for its scale, efficiency, and ease of use?",
+    "answer": "Sony, Lyft, Cisco, GitLab and many more"
+  },
+  {
+    "question": "According to Anthropic, what does ClickHouse help with?",
+    "answer": "Develop and ship Claude 4"
+  },
+  {
+    "question": "Who says ClickHouse checked every box?",
+    "answer": "Tesla"
+  },
+  {
+    "question": "What benefits did Lyft realize with ClickHouse, as stated?",
+    "answer": "Performance benefits and cost savings"
+  },
+  {
+    "question": "ClickHouse is the fastest and most resource efficient what?",
+    "answer": "Real-time data warehouse and open-source database."
+  },
+  {
+    "question": "ClickHouse is designed to ensure what?",
+    "answer": "That even the most sophisticated data analysis can be done intuitively, using simple SQL."
+  },
+  {
+    "question": "Best-in-class compression ratios reduce what at ClickHouse?",
+    "answer": "Reduce storage and accelerate performance"
+  },
+  {
+    "question": "What type of client has a new ClickPipe connector, now in Public Beta?",
+    "answer": "MySQL to ClickHouse CDC"
+  },
+  {
+    "question": "What type of ecosystem does ClickHouse allow seamless integration with?",
+    "answer": "Growing"
+  },
+  {
+    "question": "ClickHouse is optimized to process each what?",
+    "answer": "Analytical query as fast as possible."
+  },
+  {
+    "question": "What is column-oriented databases like ClickHouse better suited to?",
+    "answer": "OLAP scenarios"
+  },
+  {
+    "question": "How does ClickHouse operate, unlike traditional closed-source databases?",
+    "answer": "Runs in every environment, whether it\u2019s on your machine or in the cloud."
+  },
+  {
+    "question": "What is ClickHouse spin up a database server described as?",
+    "answer": "Always free"
+  },
+  {
+    "question": "How many people are using ClickHouse today?",
+    "answer": "Join the 100k+ developers using ClickHouse today"
+  },
+  {
+    "question": "Why is ClickHouse good to use?",
+    "answer": "We love to engage in thoughtful conversation with the ClickHouse community and are always on-hand to answer your questions."
+  },
+  {
+    "question": "What install options does ClickHouse have?",
+    "answer": "MacOS, Linux, and FreeBSD. Or install for Windows, Docker or see other install options."
+  },
+  {
+    "question": "Where are the listed headquarters of ClickHouse Inc.?",
+    "answer": "HQ in the Bay Area, CA and Amsterdam, NL."
+  },
+  {
+    "question": "What is needed for business intelligence, as well as fraud and cybersecurity?",
+    "answer": "The fastest analytical database."
+  },
+  {
+    "question": "What product is for business intelligence?",
+    "answer": "ClickHouse Cloud"
+  },
+  {
+    "question": "What's possible without skyrocketing costs?",
+    "answer": "Unlock faster queries"
+  }
+]

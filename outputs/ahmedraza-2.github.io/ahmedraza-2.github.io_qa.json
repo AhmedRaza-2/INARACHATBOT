@@ -1,218 +1,202 @@
 [
   {
-    "question": "What is Ahmed Raza's profession?",
-    "answer": "Professional Coder/Developer"
+    "question": "Who is Ahmed Raza?",
+    "answer": "Ahmed Raza is a developer who helps brands grow with web and app solutions, stunning designs, and seamless user experiences."
   },
   {
-    "question": "What does Ahmed Raza help brands achieve?",
-    "answer": "Growth through cutting-edge web & app solutions, stunning designs, and seamless user experiences."
+    "question": "What is Ahmed Raza's area of expertise?",
+    "answer": "Ahmed Raza specializes in web and app solutions, stunning designs, and seamless user experiences."
+  },
+  {
+    "question": "What kind of web solutions does Ahmed Raza offer?",
+    "answer": "Ahmed Raza builds high-performance, responsive, and visually stunning websites that enhance user experience and brand identity."
+  },
+  {
+    "question": "What kind of app development services does Ahmed Raza provide?",
+    "answer": "Ahmed Raza crafts innovative mobile and desktop applications with seamless functionality and modern UI/UX design."
+  },
+  {
+    "question": "Does Ahmed Raza offer graphic design services?",
+    "answer": "Yes, Ahmed Raza offers graphic design services, creating eye-catching visuals, brand assets, and UI designs."
+  },
+  {
+    "question": "What does Ahmed Raza offer in terms of branding and identity?",
+    "answer": "Ahmed Raza elevates businesses with strategic branding, logo design, and a cohesive digital presence."
+  },
+  {
+    "question": "What is UI/UX design?",
+    "answer": "UI/UX Design involves designing intuitive, user-friendly interfaces that provide a seamless and engaging user experience."
+  },
+  {
+    "question": "What are digital solutions?",
+    "answer": "Digital solutions are end-to-end services, from concept to launch, to help businesses grow and thrive online."
   },
   {
     "question": "How many years of experience does Ahmed Raza have?",
-    "answer": "2+ years"
+    "answer": "Ahmed Raza has 2+ years of experience."
   },
   {
     "question": "How many successful projects has Ahmed Raza completed?",
-    "answer": "20+"
+    "answer": "Ahmed Raza has completed 20+ successful projects."
   },
   {
     "question": "How many satisfied clients does Ahmed Raza have?",
-    "answer": "20+"
+    "answer": "Ahmed Raza has 20+ satisfied clients."
   },
   {
-    "question": "What are some of the services offered by Ahmed Raza?",
-    "answer": "Web Development, App Development, Graphic Design, Branding & Identity, UI/UX Design, and Digital Solutions."
+    "question": "What AI/ML project is included in Ahmed Raza's portfolio?",
+    "answer": "A Personalized AI Voice Assistant/Chat Support project is included in Ahmed Raza's portfolio."
   },
   {
-    "question": "What does Ahmed Raza do in Web Development?",
-    "answer": "Builds high-performance, responsive, and visually stunning websites."
+    "question": "What mobile application is listed in Ahmed Raza's portfolio?",
+    "answer": "RESUMIFY - AI Resume Builder is listed in Ahmed Raza's portfolio."
   },
   {
-    "question": "What does Ahmed Raza do in App Development?",
-    "answer": "Crafts innovative mobile and desktop applications with seamless functionality and modern UI/UX design."
+    "question": "What desktop application or plugin is featured in Ahmed Raza's portfolio?",
+    "answer": "Phishing AI-Phishing-Email-Detector is featured in Ahmed Raza's portfolio."
   },
   {
-    "question": "What does Ahmed Raza do in Graphic Design?",
-    "answer": "Creates eye-catching visuals, brand assets, and UI designs."
+    "question": "What web development project is highlighted in Ahmed Raza's portfolio?",
+    "answer": "Voice Of Goodness - Sout ul Khair is highlighted in Ahmed Raza's portfolio."
   },
   {
-    "question": "What does Ahmed Raza do in Branding & Identity?",
-    "answer": "Elevates businesses with strategic branding, logo design, and a cohesive digital presence."
+    "question": "What secure application is in Ahmed Raza's portfolio?",
+    "answer": "Secure File Encryption & Decryption is a secure application in Ahmed Raza's portfolio."
   },
   {
-    "question": "What does Ahmed Raza do in UI/UX Design?",
-    "answer": "Designs intuitive, user-friendly interfaces."
+    "question": "What automation bot is included in Ahmed Raza's portfolio?",
+    "answer": "Python-Automation-Bot-Youtube & Website is included in Ahmed Raza's portfolio."
   },
   {
-    "question": "What does Ahmed Raza do in Digital Solutions?",
-    "answer": "Delivers end-to-end digital solutions to help businesses grow and thrive online."
+    "question": "What statistics project is in Ahmed Raza's portfolio?",
+    "answer": "Static Data Analysis - Probability & Statistics is in Ahmed Raza's portfolio."
   },
   {
-    "question": "What is one of Ahmed Raza's AI/ML portfolio projects?",
-    "answer": "Personalized AI Voice Assistant/Chat Support"
+    "question": "What kind of taxi app is in Ahmed Raza's portfolio?",
+    "answer": "A local Taxi Booking App with specific Dashboards is in Ahmed Raza's portfolio."
   },
   {
-    "question": "What is the name of Ahmed Raza's AI Resume Builder mobile application?",
-    "answer": "RESUMIFY"
+    "question": "Where did Ahmed Raza receive his Bachelor's degree?",
+    "answer": "Ahmed Raza is pursuing his Bachelor's In Computer Sciences at Air University - Islamabad."
   },
   {
-    "question": "What is the name of Ahmed Raza's Phishing Email Detector desktop application/plugin?",
-    "answer": "Phishing AI-Phishing-Email-Detector"
+    "question": "What years did Ahmed Raza attend Air University - Islamabad?",
+    "answer": "Ahmed Raza attended Air University - Islamabad from 2023 to 2027."
   },
   {
-    "question": "What is the name of Ahmed Raza's web development project related to 'Voice of Goodness'?",
-    "answer": "Voice Of Goodness - Sout ul Khair"
+    "question": "Where did Ahmed Raza attend for his HSSC?",
+    "answer": "Ahmed Raza attended Punjab College Of Science Blue Area for his HSSC."
   },
   {
-    "question": "What kind of desktop application did Ahmed Raza create for file security?",
-    "answer": "Secure File Encryption & Decryption"
+    "question": "What years did Ahmed Raza attend Punjab College Of Science Blue Area?",
+    "answer": "Ahmed Raza attended Punjab College Of Science Blue Area from 2021 to 2023."
   },
   {
-    "question": "What type of automation bot did Ahmed Raza develop?",
-    "answer": "Python-Automation-Bot-Youtube & Website"
+    "question": "Where did Ahmed Raza attend for his SSC?",
+    "answer": "Ahmed Raza attended Model College Islamabad for his SSC."
   },
   {
-    "question": "What kind of statistical analysis has Ahmed Raza worked on?",
-    "answer": "Static Data Analysis - Probability & Statistics"
+    "question": "What years did Ahmed Raza attend Model College Islamabad?",
+    "answer": "Ahmed Raza attended Model College Islamabad from 2019 to 2021."
   },
   {
-    "question": "What type of application is 'A local Taxi Booking App with specific Dashboards'?",
-    "answer": "Desktop Application"
+    "question": "What internship did Ahmed Raza complete?",
+    "answer": "Ahmed Raza completed a Software Developer Internship at National CERT- Pakistan."
   },
   {
-    "question": "What university did Ahmed Raza attend for his Bachelor's in Computer Sciences?",
-    "answer": "Air University - Islamabad"
+    "question": "What years did Ahmed Raza work as a Software Developer Intern at National CERT- Pakistan?",
+    "answer": "Ahmed Raza worked as a Software Developer Intern at National CERT- Pakistan from 2022 to 2025."
   },
   {
-    "question": "What years did Ahmed Raza attend Air University?",
-    "answer": "2023 - 2027"
+    "question": "What role did Ahmed Raza have with Voices Against Tobacco?",
+    "answer": "Ahmed Raza was a Speaker Ambassador for Voices Against Tobacco."
   },
   {
-    "question": "What did Ahmed Raza study at Air University?",
-    "answer": "Software engineering, Mobile Application Development, and Data Structures"
-  },
-  {
-    "question": "What college did Ahmed Raza attend for his HSSC in Computer Sciences?",
-    "answer": "Punjab College Of Science Blue Area"
-  },
-  {
-    "question": "During what years did Ahmed Raza attend Punjab College Of Science Blue Area?",
-    "answer": "2021 - 2023"
-  },
-  {
-    "question": "What were some of the areas of focus in Ahmed Raza's HSSC studies?",
-    "answer": "Programming, Problem Solving, databases, and object-oriented programming."
-  },
-  {
-    "question": "What college did Ahmed Raza attend for his SSC in Computer Sciences?",
-    "answer": "Model College Islamabad"
-  },
-  {
-    "question": "During what years did Ahmed Raza attend Model College Islamabad?",
-    "answer": "2019 - 2021"
-  },
-  {
-    "question": "What did Ahmed Raza develop during his SSC?",
-    "answer": "A Basic foundation in programming, algorithms, & computer fundamentals."
-  },
-  {
-    "question": "What was Ahmed Raza's role at National CERT- Pakistan?",
-    "answer": "Software Developer - Internship"
-  },
-  {
-    "question": "During what years did Ahmed Raza intern at National CERT- Pakistan?",
-    "answer": "2022 - 2025"
-  },
-  {
-    "question": "What skills did Ahmed Raza enhance during his internship at National CERT- Pakistan?",
-    "answer": "Python Programming and secure coding."
-  },
-  {
-    "question": "What was Ahmed Raza's role at Voices Against Tobacco?",
-    "answer": "Speaker Ambassador"
-  },
-  {
-    "question": "During what years was Ahmed Raza a Speaker Ambassador at Voices Against Tobacco?",
-    "answer": "2021 - 2024"
-  },
-  {
-    "question": "What did Ahmed Raza do as a Speaker Ambassador at Voices Against Tobacco?",
-    "answer": "Advocated for tobacco-free initiatives through tech-driven awareness campaigns."
+    "question": "During what years was Ahmed Raza a Speaker Ambassador for Voices Against Tobacco?",
+    "answer": "Ahmed Raza was a Speaker Ambassador for Voices Against Tobacco from 2021 to 2024."
   },
   {
     "question": "How many clients has Ahmed Raza served as a freelancer?",
-    "answer": "Over 20+"
+    "answer": "Ahmed Raza has served over 20+ clients as a freelancer."
   },
   {
-    "question": "What areas did Ahmed Raza specialize in as a freelancer?",
-    "answer": "Development, design, and performance optimization."
+    "question": "What services did Ahmed Raza provide as a freelancer?",
+    "answer": "Ahmed Raza developed web and mobile applications, specializing in development, design, and performance optimization as a freelancer."
   },
   {
-    "question": "What are the star ratings given by Hamza?",
-    "answer": "\u2b50\u2b50\u2b50\u2b50"
+    "question": "What did Hamza say about Ahmed Raza's work?",
+    "answer": "Hamza appreciated Ahmed Raza's effort, dedication, attention to detail, and commitment to quality."
   },
   {
-    "question": "What are the star ratings given by Qambar Raza?",
-    "answer": "\u2b50\u2b50\u2b50\u2b50\u2b50"
+    "question": "What did Qambar Raza say about working with Ahmed Raza?",
+    "answer": "Qambar Raza said that Ahmed Raza was very cooperative and it was a good experience, and he will be in touch for future projects."
   },
   {
-    "question": "What are the star ratings given by Mobeen Zaheer?",
-    "answer": "\u2b50\u2b50\u2b50\u2b50\u2b50"
+    "question": "What did Mobeen Zaheer say about Ahmed Raza?",
+    "answer": "Mobeen Zaheer highly recommends Ahmed Raza and is confident he will continue to shine and overcome challenges."
   },
   {
     "question": "What is the starting price for Software & App Development?",
-    "answer": "$20"
+    "answer": "The starting price for Software & App Development is $20."
   },
   {
-    "question": "What is included in Software & App Development?",
-    "answer": "Powerful, scalable, and feature-rich applications tailored for your needs."
+    "question": "What is included in the Software & App Development pricing?",
+    "answer": "The Software & App Development pricing includes powerful, scalable, and feature-rich applications."
   },
   {
-    "question": "What types of applications are offered under Software & App Development?",
-    "answer": "Desktop Applications (Windows, macOS), Full-Stack Web Applications, AI & Automation Solutions, Console Applications, Mobile Apps (Android & iOS), Database Integration (MongoDB, Firebase, SQL), API Development & Third-Party Integrations"
+    "question": "What types of applications are included in the Software & App Development services?",
+    "answer": "Desktop Applications (Windows, macOS), Full-Stack Web Applications, AI & Automation Solutions, Console Applications, Mobile Apps (Android & iOS) are included in Software & App Development services."
   },
   {
-    "question": "What is the typical delivery time offered?",
-    "answer": "Starting from 24 Hours Delivery"
+    "question": "What type of database integration is included in the Software & App Development services?",
+    "answer": "Database Integration (MongoDB, Firebase, SQL) is included in the Software & App Development services."
   },
   {
-    "question": "What revision policy is in place?",
-    "answer": "Unlimited Revisions"
+    "question": "What are the delivery options for Software & App Development?",
+    "answer": "Starting from 24 Hours Delivery and Unlimited Revisions are available for Software & App Development."
   },
   {
-    "question": "What is the read time for the LinkedIn achievement?",
-    "answer": "2 min read"
+    "question": "What milestone did Ahmed Raza reach on LinkedIn?",
+    "answer": "Ahmed Raza reached a milestone on LinkedIn and appreciated everyone's support, engagement, and feedback."
   },
   {
-    "question": "What is the read time for the Internship achievement?",
-    "answer": "3 min read"
+    "question": "What is the National Cyber Emergency Response Team of Pakistan?",
+    "answer": "The National Cyber Emergency Response Team of Pakistan (PKCERT) is a national government entity responsible for protecting the digital assets, sensitive information, and critical infrastructure of Pakistan from cyber-attacks and cyber espionage."
   },
   {
-    "question": "What is the read time for the Awarded achievement?",
-    "answer": "3 min read"
-  },
-  {
-    "question": "What kind of organization is the National Cyber Emergency Response Team of Pakistan (PKCERT)?",
-    "answer": "A national government entity responsible for protecting digital assets and infrastructure from cyber-attacks."
+    "question": "What award did Ahmed Raza receive?",
+    "answer": "Ahmed Raza was recognized for a 3-year Leadership/Ambassador Ship journey at Voice Against Tobacco."
   },
   {
     "question": "What is Ahmed Raza's phone number?",
-    "answer": "+92 334 521 6102"
+    "answer": "Ahmed Raza's phone number is +92 334 521 6102."
   },
   {
     "question": "What is Ahmed Raza's email address?",
-    "answer": "araza2125012.pgc@gmail.com"
+    "answer": "Ahmed Raza's email address is araza2125012.pgc@gmail.com."
   },
   {
-    "question": "What year is the copyright notice?",
-    "answer": "2025"
+    "question": "What year does the copyright belong to Ahmed Raza?",
+    "answer": "The copyright belongs to Ahmed Raza in 2025."
   },
   {
-    "question": "In what city is Air University located?",
-    "answer": "Islamabad"
+    "question": "What services does Ahmed Raza provide?",
+    "answer": "Ahmed Raza offers Web Development, App Development, Graphic Design, Branding & Identity, UI/UX Design, and Digital Solutions."
   },
   {
-    "question": "What are some databases Ahmed Raza integrates?",
-    "answer": "MongoDB, Firebase, SQL"
+    "question": "What does Ahmed Raza study at Air University?",
+    "answer": "Ahmed Raza studies advanced topics in software engineering, Mobile Application Development, and Data Structures at Air University."
+  },
+  {
+    "question": "What is the starting price for web development?",
+    "answer": "The starting price for web development is $20."
+  },
+  {
+    "question": "What skills did Ahmed Raza gain during his HSSC?",
+    "answer": "Ahmed Raza gained advanced knowledge in Programming, Problem Solving, databases, and object-oriented programming during his HSSC."
+  },
+  {
+    "question": "In which areas did Ahmed Raza excel during his SSC?",
+    "answer": "Ahmed Raza excelled in problem-solving & logical thinking during his SSC."
   }
 ]

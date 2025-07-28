@@ -15,6 +15,7 @@ from db_utils import (
     get_context, log_message, create_session_if_missing,
     get_all_sessions, get_messages_for_session,
 )
+
 from auth import validate_user, register_user
 
 genai.configure(api_key="AIzaSyAtJoxVJxwbkW1qpyCNOC4Ld38F1Zzi65E")
@@ -245,6 +246,8 @@ def homee():
         return "No website data found. Please generate data first."
 
     qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
+    
+    faiss_path = os.path.join("outputs", base_name, f"{base_name}_index.faiss")
 
     if summary_path and os.path.exists(summary_path):
         with open(summary_path, "r", encoding="utf-8") as f:
@@ -252,7 +255,7 @@ def homee():
     else:
         company_context = ""
 
-    rag = RAGEngine(qa_dataset_path) if qa_dataset_path else None
+    rag = RAGEngine(qa_dataset_path,faiss_path) if qa_dataset_path else None
 
     return render_template(
         "index.html",
@@ -335,12 +338,12 @@ def chat():
     user_input = data.get('message', '')
     session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
     user_id = session['user_id']
-
+    faiss_path = os.path.join("outputs", base_name, f"{base_name}_index.faiss")
     qa_dataset_path, summary_path = find_qa_and_summary_for_domain(base_name)
     if not qa_dataset_path:
         return jsonify({'response': 'No data found for this domain.'}), 404
 
-    rag = RAGEngine(qa_dataset_path)
+    rag = RAGEngine(qa_dataset_path,faiss_path)
     company_context = open(summary_path, encoding="utf-8").read() if os.path.exists(summary_path) else ""
     retrieved_faqs = rag.retrieve_top_k(user_input, k=3)
     context = get_context(base_name, user_id, session_id)

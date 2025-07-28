@@ -5,17 +5,20 @@ from sentence_transformers import SentenceTransformer
 import os
 
 class RAGEngine:
-    def __init__(self, data_path, index_path="faq_index.faiss"):
+    def __init__(self, data_path, index_path):
         self.data = self.load_data(data_path)
         device = "cpu"
-        self.model = SentenceTransformer('all-MiniLM-L6-v2',device=device)
+        
+        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        self.model = self.model.to(device)
+        
         self.questions = [item['question'] for item in self.data]
         self.answers = [item['answer'] for item in self.data]
 
         if os.path.exists(index_path):
             self.index = faiss.read_index(index_path)
         else:
-            self.embeddings = self.model.encode(self.questions, show_progress_bar=True)
+            self.embeddings = self.model.encode(self.questions, show_progress_bar=True)      
             self.index = faiss.IndexFlatL2(self.embeddings.shape[1])
             self.index.add(np.array(self.embeddings))
             faiss.write_index(self.index, index_path)
