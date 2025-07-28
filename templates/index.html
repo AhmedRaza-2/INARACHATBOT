@@ -49,26 +49,6 @@ box-sizing: border-box;
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let session_id = getSessionId();
-        let bot_name = window.location.hostname.split('.')[0]; // ✅ Declare it before using
-
-        fetch("/greet", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ session_id: session_id, domain: bot_name })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Greeting:", data.message);
-            // Display greeting in chat
-        });
-    });
-
-    function getSessionId() {
-        // Your session ID generation or fetch logic
-        return "sess_" + Math.random().toString(36).substring(2, 10);
-    }
     let wakeRecognizer;  
     // Initialize session and user ID
     if (!localStorage.getItem("user_id")) {
