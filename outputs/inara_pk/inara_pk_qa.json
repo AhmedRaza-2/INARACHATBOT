@@ -1,87 +1,51 @@
 [
   {
-    "question": "What is Inara Technologies focused on?",
-    "answer": "Providing new breed of solutions, tailored design and high quality professional services."
+    "question": "What kind of projects has Inara been involved in?",
+    "answer": "Inara has been involved in the execution of various telecommunications projects."
   },
   {
-    "question": "What areas of expertise does Inara Technologies cover?",
-    "answer": "Service Provider Networks, OSS/BSS systems, Content Delivery Networks / Media Delivery Platforms Enterprise Systems, Virtualization & Cloud services & development."
+    "question": "What are some examples of Inara's experience in telecommunications projects?",
+    "answer": "Inara has experience in plans and specifications development, fiber optic network deployment (FTTH, SONET, DWDM, Carrier Ethernet, and OTN), and wireless network implementation."
   },
   {
-    "question": "What is Inara's forte?",
-    "answer": "Addressing the integration and optimization needs of multi-vendor multi-technology environments."
+    "question": "What does FTTH stand for in the context of fiber optic network deployment?",
+    "answer": "FTTH stands for Fiber To The Home."
   },
   {
-    "question": "What strategy did Inara embrace early on?",
-    "answer": "A \u201cSoftware First\u201d strategy and focus on integrated solutions, including a DevOps culture."
+    "question": "Besides FTTH, what other fiber optic network deployment technologies has Inara worked with?",
+    "answer": "Inara has worked with SONET, DWDM, Carrier Ethernet, and OTN in fiber optic network deployment."
   },
   {
-    "question": "What is one of the benefits customers receive from Inara's DevOps culture?",
-    "answer": "Agility, which enables them to rollout new features fast, reliably, and cost-effectively."
+    "question": "Does Inara only work with fiber optic networks?",
+    "answer": "No, Inara also has experience with wireless network implementation."
   },
   {
-    "question": "What is Inara's objective in relation to its customers' operations?",
-    "answer": "To help the customer achieve Operational Excellence."
+    "question": "What is Inara Technologies' slogan?",
+    "answer": "Defining Future."
   },
   {
-    "question": "What Service Provider OSS solutions does Inara offer?",
-    "answer": "Service provider IP transport networks, QoS implementation for multiservice environments, and Voice & Data backhaul."
+    "question": "What type of company is Inara Technologies?",
+    "answer": "Inara Technologies is a (pvt) Limited company."
   },
   {
-    "question": "What Digital TV solutions does Inara offer?",
-    "answer": "Turn key OTT / IPTV solutions, Content Monetization, and End to end System Integration for Digital TV services."
+    "question": "Where is Inara Technologies located?",
+    "answer": "Inara Technologies is located in Islamabad, Pakistan."
   },
   {
-    "question": "What are the components of Inara's Security Solutions?",
-    "answer": "Enterprise security, SoC, Information Security, Network Security & Application Security."
+    "question": "What is the suite number of Inara Technologies' office?",
+    "answer": "Suite #11."
   },
   {
-    "question": "What digital TV services does Inara enable through Media Delivery?",
-    "answer": "LIVE TV Catchup, nPVR, Video on Demand."
+    "question": "On what floor is Inara Technologies' office located?",
+    "answer": "Second Floor."
   },
   {
-    "question": "What stakeholders does Inara partner with for its IPTV/OTT streaming solution?",
-    "answer": "Middleware , CDN , Encoders, DRMs and Setup Boxes."
+    "question": "What is the name of the building where Inara Technologies is located?",
+    "answer": "Select Centre."
   },
   {
-    "question": "How does Inara help operators and broadcasters with content?",
-    "answer": "By enabling content monetization for additional revenue streams."
-  },
-  {
-    "question": "What does Inara use to predict trends, behaviors, and patterns in Analytics?",
-    "answer": "Artificial intelligence and machine learning."
-  },
-  {
-    "question": "What type of cloud solutions does Inara offer?",
-    "answer": "Public, private, and hybrid cloud solutions."
-  },
-  {
-    "question": "What is a key capability in Inara's Cloud & Orchestration services?",
-    "answer": "Orchestration providing end to end management of networking, cloud infrastructure and workload placement."
-  },
-  {
-    "question": "What does Inara simplify through dynamic orchestration?",
-    "answer": "The complexity of the network."
-  },
-  {
-    "question": "What does Inara enable through intelligent placement of workloads?",
-    "answer": "Simplified network complexity."
-  },
-  {
-    "question": "What managed services does Inara offer?",
-    "answer": "Network Operations, Security Services & Media delivery solutions."
-  },
-  {
-    "question": "What does Inara's experience in developing intelligent programmed networks ensure?",
-    "answer": "Smooth operations and guaranteed back-to-back customer SLAs."
-  },
-  {
-    "question": "What types of telecommunications projects has Inara been involved in?",
-    "answer": "Fiber optic network deployment (FTTH, SONET, DWDM, Carrier Ethernet, and OTN) and wireless network implementation."
-  },
-  {
-    "question": "Where is Inara Technologies (pvt) Limited located?",
-    "answer": "Suite#11, Second Floor, Select Centre, F-11 Markaz, Islamabad, Pakistan."
+    "question": "In which Markaz is Inara Technologies located?",
+    "answer": "F-11 Markaz."
   },
   {
     "question": "What is Inara Technologies' phone number?",
@@ -96,119 +60,151 @@
     "answer": "2025"
   },
   {
-    "question": "What is the focus of Inara's solutions?",
-    "answer": "Digital Transformation of business"
+    "question": "What type of project management does Inara offer?",
+    "answer": "Fiber Plant Project Management"
   },
   {
-    "question": "What does Inara's analytics provide for data?",
-    "answer": "Richer context and deeper insight."
+    "question": "What services does Inara Technologies provide in telecommunications?",
+    "answer": "Plans and specifications development, fiber optic network deployment and wireless network implementation."
   },
   {
-    "question": "Besides fiber optic deployment, what other type of network implementation is Inara involved in?",
-    "answer": "Wireless network implementation."
-  },
-  {
-    "question": "What are the components of Inara's service provider IP transport networks solutions?",
-    "answer": "QoS implementation for multiservice environments, and Voice & Data backhaul."
-  },
-  {
-    "question": "Can Inara deliver end-to-end system integration for digital TV services?",
-    "answer": "Yes"
-  },
-  {
-    "question": "Does Inara offer solutions related to OSS/BSS systems?",
-    "answer": "Yes"
-  },
-  {
-    "question": "What does Inara offer for enabling Digital TV services?",
-    "answer": "One stop shop."
-  },
-  {
-    "question": "What is nPVR?",
-    "answer": "Network Personal Video Recorder"
-  },
-  {
-    "question": "What are some of the benefits of partnering with Inara?",
-    "answer": "Digital transformation of your business, agile rollout of new features fast, reliably and cost-effectively, and operational excellence."
-  },
-  {
-    "question": "What are some of the technologies used by Inara in Fiber Plant Project Management?",
+    "question": "What fiber optic deployment technologies are mentioned?",
     "answer": "FTTH, SONET, DWDM, Carrier Ethernet, and OTN."
   },
   {
-    "question": "What kind of security does Inara offer?",
-    "answer": "Enterprise, Information, Network and Application Security"
+    "question": "Where can I find more information about Inara Technologies?",
+    "answer": "The text provides a 'Read More' link, which likely leads to more information."
   },
   {
-    "question": "What is Inara's role in media delivery?",
-    "answer": "Enabling Digital TV services."
+    "question": "How can I contact Inara Technologies?",
+    "answer": "The text provides a 'Contact Us' link, phone number and email address."
   },
   {
-    "question": "What is required to send a message to Inara via their website?",
-    "answer": "Name, Email, and Message"
+    "question": "What information is required when contacting Inara through the website form?",
+    "answer": "Name, email, and message."
   },
   {
-    "question": "Where on the website can you find information about contacting Inara?",
-    "answer": "In the Contact section and bottom of the page."
+    "question": "Where is Select Centre located?",
+    "answer": "F-11 Markaz, Islamabad"
   },
   {
-    "question": "What is the purpose of RFQ?",
-    "answer": "Request for Quotation."
+    "question": "What is the area code for Inara Technologies' phone number?",
+    "answer": "051"
   },
   {
-    "question": "What is a 'Software First' strategy?",
-    "answer": "A strategy emphasizing software as a core element of solutions."
+    "question": "What are the main areas of expertise for Inara Technologies?",
+    "answer": "Telecommunications project execution, fiber optic network deployment and wireless network implementation."
   },
   {
-    "question": "How does Inara guarantee customer SLAs?",
-    "answer": "Through experience in developing intelligent programmed networks which ensures smooth operations."
+    "question": "What should I include in the message field when contacting Inara Technologies?",
+    "answer": "The text doesn't specify, but you should include your inquiry or message."
   },
   {
-    "question": "What type of solution is 'Turn key OTT / IPTV'?",
-    "answer": "Digital TV solution."
+    "question": "What kind of wireless networks can Inara implement?",
+    "answer": "The text doesn't specify the types of wireless networks."
   },
   {
-    "question": "What is the meaning of OTN?",
-    "answer": "Optical Transport Network."
+    "question": "Is Inara Technologies a private limited company?",
+    "answer": "Yes, it is."
   },
   {
-    "question": "What is a service provider IP transport network?",
-    "answer": "A network that carries data for internet service providers"
+    "question": "What is the country code for Inara Technologies' phone number?",
+    "answer": "+92"
   },
   {
-    "question": "What does QoS stand for?",
-    "answer": "Quality of Service"
+    "question": "What specific aspects of fiber optic network deployment does Inara Technologies handle?",
+    "answer": "The text mentions FTTH, SONET, DWDM, Carrier Ethernet and OTN."
   },
   {
-    "question": "What does OSS stand for?",
-    "answer": "Operations Support Systems"
+    "question": "What is the best way to get in touch with Inara Technologies?",
+    "answer": "You can either call them at +92518441338 or email them at info@inaratech.com."
   },
   {
-    "question": "What does BSS stand for?",
-    "answer": "Business Support Systems"
+    "question": "Does Inara Technologies offer services outside of Pakistan?",
+    "answer": "The text doesn't explicitly state whether they offer services outside of Pakistan."
   },
   {
-    "question": "What does CDN stand for?",
-    "answer": "Content Delivery Network"
+    "question": "What type of documentation does Inara Technologies develop?",
+    "answer": "Plans and specifications."
   },
   {
-    "question": "What does DRM stand for?",
-    "answer": "Digital Rights Management"
+    "question": "Is 'Name' field required when contacting Inara Technologies?",
+    "answer": "Yes, the field is marked with an asterisk (*)."
   },
   {
-    "question": "What does SOC stand for?",
-    "answer": "Security Operations Center"
+    "question": "Is 'Email' field required when contacting Inara Technologies?",
+    "answer": "Yes, the field is marked with an asterisk (*)."
   },
   {
-    "question": "What does FTTH stand for?",
-    "answer": "Fiber to the Home"
+    "question": "Is 'Message' field required when contacting Inara Technologies?",
+    "answer": "Yes, to send a message, you must populate this field."
   },
   {
-    "question": "What does SONET stand for?",
-    "answer": "Synchronous Optical Network"
+    "question": "What is the area code of the phone number for Inara Technologies?",
+    "answer": "51"
   },
   {
-    "question": "What does DWDM stand for?",
-    "answer": "Dense Wavelength Division Multiplexing"
+    "question": "Who owns the copyright for the Inara Technologies website?",
+    "answer": "Inara Technologies owns the copyright."
+  },
+  {
+    "question": "What can I expect to find if I click on the 'Read More' link?",
+    "answer": "Likely more detailed information about Inara Technologies' services and projects."
+  },
+  {
+    "question": "What should I do if I want to learn more about Inara Technologies' projects?",
+    "answer": "Click the 'Read More' link or contact them directly."
+  },
+  {
+    "question": "What year was Inara Technologies likely founded?",
+    "answer": "The text doesn't specify the founding year, only the copyright year of 2025."
+  },
+  {
+    "question": "What are the key services that Inara Technologies provides?",
+    "answer": "Fiber Plant Project Management, Telecommunications projects execution, Fiber optic network deployment and wireless network implementation."
+  },
+  {
+    "question": "What is the full registered name of the company?",
+    "answer": "Inara Technologies (pvt) Limited"
+  },
+  {
+    "question": "What is the postal code of Inara Technologies office?",
+    "answer": "The text does not specify the postal code."
+  },
+  {
+    "question": "What specific areas of Islamabad does Inara Technologies operate in?",
+    "answer": "F-11 Markaz."
+  },
+  {
+    "question": "How can Inara Technologies help with fiber optic network projects?",
+    "answer": "They offer services in planning, specification development and deployment of FTTH, SONET, DWDM, Carrier Ethernet and OTN networks."
+  },
+  {
+    "question": "Does Inara Technologies provide consulting services?",
+    "answer": "The text does not explicitly mention consulting services, but their expertise suggests they might."
+  },
+  {
+    "question": "What is the primary focus of Inara Technologies?",
+    "answer": "Telecommunications project execution and future definition."
+  },
+  {
+    "question": "Is it possible to request a quote from Inara Technologies through the contact form?",
+    "answer": "While not explicitly stated, it is reasonable to assume you can request a quote through the contact form."
+  },
+  {
+    "question": "Does the website have an about us section?",
+    "answer": "The provided text does not indicate if the website has an about us section, but it is likely accessible through the 'Read More' link."
+  },
+  {
+    "question": "Are there any social media links available for Inara Technologies?",
+    "answer": "The provided text does not include any social media links."
+  },
+  {
+    "question": "How can I find out the company registration number for Inara Technologies?",
+    "answer": "The provided text does not include the company registration number."
+  },
+  {
+    "question": "What is OTN in the context of fiber optic networks?",
+    "answer": "The text provides OTN as one of fiber optic network deployment technologies but does not define it."
   }
 ]

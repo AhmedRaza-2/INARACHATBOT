@@ -32,7 +32,6 @@ def clean_domain_name(url):
     cleaned = re.sub(r'[^a-zA-Z0-9]', '_', domain)  # remove all non-alphanum chars
     return cleaned.strip('_').lower()
 
-
 def setup_driver():
     options = Options()
     options.add_argument("--headless")
@@ -163,7 +162,22 @@ def find_qa_and_summary_for_domain(base_name):
         os.path.join(folder, f"{base_name}_summary.txt") if os.path.exists(os.path.join(folder, f"{base_name}_summary.txt")) else ""
     )
 
-# === ROUTES ===
+def get_top_faqs(domain, limit=4):
+    try:
+        qa_path = f"outputs/{domain}_qa.json"
+        if not os.path.exists(qa_path):
+            return []
+
+        with open(qa_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        questions = [item.get("question") for item in data if item.get("question")]
+        return questions[:limit]
+
+    except Exception as e:
+        print(f"[FAQ ERROR] Failed to load FAQs for {domain}: {e}")
+        return []
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -172,28 +186,25 @@ def index():
         email = request.form.get("email")
 
         if not url or not email:
-            return "❌ Please provide both the website URL and your work email."
+            return "Please provide both website URL and your email."
 
-        # Extract domain from URL
+        # Extract base domain from URL (e.g. https://www.example.com → example.com)
         parsed_url = urlparse(url)
         domain = parsed_url.netloc.replace("www.", "").lower()
 
-        # Extract domain from email
+        # Extract domain from email (e.g. user@example.com → example.com)
         email_domain = email.split('@')[-1].lower()
 
-        # Optional: handle subdomains in email (e.g., students.example.com → example.com)
-        if email_domain.endswith(domain) or domain.endswith(email_domain):
-            pass  # allow
-        else:
+        if email_domain != domain:
             return f"""
-                ❌ You must use an email from the same domain as the website.<br>
-                Your email domain: <b>{email_domain}</b><br>
-                Website domain: <b>{domain}</b>
+            ❌ You must use an email from the same domain as the website.<br>
+            Your email domain: <b>{email_domain}</b><br>
+            Website domain: <b>{domain}</b>
             """
 
         # Email verified successfully
-        base_name = clean_domain_name(url)
-        session['base_name'] = base_name
+        base_name = domain  # use domain as folder name
+        session['base_name'] = base_name  
         session['user_email'] = email
 
         folder_path = os.path.join("outputs", base_name)
@@ -222,8 +233,15 @@ def index():
 
         return redirect(url_for('login'))
 
-    return render_template("url_input.html", bot_name="Bot")
-
+    return '''
+        <form method="post">
+            <label>Website URL:</label>
+            <input type="text" name="url" placeholder="https://example.com" required><br><br>
+            <label>Work Email:</label>
+            <input type="email" name="email" placeholder="you@students.example.com" required><br><br>
+            <input type="submit" value="Generate Bot">
+        </form>
+    '''
 
 @app.route('/homee')
 def homee():
@@ -287,11 +305,25 @@ def greet():
     session_id = request.json.get("session_id") or f"sess_{uuid.uuid4().hex[:8]}"
 
     is_new = create_session_if_missing(base_name, user_id, session_id)
+
+    messages = []
+
     if is_new:
         greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?"
+        messages.append({"type": "bot", "text": greeting})
+
+        # Log greeting
         log_message(base_name, user_id, session_id, "bot", greeting)
+
+        # Add FAQs
+        faqs = get_top_faqs(base_name)
+        if faqs:
+            faq_text = "Here are some common questions you can ask:\n" + "\n".join(f"• {q}" for q in faqs)
+            messages.append({"type": "bot", "text": faq_text})
+            log_message(base_name, user_id, session_id, "bot", faq_text)
+
         return jsonify({
-            'message': greeting,
+            'messages': messages,
             'session_id': session_id,
             'greeted': True
         })
@@ -402,6 +434,7 @@ def session_messages(session_id):
         return jsonify({'error': 'Session not found'}), 404
 
     return jsonify(session_data.get('messages', []))
+
 
 # === Run App ===
 if __name__ == "__main__":
