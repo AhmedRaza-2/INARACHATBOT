@@ -1,1 +1,0 @@
-Fast Open Source OLAP DBMS   ClickHouse
