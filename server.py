@@ -4,7 +4,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
-import google.generativeai as genai
+from sentence_transformers import SentenceTransformer
+import requests,faiss,numpy as np
 import os, time, json, re, uuid
 from auth import validate_user, register_user
 from rag import RAGEngine
@@ -25,11 +26,18 @@ from db_utils import (
     get_messages_for_session,
     create_session
 )
-from sentence_transformers import SentenceTransformer
-import numpy as np
-import faiss
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY", "AIzaSyBPPbgz7iULDuRhY8y8UgbcrXoVepEWAbg"))
+def call_ollama(prompt):
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={"model": "llama3:instruct", "prompt": prompt, "stream": False}
+        )
+        return response.json().get("response", "").strip()
+    except Exception as e:
+        print(f"[Ollama Error] {e}")
+        return "⚠️ Failed to generate response."
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
@@ -134,21 +142,18 @@ Text:
 """{text}"""
 '''
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        res = model.generate_content(prompt)
-        raw = res.text.strip()
+        raw = call_ollama(prompt)
         if raw.startswith("```json"):
             raw = raw[7:-3]
         return json.loads(raw)
     except Exception as e:
-        print(f"Gemini error: {e}")
+        print(f"[Ollama QA Error] {e}")
         return []
 
 def generate_website_context(text):
     prompt = f"Summarize this website in 3–5 concise sentences: {text[:8000]}"
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        return model.generate_content(prompt).text.strip()
+        return call_ollama(prompt)
     except Exception as e:
         print(f"Summary error: {e}")
         return "No summary available."
@@ -330,8 +335,7 @@ def chat():
             greeting_msg = "👋 Hi! I'm your assistant for this website. How may I help you today?"
             log_message(base_name, user_id, session_id, "bot", greeting_msg)
 
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        ai_response = model.generate_content(prompt).text.strip()
+        ai_response = call_ollama(prompt)
 
         log_message(base_name, user_id, session_id, "user", user_input)
         log_message(base_name, user_id, session_id, "bot", ai_response)
@@ -414,4 +418,4 @@ def session_messages(session_id):
 
 # === Run App ===
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
