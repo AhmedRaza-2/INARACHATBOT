@@ -30,14 +30,24 @@ from db_utils import (
 def call_ollama(prompt):
     try:
         response = requests.post(
-            "http://localhost:11434/api/generate",
+            "http://103.176.204.44:11434/api/generate",
             json={"model": "llama3:instruct", "prompt": prompt, "stream": False}
         )
-        return response.json().get("response", "").strip()
-    except Exception as e:
-        print(f"[Ollama Error] {e}")
-        return "⚠️ Failed to generate response."
 
+        print("Status Code:", response.status_code)
+        print("Raw Response Text:", response.text[:300])
+
+        response.raise_for_status()
+
+        try:
+            json_data = response.json()
+            return json_data.get("response", "").strip()
+        except Exception as json_err:
+            print("[Ollama QA Error] JSON decode failed:", json_err)
+            return ""
+    except requests.exceptions.RequestException as e:
+        print(f"[Ollama QA Error] Request failed: {e}")
+        return ""
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
@@ -126,28 +136,61 @@ def crawl_site(start_url, max_pages=300):
 
 def convert_to_qa(text):
     prompt = f'''
+    Convert the following website content into at least 300 question-answer pairs.
 You are a domain-agnostic AI assistant specialized in transforming raw text into structured knowledge.
 Your task is to read the following input and generate a clean, diverse set of Question-Answer (Q&A) pairs.
-Instructions:
-- Generate at least 50 meaningful Q&A pairs.
+
+    Instructions:
+- Generate at least 300 meaningful Q&A pairs.
+again minimum 300 pairs. strictly minimum 300 pairs.
 - Cover all important points, facts, sections, or ideas in the text, including numbers.
 - Rephrase questions naturally.
 - Avoid vague or repetitive questions.
-- Format the output as a JSON array:
+no less than 300 pairs.
+300 pairs is the minimum requirement.
+
+Return a JSON array only, like:
+plz only this format no other format accpeted 
+format it as json array below
 [
-  {{"question": "...", "answer": "..."}},
+  {{"question": "What is...", "answer": "..." }},
   ...
 ]
+Do NOT include explanations or summaries. Just return the JSON array. No markdown, no extra text.
+
+
+Don't return summaries or explanations.
+Only return raw JSON. No markdown or additional text.
+
 Text:
 """{text}"""
 '''
     try:
         raw = call_ollama(prompt)
-        if raw.startswith("```json"):
-            raw = raw[7:-3]
-        return json.loads(raw)
+
+        if not raw:
+            print("[convert_to_qa] Empty response from model.")
+            return []
+
+        # Extract JSON array from Markdown code block or messy response
+        match = re.search(r'```(?:json)?\s*(\[\s*{.*?}\s*])\s*```', raw, re.DOTALL) or re.search(r'(\[\s*{.*?}\s*])', raw, re.DOTALL)
+
+        if match:
+            json_text = match.group(0)
+        else:
+            print("[convert_to_qa] No JSON array found in response. Dumping full response:")
+            print(raw[:300])
+            return []
+
+        return json.loads(json_text)
+
+    except json.JSONDecodeError as e:
+        print(f"[convert_to_qa] JSON decode error: {e}")
+        print(f"[convert_to_qa] Raw JSON text received:\n{json_text[:300]}")
+        return []
+
     except Exception as e:
-        print(f"[Ollama QA Error] {e}")
+        print(f"[convert_to_qa] Unexpected error: {e}")
         return []
 
 def generate_website_context(text):
@@ -197,6 +240,9 @@ def index():
             all_combined = "\n\n".join(website_text.values())
             qa_list = convert_to_qa(all_combined)
             summary_context = generate_website_context(all_combined)
+            if not website_text:
+                    print("❌ No text extracted from website.")
+                    return render_template("url_input.html", error="Website content could not be extracted.", bot_name="bot")
 
             model = SentenceTransformer("all-MiniLM-L6-v2")
             embeddings = model.encode([item["question"] for item in qa_list], show_progress_bar=False)
