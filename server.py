@@ -97,18 +97,36 @@ def crawl_site(start_url, max_pages=300):
     visited.clear()
     
     base_name = clean_domain_name(start_url)
-    qa_path = os.path.join("outputs", base_name, f"{base_name}_qa.json")
-    summary_path = os.path.join("outputs", base_name, f"{base_name}_summary.txt")
-    title_path = os.path.join("outputs", base_name, f"{base_name}_title.txt")
+    
+    # CHECK MONGODB INSTEAD OF LOCAL FILES
+    print(f"🔍 Checking if data exists in MongoDB for {base_name}...")
+    
+    try:
+        # Check if data already exists in MongoDB
+        existing_faqs = mongo_get_faqs(base_name)
+        existing_summary = get_summary(base_name)
+        existing_title = get_title(base_name)
+        
+        if existing_faqs and existing_summary and existing_title:
+            print(f"✅ Skipping crawl: data already exists in MongoDB for {start_url}")
+            print(f"   - Found {len(existing_faqs)} FAQs")
+            print(f"   - Found summary: {len(existing_summary)} chars")
+            print(f"   - Found title: {existing_title}")
+            
+            # Return existing data in the expected format
+            combined_text = "\n\n".join([item["answer"] for item in existing_faqs])
+            return {start_url: combined_text}, existing_title
+        else:
+            print(f"📄 No complete data found in MongoDB for {base_name}")
+            print(f"   - FAQs: {len(existing_faqs) if existing_faqs else 0}")
+            print(f"   - Summary: {'Yes' if existing_summary else 'No'}")
+            print(f"   - Title: {'Yes' if existing_title else 'No'}")
+            print(f"🕷️ Starting fresh crawl...")
+            
+    except Exception as e:
+        print(f"⚠️ Error checking MongoDB, proceeding with crawl: {e}")
 
-    if os.path.exists(qa_path) and os.path.exists(summary_path):
-        print(f"✅ Skipping crawl: data already exists for {start_url}")
-        data = mongo_get_faqs(base_name)
-        company_context = get_summary(base_name)
-        title = get_title(base_name)
-        combined_text = "\n\n".join([item["answer"] for item in data])
-        return {start_url: combined_text}, title
-
+    # PROCEED WITH CRAWLING (existing code)
     driver = setup_driver()
     to_visit, all_text = [start_url], {}
     extracted_title = ""
@@ -119,19 +137,31 @@ def crawl_site(start_url, max_pages=300):
             if url in visited:
                 continue
 
+            print(f"🕷️ Crawling: {url}")
             driver.get(url)
             time.sleep(2)
+            
             if not extracted_title:
                 extracted_title = extract_title(driver)
 
             text = extract_visible_text(driver)
             all_text[url] = text
             visited.add(url)
-            to_visit.extend(link for link in extract_links(driver, url, base_domain)
+            
+            # Get new links to crawl
+            new_links = extract_links(driver, url, base_domain)
+            to_visit.extend(link for link in new_links
                           if link not in visited and link not in to_visit)
+                          
+            print(f"   📄 Extracted {len(text)} chars, found {len(new_links)} new links")
+            print(f"   📊 Progress: {len(visited)}/{max_pages} pages crawled")
+            
+    except Exception as e:
+        print(f"❌ Crawling error: {e}")
     finally:
         driver.quit()
 
+    print(f"✅ Crawling completed: {len(all_text)} pages processed")
     return all_text, extracted_title
 
 def convert_to_qa(text):
@@ -236,24 +266,86 @@ def index():
         session['user_email'] = email
 
         try:
+            print(f"🔄 Processing website: {url}")
+            
+            # FIRST: Quick check if complete data already exists in MongoDB
+            print(f"🔍 Quick MongoDB check for {base_name}...")
+            existing_faqs = mongo_get_faqs(base_name)
+            existing_summary = get_summary(base_name)
+            existing_title = get_title(base_name)
+            
+            if existing_faqs and existing_summary and existing_title:
+                print(f"⚡ FAST PATH: Complete data exists in MongoDB!")
+                print(f"   📊 Found {len(existing_faqs)} FAQs")
+                print(f"   📄 Found summary: {len(existing_summary)} chars")
+                print(f"   🏷️ Found title: {existing_title}")
+                print(f"⏭️ Skipping all processing, redirecting to login...")
+                
+                # Skip all processing and go straight to login
+                return redirect(url_for('login'))
+            
+            print(f"📄 Incomplete data in MongoDB, processing required...")
+            print(f"   📊 FAQs: {len(existing_faqs) if existing_faqs else 0}")
+            print(f"   📄 Summary: {'Yes' if existing_summary else 'No'}")
+            print(f"   🏷️ Title: {'Yes' if existing_title else 'No'}")
+            
+            # SECOND: Crawl site (will also check MongoDB but may crawl)
             website_text, website_title = crawl_site(url)
-            all_combined = "\n\n".join(website_text.values())
-            qa_list = convert_to_qa(all_combined)
-            summary_context = generate_website_context(all_combined)
+            
             if not website_text:
-                    print("❌ No text extracted from website.")
-                    return render_template("url_input.html", error="Website content could not be extracted.", bot_name="bot")
+                print("❌ No text extracted from website.")
+                return render_template("url_input.html", error="Website content could not be extracted.", bot_name="bot")
 
+            # THIRD: Check again if crawl_site returned existing data or new data
+            # If crawl_site found existing data, website_text will be the combined answers
+            # If crawl_site crawled new data, website_text will be raw page content
+            
+            # Re-check MongoDB after crawl_site to see if we now have data
+            updated_faqs = mongo_get_faqs(base_name)
+            
+            if updated_faqs:
+                print("✅ Data now exists in MongoDB (from crawl_site cache), skipping processing")
+                return redirect(url_for('login'))
+            
+            # FOURTH: Process new data (expensive operations)
+            print("🔄 Processing new website data...")
+            
+            # Generate Q&A pairs from crawled content
+            all_combined = "\n\n".join(website_text.values())
+            print(f"📄 Combined text length: {len(all_combined)} chars")
+            
+            print("🤖 Generating Q&A pairs with Ollama...")
+            qa_list = convert_to_qa(all_combined)
+            print(f"❓ Generated {len(qa_list)} Q&A pairs")
+            
+            if not qa_list:
+                return render_template("url_input.html", error="Failed to generate Q&A pairs from website content.", bot_name="bot")
+
+            # Generate summary
+            print("📋 Generating summary with Ollama...")
+            summary_context = generate_website_context(all_combined)
+            print(f"📋 Generated summary: {len(summary_context)} chars")
+
+            # Create embeddings and FAISS index (expensive!)
+            print("🔍 Creating embeddings and FAISS index...")
             model = SentenceTransformer("all-MiniLM-L6-v2")
             embeddings = model.encode([item["question"] for item in qa_list], show_progress_bar=False)
             index = faiss.IndexFlatL2(embeddings.shape[1])
             index.add(np.array(embeddings))
+            print("✅ Embeddings and FAISS index created")
 
+            # Save to MongoDB
+            print("💾 Saving data to MongoDB...")
             save_chatbot_data(base_name, website_title, summary_context, qa_list, index)
+            print("✅ Data saved successfully")
+
             return redirect(url_for('login'))
+            
         except Exception as e:
-            print(f"Crawl error: {e}")
-            return render_template("url_input.html", error="Failed to process website.", bot_name="bot")
+            print(f"❌ Processing error: {e}")
+            import traceback
+            traceback.print_exc()
+            return render_template("url_input.html", error="Failed to process website. Please try again.", bot_name="bot")
 
     return render_template("url_input.html", bot_name="bot")
 
