@@ -36,7 +36,10 @@ box-sizing: border-box;
 ">
 <div class="branding-header">
   <h2>{{ bot_name }}</h2>
-  <a href="/logout" class="logout-btn">Logout</a>
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <a href="{{ url_for('widget_demo') }}" class="logout-btn" style="background-color: #25D366; color: white;">Widget Demo</a>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
 </div>
     <div id="chat-box"></div>
     <div id="loading-spinner" class="spinner" style="display: none;"></div>

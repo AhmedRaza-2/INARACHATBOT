@@ -9,6 +9,7 @@ import requests,faiss,numpy as np
 import os, time, json, re, uuid
 from auth import validate_user, register_user
 from rag import RAGEngine
+from flask_cors import CORS
 from mongo_storage import (
     get_faqs as mongo_get_faqs, 
     save_chatbot_data, 
@@ -349,6 +350,8 @@ def index():
 
     return render_template("url_input.html", bot_name="bot")
 
+# Update your existing /homee route to include widget demo link
+
 @app.route('/homee')
 def homee():
     if 'user_id' not in session:
@@ -359,18 +362,29 @@ def homee():
         return render_template("index.html", error="No website data found.", bot_name="bot")
 
     company_context = get_summary(base_name)
+    user_email = session.get('user_email', '')
+    domain = user_email.split('@')[-1] if user_email else 'unknown'
+    
     try:
         rag = RAGEngine(base_name)
         rag_available = True
+        faq_count = len(rag.questions)
     except:
         rag_available = False
+        faq_count = 0
+
+    # Check if widget is ready
+    widget_ready = bool(company_context and faq_count > 0)
 
     return render_template(
         "index.html",
         username=session['user_id'],
         company_context=company_context,
         rag_available=rag_available,
-        bot_name=base_name
+        bot_name=base_name,
+        domain=domain,
+        faq_count=faq_count,
+        widget_ready=widget_ready
     )
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -532,6 +546,158 @@ def get_session_messages(session_id):
     except Exception as e:
         print(f"Session messages error: {e}")
         return jsonify({'error': 'Failed to fetch session messages'}), 500
+    
+
+# Add CORS support for widget embedding
+CORS(app, origins=['*'])  # Allow embedding from any domain
+
+@app.route('/widget.js')
+def widget_js():
+    """Serve the JavaScript widget code"""
+    return render_template('widget.js', mimetype='application/javascript')
+
+@app.route('/widget/<domain>')
+def widget_interface(domain):
+    """Serve the widget HTML interface"""
+    # Validate domain exists in your system
+    base_name = clean_domain_name(f"https://{domain}")
+    
+    # Check if chatbot data exists for this domain
+    faqs = mongo_get_faqs(base_name)
+    if not faqs:
+        return jsonify({'error': 'Chatbot not found for this domain'}), 404
+    
+    # Get chatbot info
+    title = get_title(base_name) or domain
+    summary = get_summary(base_name) or f"Chat with {domain}"
+    
+    return render_template('widget.html', 
+                         domain=domain,
+                         base_name=base_name,
+                         title=title,
+                         summary=summary)
+
+@app.route('/api/widget/chat', methods=['POST'])
+def widget_chat():
+    """Public API endpoint for widget chat"""
+    data = request.json
+    domain = data.get('domain')
+    message = data.get('message')
+    session_id = data.get('session_id') or f"widget_{uuid.uuid4().hex[:8]}"
+    
+    if not domain or not message:
+        return jsonify({'error': 'Domain and message required'}), 400
+    
+    # Convert domain to base_name format
+    base_name = clean_domain_name(f"https://{domain}")
+    
+    # Check if chatbot exists
+    try:
+        rag = RAGEngine(base_name)
+        if not rag.questions:
+            return jsonify({'error': 'Chatbot not found for this domain'}), 404
+    except:
+        return jsonify({'error': 'Chatbot not found for this domain'}), 404
+    
+    try:
+        # Get context and generate response (similar to your existing chat route)
+        retrieved_faqs = rag.retrieve_top_k(message, k=3)
+        summary_context = get_summary(base_name) or ""
+        
+        # Use anonymous user for widget sessions
+        user_id = f"widget_user_{session_id}"
+        context = get_context(base_name, user_id, session_id, limit=3)
+        
+        prompt = f"""You are a helpful assistant for {domain}. 
+        Company Context: {summary_context}
+        Relevant FAQs: {retrieved_faqs}
+        Recent Context: {context}
+        User Question: {message}
+
+        Please provide a helpful and accurate response based on the information about {domain}."""
+
+        # Generate AI response
+        ai_response = call_ollama(prompt)
+        
+        # Log the conversation (optional - you might want to track widget usage)
+        log_message(base_name, user_id, session_id, "user", message)
+        log_message(base_name, user_id, session_id, "bot", ai_response)
+        
+        return jsonify({
+            'response': ai_response,
+            'session_id': session_id,
+            'domain': domain
+        })
+        
+    except Exception as e:
+        print(f"Widget chat error: {e}")
+        return jsonify({'error': 'Failed to process message'}), 500
+
+@app.route('/api/widget/greet', methods=['POST'])
+def widget_greet():
+    """Get greeting and FAQs for widget"""
+    data = request.json
+    domain = data.get('domain')
+    
+    if not domain:
+        return jsonify({'error': 'Domain required'}), 400
+    
+    base_name = clean_domain_name(f"https://{domain}")
+    
+    try:
+        # Get basic info
+        title = get_title(base_name) or domain
+        faqs = get_top_faqs(base_name, limit=3)
+        
+        greeting = f"👋 Hi! I'm the assistant for {title}. How can I help you today?"
+        
+        return jsonify({
+            'greeting': greeting,
+            'faqs': faqs,
+            'title': title,
+            'session_id': f"widget_{uuid.uuid4().hex[:8]}"
+        })
+        
+    except Exception as e:
+        print(f"Widget greet error: {e}")
+        return jsonify({'error': 'Failed to get greeting'}), 500
+
+@app.route('/generate-embed-code/<domain>')
+def generate_embed_code(domain):
+    """Generate embed code for users"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Verify this domain belongs to the logged-in user
+    base_name = session.get('base_name')
+    if base_name != clean_domain_name(f"https://{domain}"):
+        return jsonify({'error': 'Unauthorized for this domain'}), 403
+    
+    embed_code = f"""
+    <!-- {domain.upper()} Chatbot Widget -->
+    <script>
+    (function() {{
+        var script = document.createElement('script');
+        script.src = '{request.host_url}widget.js';
+        script.setAttribute('data-domain', '{domain}');
+        script.setAttribute('data-position', 'bottom-right');
+        script.setAttribute('data-color', '#007bff');
+        document.head.appendChild(script);
+    }})();
+    </script>
+    <!-- End {domain.upper()} Chatbot Widget -->
+    """
+    
+    return jsonify({
+        'embed_code': embed_code.strip(),
+        'domain': domain,
+        'instructions': [
+            'Copy the code above',
+            'Paste it before the closing </body> tag on your website',
+            'The chatbot will appear as a floating button on your site',
+            'Customize colors and position by editing the data attributes'
+        ]
+    })
 
 @app.route('/session/<session_id>/messages', methods=['GET'])
 def session_messages(session_id):
@@ -553,6 +719,50 @@ def session_messages(session_id):
     except Exception as e:
         print(f"Session messages error: {e}")
         return jsonify({'error': 'Failed to fetch session messages'}), 500
+    
+# Add this route to show users how their widget looks and get embed code
+
+@app.route('/widget-demo')
+def widget_demo():
+    """Show users their widget demo and embed code"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    base_name = session.get('base_name')
+    user_email = session.get('user_email')
+    
+    if not base_name or not user_email:
+        return redirect(url_for('index'))
+    
+    # Extract domain from email
+    domain = user_email.split('@')[-1]
+    
+    # Get chatbot info
+    title = get_title(base_name) or domain
+    summary = get_summary(base_name) or f"Chatbot for {domain}"
+    faqs = get_top_faqs(base_name, limit=5)
+    
+    # Generate embed code
+    embed_code = f'''<!-- {domain.upper()} Chatbot Widget -->
+    <script>
+    (function() {{
+        var script = document.createElement('script');
+        script.src = '{request.host_url}widget.js';
+        script.setAttribute('data-domain', '{domain}');
+        script.setAttribute('data-position', 'bottom-right');
+        script.setAttribute('data-color', '#007bff');
+        document.head.appendChild(script);
+    }})();
+    </script>
+    <!-- End {domain.upper()} Chatbot Widget -->'''
+    
+    return render_template('widget_demo.html',
+                         domain=domain,
+                         title=title,
+                         summary=summary,
+                         faqs=faqs,
+                         embed_code=embed_code,
+                         api_base=request.host_url)
 
 # === Run App ===
 if __name__ == "__main__":

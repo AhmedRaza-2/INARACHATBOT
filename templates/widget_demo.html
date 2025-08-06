@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Demo - {{ domain }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    <style>
+        .demo-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .demo-preview {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            position: relative;
+            min-height: 400px;
+        }
+        .widget-preview {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .widget-preview:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+        }
+        .chat-window {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1001;
+            overflow: hidden;
+        }
+        .chat-header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 350px;
+        }
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+        .message {
+            margin-bottom: 15px;
+        }
+        .bot-message {
+            background: #f1f3f4;
+            padding: 10px 15px;
+            border-radius: 18px 18px 18px 5px;
+            margin-right: 50px;
+        }
+        .user-message {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 18px 18px 5px 18px;
+            margin-left: 50px;
+            text-align: right;
+        }
+        .faq-btn {
+            background: transparent;
+            border: 1px solid #007bff;
+            color: #007bff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .faq-btn:hover {
+            background: #007bff;
+            color: white;
+        }
+        .embed-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="content-card">
+                        <!-- Header -->
+                        <div class="bg-primary text-white p-4 text-center">
+                            <h1 class="mb-2">🤖 Widget Demo</h1>
+                            <p class="mb-0">{{ title }} Chatbot</p>
+                        </div>
+
+                        <div class="p-4">
+                            <!-- Stats Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="stats-card p-3 text-center">
+                                        <h3 class="mb-1">{{ faqs|length }}</h3>
+                                        <small>FAQ Items</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stats-card p-3 text-center">
+                                        <h3 class="mb-1">{{ domain }}</h3>
+                                        <small>Domain</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stats-card p-3 text-center">
+                                        <h3 class="mb-1">✅</h3>
+                                        <small>Ready to Deploy</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Demo Preview -->
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <h3>🎯 Live Preview</h3>
+                                    <div class="demo-preview p-4">
+                                        <div class="text-center text-muted">
+                                            <h5>Your Website Preview</h5>
+                                            <p>This simulates how your chatbot will appear on your website.</p>
+                                            <button class="btn btn-primary" onclick="toggleWidget()">
+                                                🚀 Load Test Widget
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <h3>📋 Embed Code</h3>
+                                    <div class="position-relative">
+                                        <pre class="embed-code p-3"><code id="embed-code">{{ embed_code }}</code></pre>
+                                        <button class="btn btn-sm btn-outline-light copy-btn" onclick="copyEmbedCode()">
+                                            📋 Copy
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <h5>📖 Setup Instructions:</h5>
+                                        <ol class="small">
+                                            <li>Copy the embed code above</li>
+                                            <li>Paste it before the <code>&lt;/body&gt;</code> tag on your website</li>
+                                            <li>The chatbot will appear as a floating button</li>
+                                            <li>Visitors can click to start chatting!</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chatbot Info -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">🧠 Chatbot Knowledge</h5>
+                                            <p class="card-text">{{ summary }}</p>
+                                            
+                                            {% if faqs %}
+                                            <h6>💬 Sample Questions Visitors Can Ask:</h6>
+                                            <div class="faq-preview">
+                                                {% for faq in faqs %}
+                                                <span class="badge bg-light text-dark me-2 mb-2">{{ faq }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Back Button -->
+                            <div class="text-center mt-4">
+                                <a href="{{ url_for('homee') }}" class="btn btn-outline-primary">
+                                    ← Back to Dashboard
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widget Preview (Hidden by default) -->
+    <div class="widget-preview" id="widget-btn" style="display: none;" onclick="toggleChatWindow()">
+        💬
+    </div>
+
+    <!-- Chat Window (Hidden by default) -->
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header d-flex justify-content-between align-items-center">
+            <span>{{ title }}</span>
+            <button class="btn btn-sm btn-outline-light" onclick="toggleChatWindow()">×</button>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="message">
+                <div class="bot-message">
+                    👋 Hi! I'm the assistant for {{ title }}. How can I help you today?
+                </div>
+            </div>
+            
+            {% if faqs %}
+            <div class="message">
+                <div class="bot-message">
+                    <small class="text-muted">Quick questions you can ask:</small><br>
+                    {% for faq in faqs[:3] %}
+                    <button class="faq-btn" onclick="askFAQ('{{ faq }}')">{{ faq }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="chat-input-area">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Type your message..." id="chat-input" onkeypress="handleEnter(event)">
+                <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let isWidgetLoaded = false;
+        let sessionId = 'demo_' + Math.random().toString(36).substr(2, 9);
+
+        function toggleWidget() {
+            const widgetBtn = document.getElementById('widget-btn');
+            if (!isWidgetLoaded) {
+                widgetBtn.style.display = 'flex';
+                isWidgetLoaded = true;
+                showToast('✅ Widget loaded! Click the chat button to test it.');
+            }
+        }
+
+        function toggleChatWindow() {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.style.display = chatWindow.style.display === 'none' || !chatWindow.style.display ? 'block' : 'none';
+        }
+
+        function copyEmbedCode() {
+            const code = document.getElementById('embed-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('📋 Embed code copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('📋 Embed code copied to clipboard!');
+            });
+        }
+
+        function askFAQ(question) {
+            document.getElementById('chat-input').value = question;
+            sendMessage();
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('chat-messages');
+            
+            // Add user message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message';
+            userDiv.innerHTML = `<div class="user-message">${message}</div>`;
+            messagesContainer.appendChild(userDiv);
+            
+            // Clear input
+            input.value = '';
+            
+            // Add typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message typing-indicator';
+            typingDiv.innerHTML = '<div class="bot-message"><em>Typing...</em></div>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Send to API
+            fetch('{{ api_base }}api/widget/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    domain: '{{ domain }}',
+                    message: message,
+                    session_id: sessionId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove typing indicator
+                messagesContainer.removeChild(typingDiv);
+                
+                if (data.error) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'message';
+                    errorDiv.innerHTML = `<div class="bot-message text-danger">Error: ${data.error}</div>`;
+                    messagesContainer.appendChild(errorDiv);
+                } else {
+                    // Add bot response
+                    const botDiv = document.createElement('div');
+                    botDiv.className = 'message';
+                    botDiv.innerHTML = `<div class="bot-message">${data.response}</div>`;
+                    messagesContainer.appendChild(botDiv);
+                }
+                
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                messagesContainer.removeChild(typingDiv);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message';
+                errorDiv.innerHTML = '<div class="bot-message text-danger">Sorry, there was an error processing your message.</div>';
+                messagesContainer.appendChild(errorDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        function showToast(message) {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.className = 'alert alert-success position-fixed';
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
