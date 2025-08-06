@@ -264,6 +264,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Type your message..." id="chat-input" onkeypress="handleEnter(event)">
                 <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                <button class="btn btn-secondary" id="mic-btn" title="Speak" style="margin-left:5px;">🎙️</button>
             </div>
         </div>
     </div>
@@ -377,6 +378,28 @@
                 messagesContainer.appendChild(errorDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
+        }
+
+        document.getElementById('mic-btn').addEventListener('click', startVoiceInput);
+
+        function startVoiceInput() {
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                showToast('Voice input not supported in this browser.');
+                return;
+            }
+            var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = function(event) {
+                var transcript = event.results[0][0].transcript;
+                document.getElementById('chat-input').value = transcript;
+            };
+            recognition.onerror = function(event) {
+                showToast('Voice input error: ' + event.error);
+            };
+            recognition.start();
         }
 
         function showToast(message) {

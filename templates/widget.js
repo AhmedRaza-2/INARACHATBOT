@@ -125,6 +125,19 @@
                             align-items: center;
                             justify-content: center;
                         ">➤</button>
+                        <button id="mic-button" style="
+                            background: ${primaryColor};
+                            color: white;
+                            border: none;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-left: 5px;
+                        ">🎙️</button>
                     </div>
                 </div>
             </div>
@@ -158,6 +171,7 @@
         var closeButton = document.getElementById('close-chat');
         var sendButton = document.getElementById('send-button');
         var chatInput = document.getElementById('chat-input');
+        var micButton = document.getElementById('mic-button');
         
         chatButton.addEventListener('click', toggleChat);
         closeButton.addEventListener('click', closeChat);
@@ -165,6 +179,7 @@
         chatInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendMessage();
         });
+        micButton.addEventListener('click', startVoiceInput);
     }
     
     function toggleChat() {
@@ -331,6 +346,26 @@
             console.error('Widget chat error:', error);
             addMessage('Sorry, I encountered an error. Please try again.');
         });
+    }
+    
+    function startVoiceInput() {
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            alert('Voice input not supported in this browser.');
+            return;
+        }
+        var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = function(event) {
+            var transcript = event.results[0][0].transcript;
+            document.getElementById('chat-input').value = transcript;
+        };
+        recognition.onerror = function(event) {
+            alert('Voice input error: ' + event.error);
+        };
+        recognition.start();
     }
     
     // Initialize widget when DOM is ready
