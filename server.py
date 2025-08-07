@@ -252,7 +252,7 @@ def index():
             return render_template("url_input.html", error="Please provide both website URL and your email.", bot_name="bot")
 
         parsed_url = urlparse(url)
-        domain = parsed_url.netloc.replace("www.", "").lower()
+        domain = parsed_url.hostname.replace("www.", "").lower()
         email_domain = email.split('@')[-1].lower()
 
         if email_domain != domain:
@@ -632,6 +632,11 @@ def widget_chat():
     except Exception as e:
         print(f"Widget chat error: {e}")
         return jsonify({'error': 'Failed to process message'}), 500
+    
+@app.route('/redirect-widget.js')
+def redirect_widget_js():
+    """Serve the redirect widget JavaScript code"""
+    return render_template('redirect-widget.js', mimetype='application/javascript')
 
 @app.route('/api/widget/greet', methods=['POST'])
 def widget_greet():
@@ -742,26 +747,43 @@ def widget_demo():
     summary = get_summary(base_name) or f"Chatbot for {domain}"
     faqs = get_top_faqs(base_name, limit=5)
     
-    # Generate embed code
-    embed_code = f'''<!-- {domain.upper()} Chatbot Widget -->
-    <script>
-    (function() {{
-        var script = document.createElement('script');
-        script.src = '{request.host_url}widget.js';
-        script.setAttribute('data-domain', '{domain}');
-        script.setAttribute('data-position', 'bottom-right');
-        script.setAttribute('data-color', '#007bff');
-        document.head.appendChild(script);
-    }})();
-    </script>
-    <!-- End {domain.upper()} Chatbot Widget -->'''
+    # Generate FULL CHAT embed code (existing)
+    chat_embed_code = f'''<!-- {domain.upper()} Chatbot Widget -->
+<script>
+  (function() {{
+    var script = document.createElement('script');
+    script.src = '{request.host_url}widget.js';
+    script.setAttribute('data-domain', '{domain}');
+    script.setAttribute('data-position', 'bottom-right');
+    script.setAttribute('data-color', '#007bff');
+    document.head.appendChild(script);
+  }})();
+</script>
+<!-- End {domain.upper()} Chatbot Widget -->'''
+    
+    # Generate REDIRECT embed code (new)
+    redirect_embed_code = f'''<!-- {domain.upper()} Support Portal Widget -->
+<script>
+  (function() {{
+    var script = document.createElement('script');
+    script.src = '{request.host_url}redirect-widget.js';
+    script.setAttribute('data-domain', '{domain}');
+    script.setAttribute('data-redirect-url', '{request.host_url}login?base_name={base_name}');
+    script.setAttribute('data-position', 'bottom-left');
+    script.setAttribute('data-color', '#28a745');
+    script.setAttribute('data-text', 'Support Portal');
+    document.head.appendChild(script);
+  }})();
+</script>
+<!-- End {domain.upper()} Support Portal Widget -->'''
     
     return render_template('widget_demo.html',
                          domain=domain,
                          title=title,
                          summary=summary,
                          faqs=faqs,
-                         embed_code=embed_code,
+                         chat_embed_code=chat_embed_code,
+                         redirect_embed_code=redirect_embed_code,
                          api_base=request.host_url)
 
 # === Run App ===
