@@ -31,7 +31,7 @@ from db_utils import (
 def call_ollama(prompt):
     try:
         response = requests.post(
-            "http://103.176.204.44:11434/api/generate",
+            "http://103.176.204.44:5000/api/generate",
             json={"model": "llama3:instruct", "prompt": prompt, "stream": False}
         )
 
