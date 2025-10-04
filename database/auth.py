@@ -3,7 +3,7 @@ import os
 import hashlib
 import re
 from dotenv import load_dotenv
-from db_utils import get_users_collection  # ✅ Use dynamic DB
+from database.db_utils import get_users_collection  # ✅ Use dynamic DB
 
 load_dotenv()
 

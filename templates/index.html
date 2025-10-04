@@ -26,6 +26,7 @@
   <h3 style="color: #25D366; font-size: 18px; margin-bottom: 20px;">
     🗂️ Your Chats
   </h3>
+  <div id="session-list"></div>
 </div>
 
 <!-- Main Chat UI shifted to the right -->
@@ -37,6 +38,7 @@ box-sizing: border-box;
 <div class="branding-header">
   <h2>{{ bot_name }}</h2>
   <div style="display: flex; gap: 10px; align-items: center;">
+
     <a href="{{ url_for('widget_demo') }}" class="logout-btn" style="background-color: #25D366; color: white;">Widget Demo</a>
     <a href="/logout" class="logout-btn">Logout</a>
   </div>
@@ -82,11 +84,11 @@ box-sizing: border-box;
       body: JSON.stringify({ session_id })
     });
     const greetData = await greetRes.json();
-    if (greetData.greeted && greetData.message) {
-      appendMessage("bot", greetData.message);
-      speakText(greetData.message);
-      
-    }
+    if (greetData.greeted && greetData.messages && greetData.messages.length > 0) {
+  greetData.messages.forEach(m => appendMessage("bot", m.text));
+  speakText(greetData.messages[0].text);
+}
+
   } catch (e) {
     console.warn("Greeting fetch failed:", e);
   }
@@ -115,7 +117,7 @@ box-sizing: border-box;
         const res = await fetch("/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message, session_id, user_id })
+          body: JSON.stringify({ message, session_id})
         });
         const data = await res.json();
         appendMessage("bot", data.response);
@@ -134,75 +136,76 @@ box-sizing: border-box;
     }
 
     // UI Helpers
-    function appendMessage(role, text) {
-      const chatBox = document.getElementById("chat-box");
-      const div = document.createElement("div");
-      div.className = role;
-      div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 Bot: ") + text;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    function linkify(text) {
+  const urlRegex = /((https?:\/\/[^\s]+))/g;
+  return text.replace(urlRegex, '<a href="$1" target="_blank" style="color:#25D366;">$1</a>');
+}
+
+function appendMessage(role, text) {
+  const chatBox = document.getElementById("chat-box");
+  const div = document.createElement("div");
+  div.className = role;
+
+  // convert URLs to clickable links
+  text = linkify(text);
+
+  div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 Bot: ") + text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
     const domain = "{{ base_name }}";
     async function loadSessions() {
-      const res = await fetch('/sessions');
-      const sessions = await res.json();
-      const container = document.getElementById("chat-sessions");
-      container.innerHTML = '';
+  const res = await fetch('/sessions');
+  const sessions = await res.json();
+  const container = document.getElementById("session-list"); // 🟢 only replace inside
+  container.innerHTML = '';
 
-      const newBtn = document.createElement("div");
-      newBtn.className = "chat-item new-chat";
-      newBtn.textContent = "+ Start New Chat";
-      newBtn.onclick = startNewChat;
-      container.appendChild(newBtn);
+  // ➕ Start new chat button
+  const newBtn = document.createElement("div");
+  newBtn.className = "chat-item new-chat";
+  newBtn.textContent = "+ Start New Chat";
+  newBtn.style.cursor = "pointer";
+  newBtn.onclick = startNewChat;
+  container.appendChild(newBtn);
 
-      sessions.forEach(sess => {
-        const div = document.createElement("div");
-        div.className = "chat-item";
-        div.textContent = sess.title;
-        div.onclick = async () => {
-          session_id = sess.session_id;
-          localStorage.setItem("session_id", session_id);
-          document.getElementById("chat-box").innerHTML = '';
-          await loadChatHistory(session_id);
-        };
-        container.appendChild(div);
-      });
-    }
+  // 📜 Existing sessions
+  sessions.forEach(sess => {
+    const div = document.createElement("div");
+    div.className = "chat-item";
+    div.style.cursor = "pointer";
+    div.innerHTML = `
+      <strong>${sess.title}</strong><br>
+      <small style="color: #666;">${new Date(sess.started_at).toLocaleString()}</small>
+    `;
+    div.onclick = async () => {
+      session_id = sess.session_id;
+      localStorage.setItem("session_id", session_id);
+      document.getElementById("chat-box").innerHTML = '';
+      await loadChatHistory(session_id);
+    };
+    container.appendChild(div);
+  });
+}
 
-    async function loadChatHistory(sessionId) {
+async function loadChatHistory(sessionId) {
   try {
-    const res = await fetch(`/session/${sessionId}`);
-    const messages = await res.json();
+    const res = await fetch(`/session/${sessionId}?username=${user_id}&base=${domain}`);
+    const data = await res.json();
+
     const chatBox = document.getElementById("chat-box");
     chatBox.innerHTML = "";
-    messages.forEach(msg => appendMessage(msg.sender, msg.text));
 
-    // ✅ Fetch and display FAQs even on session load
-    const faqRes = await fetch('/get_faqs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ domain })
-    });
-
-    const faqData = await faqRes.json();
-    if (faqData.faqs && faqData.faqs.length > 0) {
-      const faqContainer = document.createElement("div");
-      faqContainer.className = "bot";
-      faqContainer.innerHTML = `<strong>🔍 Choose a question:</strong><br><br>`;
-      faqData.faqs.forEach(faq => {
-        const faqBtn = document.createElement("button");
-        faqBtn.innerText = faq;
-        faqBtn.className = "faq-button";
-        faqBtn.onclick = () => sendMessage(faq);
-        faqContainer.appendChild(faqBtn);
-      });
-      chatBox.appendChild(faqContainer);
+    if (data.messages) {
+      data.messages.forEach(msg => appendMessage(msg.sender, msg.text));
+    } else {
+      appendMessage("bot", "⚠️ No messages found for this session.");
     }
-
   } catch (err) {
     console.error("Failed to load chat history:", err);
   }
 }
+
 
     function startNewChat() {
       console.log("✅ startNewChat called");
@@ -214,40 +217,8 @@ box-sizing: border-box;
       // Show greeting message immediately
       const greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?";
       appendMessage("bot", greeting);
-      speakText(greeting);  // Optional voice
-      console.log("Fetching FAQs for:", domain);
-      fetch('/get_faqs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ domain })
-
-    })
-
-    .then(res => res.json())
-    .then(data => {
-      if (data.faqs && data.faqs.length > 0) {
-
-        const faqContainer = document.createElement("div");
-        faqContainer.className = "bot";
-        faqContainer.innerHTML = `<strong>🔍 Choose a question:</strong><br><br>`;
-        data.faqs.forEach(faq => {
-          const faqBtn = document.createElement("button");
-          faqBtn.innerText = faq;
-          faqBtn.className = "faq-button";
-          faqBtn.onclick = () => sendMessage(faq);
-          faqContainer.appendChild(faqBtn);
-        });
-        document.getElementById("chat-box").appendChild(faqContainer);
-
-      }
-      console.log("Sending domain:", window.location.hostname);
-
-    });
-
-      loadSessions();
-}
-
-
+      speakText(greeting)  // Optional voice
+    }
     function speakText(text) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
@@ -356,6 +327,77 @@ box-sizing: border-box;
       sendMessage();
     }
   });
+
+  async function sendMessage(optionalMessage = null) {
+    const input = document.getElementById("user-input");
+    const message = optionalMessage || input.value.trim();
+
+    if (!message) return;
+
+    appendMessage("user", message);
+    input.value = "";
+    document.getElementById("loading-spinner").style.display = "block";
+
+    // Show a thinking/typing indicator
+    const chatBox = document.getElementById("chat-box");
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.className = "bot";
+    thinkingDiv.id = "thinking"  // an id so we can remove later
+    thinkingDiv.innerHTML = "🤖 Bot: Thinking...";
+    chatBox.appendChild(thinkingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, session_id})
+      });
+      const data = await res.json();
+
+      // Remove thinking message
+      const thinkingEl = document.getElementById("thinking");
+      if (thinkingEl) thinkingEl.remove();
+
+      // Now show the real bot response, typing effect
+      await typeText("bot", data.response);
+
+      // optional: speech
+      speakText(data.response);
+
+      if (data.session_id && data.session_id !== session_id) {
+        session_id = data.session_id;
+        localStorage.setItem("session_id", session_id);
+        await loadSessions();
+      }
+    } catch (err) {
+      // Remove thinking
+      const thinkingEl = document.getElementById("thinking");
+      if (thinkingEl) thinkingEl.remove();
+
+      appendMessage("bot", "❌ Server not responding.");
+    }
+
+    document.getElementById("loading-spinner").style.display = "none";
+  }
+
+  // New helper: type the bot response character by character
+  async function typeText(role, fullText, speed = 40) {
+    const chatBox = document.getElementById("chat-box");
+    const div = document.createElement("div");
+    div.className = role;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const prefix = (role === "user" ? "🧠 You: " : "🤖 Bot: ");
+    div.innerHTML = prefix;
+    for (let i = 0; i < fullText.length; i++) {
+      div.innerHTML = prefix + fullText.substring(0, i+1);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      await new Promise(resolve => setTimeout(resolve, speed));
+    }
+  }
+
 
   </script>
 </body>
