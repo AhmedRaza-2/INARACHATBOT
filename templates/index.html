@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ bot_name }}</title>
+
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div id="chat-sessions" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #ffffff;
+  color: #333;
+  border-right: 1px solid #ddd;
+  padding: 20px 15px;
+  box-sizing: border-box;
+  z-index: 999;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+">
+  <h3 style="color: #25D366; font-size: 18px; margin-bottom: 20px;">
+    🗂️ Your Chats
+  </h3>
+  <div id="session-list"></div>
+</div>
+
+<!-- Main Chat UI shifted to the right -->
+<div class="main-content" style="
+margin-left: 240px;
+padding: 20px;
+box-sizing: border-box;
+">
+<div class="branding-header">
+  <h2>{{ bot_name }}</h2>
+  <div style="display: flex; gap: 10px; align-items: center;">
+
+    <a href="{{ url_for('widget_demo') }}" class="logout-btn" style="background-color: #25D366; color: white;">Widget Demo</a>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
+</div>
+    <div id="chat-box"></div>
+    <div id="loading-spinner" class="spinner" style="display: none;"></div>
+
+    <div class="input-group">
+      <input id="user-input" type="text" placeholder="Type or speak..." autofocus>
+      <button onclick="sendMessage()">Send</button>
+      <button onclick="toggleVoiceMode()" id="voice-toggle">🎙️ Start Listening</button>
+    </div>
+  </div>
+
+  <script>
+    let wakeRecognizer;  
+    // Initialize session and user ID
+    if (!localStorage.getItem("user_id")) {
+      localStorage.setItem("user_id", "user_" + Math.random().toString(36).substring(2, 9));
+    }
+    if (!localStorage.getItem("session_id")) {
+      localStorage.setItem("session_id", "sess_" + Math.random().toString(36).substring(2, 10));
+    }
+
+    const user_id = localStorage.getItem("user_id");
+    let session_id = localStorage.getItem("session_id");
+
+    window.onload = async () => {
+  // Ensure session_id exists
+  if (!localStorage.getItem("session_id")) {
+    const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem("session_id", newSessionId);
+    session_id = newSessionId;
+  } else {
+    session_id = localStorage.getItem("session_id");
+  }
+
+  // Greet the user on first visit
+  try {
+    const greetRes = await fetch("/greet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id })
+    });
+    const greetData = await greetRes.json();
+    if (greetData.greeted && greetData.messages && greetData.messages.length > 0) {
+  greetData.messages.forEach(m => appendMessage("bot", m.text));
+  speakText(greetData.messages[0].text);
+}
+
+  } catch (e) {
+    console.warn("Greeting fetch failed:", e);
+  }
+
+  // Load session list and history
+  await loadSessions();
+  await loadChatHistory(session_id);
+
+  // Start wake word detection
+  startWakeWordListener();
+};
+
+
+    // Chat sending
+    async function sendMessage(optionalMessage = null) {
+      const input = document.getElementById("user-input");
+      const message = optionalMessage || input.value.trim();
+
+      if (!message) return;
+
+      appendMessage("user", message);
+      input.value = "";
+      document.getElementById("loading-spinner").style.display = "block";
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, session_id})
+        });
+        const data = await res.json();
+        appendMessage("bot", data.response);
+        speakText(data.response);
+
+        if (data.session_id && data.session_id !== session_id) {
+          session_id = data.session_id;
+          localStorage.setItem("session_id", session_id);
+          await loadSessions();
+        }
+      } catch (err) {
+        appendMessage("bot", "❌ Server not responding.");
+      }
+
+      document.getElementById("loading-spinner").style.display = "none";
+    }
+
+    // UI Helpers
+    function linkify(text) {
+  const urlRegex = /((https?:\/\/[^\s]+))/g;
+  return text.replace(urlRegex, '<a href="$1" target="_blank" style="color:#25D366;">$1</a>');
+}
+
+function appendMessage(role, text) {
+  const chatBox = document.getElementById("chat-box");
+  const div = document.createElement("div");
+  div.className = role;
+
+  // convert URLs to clickable links
+  text = linkify(text);
+
+  div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 Bot: ") + text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+    const domain = "{{ base_name }}";
+    async function loadSessions() {
+  const res = await fetch('/sessions');
+  const sessions = await res.json();
+  const container = document.getElementById("session-list"); // 🟢 only replace inside
+  container.innerHTML = '';
+
+  // ➕ Start new chat button
+  const newBtn = document.createElement("div");
+  newBtn.className = "chat-item new-chat";
+  newBtn.textContent = "+ Start New Chat";
+  newBtn.style.cursor = "pointer";
+  newBtn.onclick = startNewChat;
+  container.appendChild(newBtn);
+
+  // 📜 Existing sessions
+  sessions.forEach(sess => {
+    const div = document.createElement("div");
+    div.className = "chat-item";
+    div.style.cursor = "pointer";
+    div.innerHTML = `
+      <strong>${sess.title}</strong><br>
+      <small style="color: #666;">${new Date(sess.started_at).toLocaleString()}</small>
+    `;
+    div.onclick = async () => {
+      session_id = sess.session_id;
+      localStorage.setItem("session_id", session_id);
+      document.getElementById("chat-box").innerHTML = '';
+      await loadChatHistory(session_id);
+    };
+    container.appendChild(div);
+  });
+}
+
+async function loadChatHistory(sessionId) {
+  try {
+    const res = await fetch(`/session/${sessionId}?username=${user_id}&base=${domain}`);
+    const data = await res.json();
+
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML = "";
+
+    if (data.messages) {
+      data.messages.forEach(msg => appendMessage(msg.sender, msg.text));
+    } else {
+      appendMessage("bot", "⚠️ No messages found for this session.");
+    }
+  } catch (err) {
+    console.error("Failed to load chat history:", err);
+  }
+}
+
+
+    function startNewChat() {
+      console.log("✅ startNewChat called");
+      const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem("session_id", newSessionId);
+      session_id = newSessionId;
+      document.getElementById("chat-box").innerHTML = "";
+
+      // Show greeting message immediately
+      const greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?";
+      appendMessage("bot", greeting);
+      speakText(greeting)  // Optional voice
+    }
+    function speakText(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Voice control
+    let recognition;
+    let isListening = false;
+
+    function toggleVoiceMode() {
+    const button = document.getElementById("voice-toggle");
+
+    if (isListening) {
+      button.textContent = "🎙️ Start Listening";  // 💡 Update immediately
+      stopVoiceInput(); // `onend` will still fire a bit later
+    } else {
+      button.textContent = "🔇 Stop Listening";   // 💡 Update immediately
+      startVoiceInput();
+    }
+  }
+
+
+    function startVoiceInput() {
+    stopWakeWordListener();  // <-- prevent overlap
+    window.speechSynthesis.cancel();
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      isListening = true;
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      document.getElementById("user-input").value = transcript;
+      sendMessage();
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Voice input error:", event.error);
+      stopVoiceInput();
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      document.getElementById("voice-toggle").textContent = "🎙️ Start Listening";
+      startWakeWordListener();  // <-- resume wake word detection
+    };
+
+    recognition.start();
+  }
+
+
+    // Wake word listener
+    function startWakeWordListener() {
+    if (wakeRecognizer) return;  // prevent multiple instances
+
+    wakeRecognizer = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    wakeRecognizer.lang = "en-US";
+    wakeRecognizer.continuous = true;
+    wakeRecognizer.interimResults = false;
+
+    wakeRecognizer.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+      console.log("Heard:", transcript);
+
+      if (transcript.includes("hello") && !isListening) {
+        console.log("🎉 Wake word detected!");
+        document.getElementById("voice-toggle").textContent = "🔇 Stop Listening";
+        stopWakeWordListener();  // prevent conflict
+        startVoiceInput();
+      }
+    };
+
+    wakeRecognizer.onerror = (e) => {
+      console.warn("Wake listener error:", e.error);
+      stopWakeWordListener();
+      setTimeout(startWakeWordListener, 1000); // retry after short delay
+    };
+
+    wakeRecognizer.onend = () => {
+      if (!wakeRecognizer._manuallyStopped) {
+        setTimeout(startWakeWordListener, 500); // ensure it keeps listening
+      }
+    };
+  
+    wakeRecognizer.start();
+    wakeRecognizer._manuallyStopped = false
+  }
+
+  function stopWakeWordListener() {
+    if (wakeRecognizer) {
+      wakeRecognizer._manuallyStopped = true;
+      wakeRecognizer.stop();
+      wakeRecognizer = null;
+    }
+  }
+
+    document.getElementById("user-input").addEventListener("keydown", function (event) {
+    window.speechSynthesis.cancel();  // 🛑 stop speaking
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
+
+  async function sendMessage(optionalMessage = null) {
+    const input = document.getElementById("user-input");
+    const message = optionalMessage || input.value.trim();
+
+    if (!message) return;
+
+    appendMessage("user", message);
+    input.value = "";
+    document.getElementById("loading-spinner").style.display = "block";
+
+    // Show a thinking/typing indicator
+    const chatBox = document.getElementById("chat-box");
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.className = "bot";
+    thinkingDiv.id = "thinking"  // an id so we can remove later
+    thinkingDiv.innerHTML = "🤖 Bot: Thinking...";
+    chatBox.appendChild(thinkingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, session_id})
+      });
+      const data = await res.json();
+
+      // Remove thinking message
+      const thinkingEl = document.getElementById("thinking");
+      if (thinkingEl) thinkingEl.remove();
+
+      // Now show the real bot response, typing effect
+      await typeText("bot", data.response);
+
+      // optional: speech
+      speakText(data.response);
+
+      if (data.session_id && data.session_id !== session_id) {
+        session_id = data.session_id;
+        localStorage.setItem("session_id", session_id);
+        await loadSessions();
+      }
+    } catch (err) {
+      // Remove thinking
+      const thinkingEl = document.getElementById("thinking");
+      if (thinkingEl) thinkingEl.remove();
+
+      appendMessage("bot", "❌ Server not responding.");
+    }
+
+    document.getElementById("loading-spinner").style.display = "none";
+  }
+
+  // New helper: type the bot response character by character
+  async function typeText(role, fullText, speed = 40) {
+    const chatBox = document.getElementById("chat-box");
+    const div = document.createElement("div");
+    div.className = role;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const prefix = (role === "user" ? "🧠 You: " : "🤖 Bot: ");
+    div.innerHTML = prefix;
+    for (let i = 0; i < fullText.length; i++) {
+      div.innerHTML = prefix + fullText.substring(0, i+1);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      await new Promise(resolve => setTimeout(resolve, speed));
+    }
+  }
+
+
+  </script>
+</body>
+</html>

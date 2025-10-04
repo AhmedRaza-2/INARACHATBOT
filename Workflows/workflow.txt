@@ -1,0 +1,409 @@
+1 --> we will write/get a dataset in.csv or .json like having 100s of faq's
+2 --> Convert this sentence into a vector (meaning) using an embedding model like MiniLM.
+3 --> Search your datasetfor the most similar question using FAISS
+4 --> The bot first searches dataset, and only if nothing fits well, it uses the AI to generate a new response with context given — all using the user's question and some company context.
+5 --> stt --> whisper
+6 --> tts --> pyttsx3
+7 --> HTTP API / Socket local host pr as of now
+8 --> 🖥️ Client Side --Record voice, send to server, show text, play bot reply
+9 --> 🧠 Server Side --Transcribe audio (STT), run RAG logic, synthesize voice (TTS), send response
+
+
+
+🔻 User Action (Client Side)
+   └── 🎤 Speak Question
+           ↓
+   🎙️ Record Audio (Browser/App)
+           ↓
+   📤 Send Audio to Server (HTTP/Sockets)
+
+🔻 Server Side (Backend Logic)
+   └── 🎧 Speech-to-Text (Whisper)
+           ↓
+   📝 Extract Text (User Question)
+           ↓
+   🧠 Embed Question (MiniLM / SentenceTransformer)
+           ↓
+   🔍 Search Dataset (FAISS - Vector Matching)
+           ↓
+   ❓ Match Found?
+       ├─ ✅ Yes → Use Matching Answer from Dataset
+       │       ↓
+       │  🗣️ Text-to-Speech (pyttsx3)
+       │       ↓
+       │  📤 Send Audio + Text to Client
+       │
+       └─ ❌ No → Use AI Model (Flan-T5 with Context)
+               ↓
+         🧠 AI Generates New Response
+               ↓
+         🗣️ Text-to-Speech (pyttsx3)
+               ↓
+         📤 Send Audio + Text to Client
+
+🔻 Client Side (Frontend)
+   └── 📥 Receive Text + Audio
+           ↓
+   💬 Show Response Text on Screen
+           ↓
+   🔊 Play Bot Voice (Audio Output)
+
+
+
+
+
+Solutions For Digital Age
+Partner with Inara for Digital Transformation of your business
+
+
+Security Is A Process
+With Inara take a holistic approach to your Information , Network & Application security needs
+
+Monetize OTT Content
+With Inara let the content bring additional revenue streams for broadcasters and Operators
+
+Solutions
+SERVICE PROVIDER OSS
+» Service provider IP transport networks
+» QoS implementation for multiservice environments
+» Voice & Data backhaul
+
+DIGITAL TV SOLUTIONS
+» Turn key OTT / IPTV solutions
+» Content Monetization
+» End to end System Integration for Digital TV services
+
+SECURITY SOLUTIONS
+» Enterprise security
+» SoC
+» Information Security, Network Security & Application Security
+
+DEVOPS
+Having a “Software First” strategy and focus on integrated solutions, Inara embraced a DevOps culture early on.
+This has paid off to Inara in shape of loyal customers and to our customers in shape of agility – who rollout new features
+Fast
+Reliably
+Cost-effectively
+Complementing our objective to help the customer achieve Operational Excellence
+
+What We Do
+Inara Technologies is a solutions and services company focused on providing new breed of solutions, tailored design and high quality professional services in the region. Our expertise cover Service Provider Networks, OSS/BSS systems, Content Delivery Networks / Media Delivery Platforms Enterprise Systems, Virtualization & Cloud services & development.
+Our forte is addressing the integration and optimization needs of multi-vendor multi-technology environments, leveraging a deep understanding coming from decades of experience. Having a “Software First” strategy and focus on integrated solutions, Inara embraced a DevOps culture early on.
+
+
+MEDIA DELIVERY
+Inara offers one stop shop for enabling Digital TV services : LIVE TV Catchup, nPVR, Video on Demand . Inara brings you an end to end IPTV / OTT streaming solution partnered with right stack holders of Middleware , CDN , Encoders, DRMs and Setup Boxes. We enable content monetization for operators and broadcasters for additional revenue streams.
+
+
+ANALYTICS
+Inara provides richer context and deeper insight to data through analytics. Combining with artificial intelligence and machine learning we predict trends, behaviors and patterns . By making sense of data Inara brings the real value for your business
+
+Services
+
+CLOUD & ORCHESTRATION
+Inara offers public/private or hybrid cloud solutions for business critical services. Orchestration is a key capability providing end to end management of networking, cloud infrastructure and workload placement. Through dynamic orchestration inara simplifies the complexity of the network enabling intelligent placement of workloads.
+
+
+MANAGED SERVICES
+Inara offers managed services to its customers for Network Operations, Security Services & Media delivery solutions. Our experience in developing the intelligent programmed networks ensures the smooth operations and gurentees the back to back customer SLA's.
+
+Fiber Plant Project Management!
+At Inara, we have been involved in the execution of various telecommunications projects, including plans and specifications development, fiber optic network deployment (FTTH, SONET, DWDM, Carrier Ethernet, and OTN) along with wireless network implementation.
+
+Introduction
+Project Management for Fiber Cable plant design starting from Planning, Execution and Project Closing and Archiving. Fiber Optic Cable Plant Project Management Initiation Process Group starts with Choosing the PM and initiation of the tasks to Develop Project Charter based on Project Planning Design Process Group.
+Design
+The Fiber Optic Cable Plant Design Process for Designing of link communication requirements, develop equipment and component requirements, choosing link route with cable plant component requirements, determine coordination with facilities and electrical personnel, develop installation documentation, develop guidelines to inspect workmanship at every step, develop test plan, develop restoration plan, develop installation schedule.
+Execution
+The Fiber Optic Cable Plant Execution Phase is centered on the communication infrastructure installation activities subdivided into the pre-installation, installation, and post-installation phases. Review and Project Monitoring: Develop installation documentation and guidelines to inspect workmanship at every step with test plan, restoration plan matching with installation schedule, Control workmanship compliance with specifications at every step and conduct daily review of process, progress, and test data.
+Inspection
+Execution phase includes final inspection of workmanship, Review of test data on cable plant with Updated and complete documentation. Finally Archive all relevant project documents in the Project Management Information System (PMIS).
+
+
+We are INARA TECHNOLOGIES - Defining Future
+
+
+
+Inara Technologies (pvt) Limited
+Suite#11, Second Floor, Select Centre,
+F-11 Markaz
+Islamabad, Pakistan
+
++92518441338
+info@inaratech.com
+Phone: (051) 2700264
+
+Sectors:
+Agriculture, Environment & NRM, Information & Communication Technology, Other, Telecommunications, Water & Sanitation, Water Navigation & Ports & Shipping
+
+Nr. of employees:
+51-200
+
+Inara Technologies is a solutions and services company focused on providing new breed of solutions, tailored design and high quality professional services in the region. Our expertise cover Service Provider Networks, OSS/BSS systems, Content Delivery Networks / Media Delivery Platforms, Enterprise Systems, Virtualization, Cloud services & development and Climate Change and Agriculture sectors. 
+Our forte is addressing the integration and optimization needs of multi-vendor multi-technology environments, leveraging a deep understanding coming from decades of experience. Having a “Software First” strategy and focus on integrated solutions, Inara embraced a DevOps culture early on.
+
+
+Banner
+Organizations
+Inara Technologies Pvt. Ltd
+Banner
+Print
+Inara Technologies Pvt. Ltd
+Inara Technologies Pvt. Ltd
+General
+Jobs
+Shortlists/Awards
+Pricing strategy
+Partners/Competitors
+Last update: May 9, 2025
+Details
+Legal residence:
+Pakistan
+Organization type:
+Other business entity
+Funding agencies:
+Other
+Sectors:
+Agriculture, Environment & NRM, Information & Communication Technology, Other, Telecommunications, Water & Sanitation, Water Navigation & Ports & Shipping
+See less
+Nr. of employees:
+51-200
+Sanctions:Check now
+Status:
+Active
+See less details
+Attachments • 0
+About
+Inara Technologies is a solutions and services company focused on providing new breed of solutions, tailored design and high quality professional services in the region. Our expertise cover Service Provider Networks, OSS/BSS systems, Content Delivery Networks / Media Delivery Platforms, Enterprise Systems, Virtualization, Cloud services & development and Climate Change and Agriculture sectors. 
+Our forte is addressing the integration and optimization needs of multi-vendor multi-technology environments, leveraging a deep understanding coming from decades of experience. Having a “Software First” strategy and focus on integrated solutions, Inara embraced a DevOps culture early on.
+
+Top partners
+Top competitors
+Want to unlock full information?
+Register with us or sign in to access the organization database.
+Register
+Sign in
+Learn more about our membership benefits
+Similar Companies
+By Sectors and Organization Types
+BIMP EAGA Business Council Sar
+BIMP EAGA Business Council Sarawak
+Country:
+Malaysia
+Awards:
+0
+Jobs:
+0
+Fast Express Logistic Company
+Fast Express Logistic Company
+Country:
+Somalia
+Awards:
+0
+Jobs:
+0
+MaraisButtonandAssociates
+MaraisButtonandAssociates
+Country:
+South Africa
+Awards:
+0
+Jobs:
+0
+Optimus World Logistics Group
+Optimus World Logistics Group
+Country:
+Mozambique
+Awards:
+0
+Jobs:
+0
+
+With over a decade of experience in providing solutions and consulting services to our clients in Telecom, Oil & Gas, Education and Network industries, we cater to companies with ever growing and diverse business requirements across the world.
+
+
+Revenue	$7.1 million
+Employees
+78
+(
+61 on RocketReach
+)
+Founded	2013
+Address	F11 Markaz, Islamabad 44000, PK
+Phone	+92 51 8441338
+Technologies	
+JavaScript , HTML , Nginx , Linux , Python , Angularjs , Zoho Mail , PostgreSQL , Cisco Switches , Cisco Routers +7 more (view full list)
+ Industry	Information Technology and Services, Business Services General, Business Services
+Keywords	Telecom Solutions, Network Infrastructure, Network Management, Managed Network Services, Telecom Network Solutions, Oil And Gas Consulting, Telecommunications Consulting, Telecom Engineering, Education Technology, Data Network Consulting, Energy Sector Solutions, Oil And Gas Technology, Energy Consulting Services, It Consulting Services, Educational Technology Solutions, It Infrastructure Consulting, Global Business Solutions, Global It Solutions
+Competitors	Microsoft, IBM, Amazon, Oracle, Google, Salesforce, Akamai Technologies, DigitalOcean, Fastly, Cloudflare +48 more (view full list)
+SIC	SIC Code 73 Companies, SIC Code 737 Companies
+NAICS	NAICS Code 54151 Companies, NAICS Code 541 Companies, NAICS Code 541512 Companies, NAICS Code 5415 Companies, NAICS Code 54 Companies
+
+Hilal Afridi is the Co-founder and Director Technical of Inara Technologies.
+61 people are employed at Inara Technologies.
+The NAICS codes for Inara Technologies are [54151, 541, 541512, 5415, 54].
+The SIC codes for Inara Technologies are [73, 737].
+
+Inara Technologies reviews
+3.2
+
+
+
+Ratings by category
+3.2
+
+Culture & values
+
+3.5
+
+Diversity, Equity & Inclusion
+
+2.8
+
+Work/Life balance
+
+3.2
+
+Senior management
+
+2.5
+
+Compensation and benefits
+
+3.2
+
+Career opportunities
+
+Ratings distribution
+5 stars
+
+43%
+
+4 stars
+
+0%
+
+3 stars
+
+0%
+
+2 stars
+
+14%
+
+1 star
+
+43%
+
+
+
+Departments
+Inara Technologies has 78 employees, the majority of which are in product & engineering functions.
+
+All Employees
+Product & Engineering
+83%
+Operations
+10%
+Sales
+4%
+Finance
+2%
+Marketing
+2%
+
+
+ Rahat Jan Location
+Pakistan
+
+ Rahat Jan Work
+2013 - now  Co-Founder, Director Strategy and Alliances @ Inara Technologies
+2004 - now  Founding Director and Advisor @ Inara Institute of Technology
+ Rahat Jan Education
+University of Engineering and Technology, Peshawar
+1992 - 1997
+Islamia College Peshawar
+1990 - 1992
+ Rahat Jan Skills
+Pre-sales
+Solution Architecture
+Network Design
+Rahat Jan Summary
+Rahat Jan, based in Pakistan, is currently a Co-Founder, Director Strategy and Alliances at Inara Technologies. Rahat Jan brings experience from previous roles at Inara Institute of Technology. Rahat Jan holds a 1992 - 1997 University of Engineering and Technology, Peshawar. With a robust skill set that includes Pre-sales, Solution Architecture, Network Design, Telecommunications, OSS/BSS and more. Rahat Jan has 1 emails on RocketReach.
+
+ Muhammad Malik Location
+Islamabad, PK
+
+ Muhammad Malik Work
+2024 - now  Principal Consultant @ Inara Technologies
+2021 - 2024 Group Director IP Core and Edge Operations @ PTCL Customer Care
+2020 - 2021 Chief Technical Advisor @ HB group
+ Muhammad Malik Education
+CTC, PAEC Islamabad
+Post-graduation (Computer Systems)
+
+1995 - 1996
+UET Lahore
+Bachelor of Engineering (BEng) (Electrical, Electronics and Communications Engineering)
+
+1989 - 1994
+ Muhammad Malik Skills
+Leadership
+Team Building
+RF
+Muhammad Malik Summary
+Muhammad Malik, based in Islamabad, PK, is currently a Principal Consultant at Inara Technologies. Muhammad Malik brings experience from previous roles at PTCL.Official, HB group, wi-tribe Pakistan, Orient Express, SkyTel, SharpTel and wi-tribe. Muhammad Malik holds a 1995 - 1996 Post-graduation in Computer Systems @ CTC, PAEC Islamabad. With a robust skill set that includes Leadership, Team Building, RF, Transmission, MPLS and more. Muhammad Malik has 1 emails and 3 mobile phone numbers on RocketReach.
+
+ Hilal Afridi Location
+Pakistan
+
+ Hilal Afridi Work
+2013 - now  Co-founder and Director Technical @ Inara Technologies
+2011 - 2012 Head of Network Operations @ S.A.S Viti
+2008 - 2011 Manager Core Planning and Operations @ wi-tribe Pakistan Limited (A Qtel Company)
+ Hilal Afridi Education
+Newports Institute of Communications and Economics
+BS (Computer Sciences)
+
+ Hilal Afridi Skills
+Technical Project Leadership
+Network Design
+Team Building
+Hilal Afridi Summary
+Hilal Afridi, based in Pakistan, is currently a Co-founder and Director Technical at Inara Technologies. Hilal Afridi brings experience from previous roles at S.A.S Viti, wi-tribe Pakistan Limited (A Qtel Company) and Paknet Limited. Hilal Afridi holds a BS in Computer Sciences @ Newports Institute of Communications and Economics. With a robust skill set that includes Technical Project Leadership, Network Design, Team Building, Network Operations, WiMAX and more. Hilal Afridi has 1 emails on RocketReach.
+
+🌟 Discover Opportunities with Hunars.com! 🌟
+Inara Technologies is thrilled to introduce Hunars.com – your gateway to building a digital presence, showcasing your skills, and earning income! Whether you're a freelancer, skilled professional, or laborer, Hunars is here to connect you with opportunities, all while ensuring you never lose valuable connections again.
+Proudly Made in Pakistan, for Pakistan, Hunars empowers our workforce to thrive in the digital economy.
+🎯 Create your profile.
+💼 List your services.
+💰 Start earning today!
+Let’s champion our skills, support local talent, and redefine freelancing in Pakistan. Join the revolution! 🚀
+hashtag#Freelancing hashtag#Hunars hashtag#HunarChampion hashtag#Hiring hashtag#HireLabour hashtag#HireFreelancers hashtag#MadeInPakistan
+https://lnkd.in/dYA_Y3Pf
+
+#InaraTechnologies and hashtag#PCRWR presented the hashtag#ICAS project—"Customized Irrigation and Climate Advisory Services through Citizen Science"—at hashtag#ARID Agriculture University. This groundbreaking initiative transforms traditional irrigation advisory services by engaging farmers as active citizen scientists. By equipping farmers with tools to collect and use climate-related data, the project strengthens their decision-making and resilience in managing climate variability. The presentation aimed to inspire future agriculture professionals with sustainable, data-driven solutions for enhancing agricultural practices. hashtag#farming hashtag#pakistanagriculture hashtag#irrigationsystemofpakistan hashtag#modernirrigation hashtag#modernfarming hashtag#ICAS hashtag#ADPC
+
+Proud Moment for Inara Technologies!
+
+At the ADB Water and Urban Development Forum hashtag#AWUF2025 held in the Asian Development Bank (ADB) HQ Manila, our hashtag#ICAS innovation took the global stage! 
+
+Mr. Sagar Acharya, Asian Disaster Preparedness Center (ADPC) iCARE Manager, highlighted the ICAS (Irrigation and Climate Advisory Services) innovations and showcased the ICAS App – a digital solution developed by INARA Technologies Pvt. Ltd., Pakistan, in collaboration with our esteemed research partner PCRWR.
+
+This recognition at such a prestigious forum is a testament to the dedication, innovation, and impact-driven work of our entire team and partners.
+
+🇵🇰 Proud to represent Pakistan on the global front for smart agriculture and water resilience!
+
+Inara Technologies Hilal Afridi Maryam Tauheed Izza S. Faisal Waheed, PE, MS EM, PMP®, CSM Dr. Babur Wasim Dr. Hamza Farooq Gabriel PCRWR Progressive Climate Foundation - PCF Asian Disaster Preparedness Center (ADPC) ADB Water The World Bank Climate and Agriculture Sustainable Development Initiative[CASDI] Climate Forward Pakistan Arif Goheer Senator Sherry Rehman Tawseef Khan National University of Sciences and Technology (NUST) PMAS Arid Agriculture University, Rawalpindi CABI Muhammad Umair Ashraf hashtag#AWUF2025 hashtag#ClimateSmartAgriculture Gohar Tasneem Shaikh Nustainable Dr. Muhammad Naveed Anjum
+
+🎉 10 Years at Inara Technologies 🎉 
+A whole decade. What an incredible journey it's been.
+Fresh out of university, a dear friend shared a remote opportunity that felt like the perfect fit—especially with a baby on the way and a planned break just a few months in. I never imagined that conversation would lead to 10 incredible years with the same company.
+The unwavering support, the flexibility, and the trust Inara Technologies placed in me from day one made all the difference. It's not just a workplace—it's a place where people truly matter.
+Here's to the memories, growth, and everything that’s yet to come. 🧡 🎉 
+
+Inara Technologies
+Enhancing Cybersecurity with Standardized Controls
+In today’s evolving threat landscape, organizations must align with industry standards to strengthen their security posture. I’ve compiled a document on Cybersecurity Standards and Associated Controls, providing a structured approach to managing security risks effectively.
+This document outlines key cybersecurity frameworks, best practices, and associated controls to help organizations achieve compliance and improve their resilience against cyber threats.
+Let’s work together to create a more secure digital environment! 

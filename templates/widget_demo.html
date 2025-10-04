@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Demo - {{ domain }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .demo-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .embed-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        .widget-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .widget-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 15px rgba(0,123,255,0.1);
+        }
+        .widget-type-badge {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .demo-preview {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            position: relative;
+            min-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container d-flex align-items-center py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-11">
+                    <div class="content-card">
+                        <!-- Header -->
+                        <div class="bg-primary text-white p-4 text-center">
+                            <h1 class="mb-2">🤖 Widget Options</h1>
+                            <p class="mb-0">{{ title }} - Choose Your Integration Style</p>
+                        </div>
+
+                        <div class="p-4">
+                            <!-- Stats Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="stats-card p-3 text-center">
+                                        <h3 class="mb-1">{{ faqs|length }}</h3>
+                                        <small>FAQ Items</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stats-card p-3 text-center">
+                                        <h3 class="mb-1">{{ domain }}</h3>
+                                        <small>Domain</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stats-card p-3 text-center">
+                                        <h3 class="mb-1">2</h3>
+                                        <small>Widget Types</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stats-card p-3 text-center">
+                                        <h3 class="mb-1">✅</h3>
+                                        <small>Ready to Deploy</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Widget Options -->
+                            <div class="row">
+                                <!-- Support Portal Widget -->
+                                <div class="col-lg-6 mb-4">
+                                    <div class="widget-card p-4 position-relative h-100">
+                                        <span class="widget-type-badge bg-success text-white">Support Portal</span>
+                                        
+                                        <h4 class="mt-3 mb-3">🔗 Redirect to Support</h4>
+                                        <p class="text-muted mb-3">
+                                            Simple button that redirects visitors to your full support portal. 
+                                            Perfect for "Contact Support" or "Help Center" links.
+                                        </p>
+                                        
+                                        <div class="mb-3">
+                                            <h6>✨ Features:</h6>
+                                            <ul class="small">
+                                                <li>Opens support portal in new tab</li>
+                                                <li>Customizable button text & colors</li>
+                                                <li>Minimal footprint on your site</li>
+                                                <li>Users get full dashboard access</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="position-relative">
+                                            <pre class="embed-code p-3"><code id="redirect-embed-code">{{ redirect_embed_code }}</code></pre>
+                                            <button class="btn btn-sm btn-outline-light copy-btn" onclick="copyEmbedCode('redirect-embed-code')">
+                                                📋 Copy
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mt-3 text-center">
+                                            <button class="btn btn-success btn-sm" onclick="testRedirectWidget()">
+                                                🧪 Test Widget
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Full Chat Widget -->
+                                <div class="col-lg-6 mb-4">
+                                    <div class="widget-card p-4 position-relative h-100">
+                                        <span class="widget-type-badge bg-primary text-white">Live Chat</span>
+                                        
+                                        <h4 class="mt-3 mb-3">💬 Instant Chat Support</h4>
+                                        <p class="text-muted mb-3">
+                                            Full-featured chat widget that opens directly on your website. 
+                                            Visitors can get instant answers without leaving your page.
+                                        </p>
+                                        
+                                        <div class="mb-3">
+                                            <h6>✨ Features:</h6>
+                                            <ul class="small">
+                                                <li>Instant chat popup on your site</li>
+                                                <li>AI-powered responses</li>
+                                                <li>FAQ quick-answer buttons</li>
+                                                <li>Voice input support</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="position-relative">
+                                            <pre class="embed-code p-3"><code id="chat-embed-code">{{ chat_embed_code }}</code></pre>
+                                            <button class="btn btn-sm btn-outline-light copy-btn" onclick="copyEmbedCode('chat-embed-code')">
+                                                📋 Copy
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mt-3 text-center">
+                                            <button class="btn btn-primary btn-sm" onclick="testChatWidget()">
+                                                🧪 Test Widget
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Preview Area -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h3>🎯 Live Preview</h3>
+                                    <div class="demo-preview p-4">
+                                        <div class="text-center text-muted">
+                                            <h5>Website Simulation</h5>
+                                            <p>Click "Test Widget" buttons above to see how each widget will appear on your website.</p>
+                                            <div id="preview-status" class="mt-3">
+                                                <em>No widgets loaded yet...</em>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Setup Instructions -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">📖 Setup Instructions</h5>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>🔗 Support Portal Widget:</h6>
+                                                    <ol class="small">
+                                                        <li>Copy the green "Support Portal" embed code</li>
+                                                        <li>Paste it before <code>&lt;/body&gt;</code> on your website</li>
+                                                        <li>Visitors see a "Support Portal" button</li>
+                                                        <li>Clicking opens your full chatbot interface</li>
+                                                    </ol>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6>💬 Live Chat Widget:</h6>
+                                                    <ol class="small">
+                                                        <li>Copy the blue "Live Chat" embed code</li>
+                                                        <li>Paste it before <code>&lt;/body&gt;</code> on your website</li>
+                                                        <li>Visitors see a chat bubble</li>
+                                                        <li>Clicking opens instant chat popup</li>
+                                                    </ol>
+                                                </div>
+                                            </div>
+
+                                            <div class="alert alert-info mt-3">
+                                                <strong>💡 Pro Tip:</strong> You can use both widgets on the same page! 
+                                                The redirect widget for complex inquiries and the chat widget for quick questions.
+                                            </div>
+
+                                            <h6 class="mt-3">🧠 Your Chatbot Knowledge:</h6>
+                                            <p>{{ summary }}</p>
+                                            
+                                            {% if faqs %}
+                                            <div class="mt-2">
+                                                <strong>Sample Questions:</strong>
+                                                {% for faq in faqs %}
+                                                <span class="badge bg-light text-dark me-2 mb-1">{{ faq }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Back Button -->
+                            <div class="text-center mt-4">
+                                <a href="{{ url_for('homee') }}" class="btn btn-outline-primary">
+                                    ← Back to Dashboard
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let redirectWidgetLoaded = false;
+        let chatWidgetLoaded = false;
+
+        function testRedirectWidget() {
+            if (!redirectWidgetLoaded) {
+                // Create redirect widget dynamically
+                loadRedirectWidget();
+                redirectWidgetLoaded = true;
+                document.getElementById('preview-status').innerHTML = 
+                    '<span class="text-success">✅ Support Portal widget loaded! Check bottom-left corner.</span>';
+            } else {
+                showToast('Support Portal widget is already loaded!');
+            }
+        }
+
+        function testChatWidget() {
+            if (!chatWidgetLoaded) {
+                // Create chat widget dynamically
+                loadChatWidget();
+                chatWidgetLoaded = true;
+                document.getElementById('preview-status').innerHTML = 
+                    '<span class="text-primary">✅ Live Chat widget loaded! Check bottom-right corner.</span>';
+            } else {
+                showToast('Live Chat widget is already loaded!');
+            }
+        }
+
+        function loadRedirectWidget() {
+            const script = document.createElement('script');
+            script.src = '{{ api_base }}redirect-widget.js';
+            script.setAttribute('data-domain', '{{ domain }}');
+            script.setAttribute('data-redirect-url', '{{ api_base }}login?base_name={{ domain }}');
+            script.setAttribute('data-position', 'bottom-left');
+            script.setAttribute('data-color', '#28a745');
+            script.setAttribute('data-text', 'Support Portal');
+            document.head.appendChild(script);
+        }
+
+        function loadChatWidget() {
+            const script = document.createElement('script');
+            script.src = '{{ api_base }}widget.js';
+            script.setAttribute('data-domain', '{{ domain }}');
+            script.setAttribute('data-position', 'bottom-right');
+            script.setAttribute('data-color', '#007bff');
+            document.head.appendChild(script);
+        }
+
+        function copyEmbedCode(elementId) {
+            const code = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('📋 Embed code copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('📋 Embed code copied to clipboard!');
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'alert alert-success position-fixed';
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
