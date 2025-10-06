@@ -7,28 +7,26 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-
-
-  <div class="main-content" style="position: relative; display: flex;">
-   <!-- Fixed Sidebar on the Left -->
-   <div id="chat-sessions" style="
-   position: fixed;
-   top: 0;
-   left: 0;
-   width: 260px;
-   height: 100vh;
-   overflow-y: auto;
-   background: linear-gradient(to bottom, #1b1f3b, #2c2f4a);
-   color: #ffffff;
-   border-right: 1px solid #333;
-   padding: 20px 15px;
-   box-sizing: border-box;
-   z-index: 999;
-   font-family: 'Segoe UI', sans-serif;
- ">
- 
-   <h3 style="color: #f7c325; font-size: 18px; margin-bottom: 20px;">🗂️ Your Chats</h3>
-<!-- Sessions will be injected here -->
+  <div id="chat-sessions" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #ffffff;
+  color: #333;
+  border-right: 1px solid #ddd;
+  padding: 20px 15px;
+  box-sizing: border-box;
+  z-index: 999;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+">
+  <h3 style="color: #25D366; font-size: 18px; margin-bottom: 20px;">
+    🗂️ Your Chats
+  </h3>
+  <div id="session-list"></div>
 </div>
 
 <!-- Main Chat UI shifted to the right -->
@@ -39,7 +37,11 @@ box-sizing: border-box;
 ">
 <div class="branding-header">
   <h2>{{ bot_name }}</h2>
-  <a href="/logout" class="logout-btn">Logout</a>
+  <div style="display: flex; gap: 10px; align-items: center;">
+
+    <a href="{{ url_for('widget_demo') }}" class="logout-btn" style="background-color: #25D366; color: white;">Widget Demo</a>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
 </div>
     <div id="chat-box"></div>
     <div id="loading-spinner" class="spinner" style="display: none;"></div>
@@ -65,15 +67,46 @@ box-sizing: border-box;
     let session_id = localStorage.getItem("session_id");
 
     window.onload = async () => {
-      await loadSessions();
-      await loadChatHistory(session_id);
-      startWakeWordListener(); // Always listen for wake word
-    };
+  // Ensure session_id exists
+  if (!localStorage.getItem("session_id")) {
+    const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem("session_id", newSessionId);
+    session_id = newSessionId;
+  } else {
+    session_id = localStorage.getItem("session_id");
+  }
+
+  // Greet the user on first visit
+  try {
+    const greetRes = await fetch("/greet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id })
+    });
+    const greetData = await greetRes.json();
+    if (greetData.greeted && greetData.messages && greetData.messages.length > 0) {
+  greetData.messages.forEach(m => appendMessage("bot", m.text));
+  speakText(greetData.messages[0].text);
+}
+
+  } catch (e) {
+    console.warn("Greeting fetch failed:", e);
+  }
+
+  // Load session list and history
+  await loadSessions();
+  await loadChatHistory(session_id);
+
+  // Start wake word detection
+  startWakeWordListener();
+};
+
 
     // Chat sending
-    async function sendMessage() {
+    async function sendMessage(optionalMessage = null) {
       const input = document.getElementById("user-input");
-      const message = input.value.trim();
+      const message = optionalMessage || input.value.trim();
+
       if (!message) return;
 
       appendMessage("user", message);
@@ -84,7 +117,7 @@ box-sizing: border-box;
         const res = await fetch("/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message, session_id, user_id })
+          body: JSON.stringify({ message, session_id})
         });
         const data = await res.json();
         appendMessage("bot", data.response);
@@ -103,61 +136,89 @@ box-sizing: border-box;
     }
 
     // UI Helpers
-    function appendMessage(role, text) {
-      const chatBox = document.getElementById("chat-box");
-      const div = document.createElement("div");
-      div.className = role;
-      div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 InaraBot: ") + text;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    function linkify(text) {
+  const urlRegex = /((https?:\/\/[^\s]+))/g;
+  return text.replace(urlRegex, '<a href="$1" target="_blank" style="color:#25D366;">$1</a>');
+}
 
+function appendMessage(role, text) {
+  const chatBox = document.getElementById("chat-box");
+  const div = document.createElement("div");
+  div.className = role;
+
+  // convert URLs to clickable links
+  text = linkify(text);
+
+  div.innerHTML = (role === "user" ? "🧠 You: " : "🤖 Bot: ") + text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+    const domain = "{{ base_name }}";
     async function loadSessions() {
-      const res = await fetch('/sessions');
-      const sessions = await res.json();
-      const container = document.getElementById("chat-sessions");
-      container.innerHTML = '';
+  const res = await fetch('/sessions');
+  const sessions = await res.json();
+  const container = document.getElementById("session-list"); // 🟢 only replace inside
+  container.innerHTML = '';
 
-      const newBtn = document.createElement("div");
-      newBtn.className = "chat-item new-chat";
-      newBtn.textContent = "+ Start New Chat";
-      newBtn.onclick = startNewChat;
-      container.appendChild(newBtn);
+  // ➕ Start new chat button
+  const newBtn = document.createElement("div");
+  newBtn.className = "chat-item new-chat";
+  newBtn.textContent = "+ Start New Chat";
+  newBtn.style.cursor = "pointer";
+  newBtn.onclick = startNewChat;
+  container.appendChild(newBtn);
 
-      sessions.forEach(sess => {
-        const div = document.createElement("div");
-        div.className = "chat-item";
-        div.textContent = sess.title;
-        div.onclick = async () => {
-          session_id = sess.session_id;
-          localStorage.setItem("session_id", session_id);
-          document.getElementById("chat-box").innerHTML = '';
-          await loadChatHistory(session_id);
-        };
-        container.appendChild(div);
-      });
+  // 📜 Existing sessions
+  sessions.forEach(sess => {
+    const div = document.createElement("div");
+    div.className = "chat-item";
+    div.style.cursor = "pointer";
+    div.innerHTML = `
+      <strong>${sess.title}</strong><br>
+      <small style="color: #666;">${new Date(sess.started_at).toLocaleString()}</small>
+    `;
+    div.onclick = async () => {
+      session_id = sess.session_id;
+      localStorage.setItem("session_id", session_id);
+      document.getElementById("chat-box").innerHTML = '';
+      await loadChatHistory(session_id);
+    };
+    container.appendChild(div);
+  });
+}
+
+async function loadChatHistory(sessionId) {
+  try {
+    const res = await fetch(`/session/${sessionId}?username=${user_id}&base=${domain}`);
+    const data = await res.json();
+
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML = "";
+
+    if (data.messages) {
+      data.messages.forEach(msg => appendMessage(msg.sender, msg.text));
+    } else {
+      appendMessage("bot", "⚠️ No messages found for this session.");
     }
+  } catch (err) {
+    console.error("Failed to load chat history:", err);
+  }
+}
 
-    async function loadChatHistory(sessionId) {
-      try {
-        const res = await fetch(`/session/${sessionId}`);
-        const messages = await res.json();
-        const chatBox = document.getElementById("chat-box");
-        chatBox.innerHTML = "";
-        messages.forEach(msg => appendMessage(msg.sender, msg.text));
-      } catch (err) {
-        console.error("Failed to load chat history:", err);
-      }
-    }
 
     function startNewChat() {
+      console.log("✅ startNewChat called");
       const newSessionId = "sess_" + Math.random().toString(36).substring(2, 10);
       localStorage.setItem("session_id", newSessionId);
       session_id = newSessionId;
       document.getElementById("chat-box").innerHTML = "";
-      loadSessions();
-    }
 
+      // Show greeting message immediately
+      const greeting = "👋 Hi! I'm your assistant for this website. How may I help you today?";
+      appendMessage("bot", greeting);
+      speakText(greeting)  // Optional voice
+    }
     function speakText(text) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
@@ -266,6 +327,77 @@ box-sizing: border-box;
       sendMessage();
     }
   });
+
+  async function sendMessage(optionalMessage = null) {
+    const input = document.getElementById("user-input");
+    const message = optionalMessage || input.value.trim();
+
+    if (!message) return;
+
+    appendMessage("user", message);
+    input.value = "";
+    document.getElementById("loading-spinner").style.display = "block";
+
+    // Show a thinking/typing indicator
+    const chatBox = document.getElementById("chat-box");
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.className = "bot";
+    thinkingDiv.id = "thinking"  // an id so we can remove later
+    thinkingDiv.innerHTML = "🤖 Bot: Thinking...";
+    chatBox.appendChild(thinkingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, session_id})
+      });
+      const data = await res.json();
+
+      // Remove thinking message
+      const thinkingEl = document.getElementById("thinking");
+      if (thinkingEl) thinkingEl.remove();
+
+      // Now show the real bot response, typing effect
+      await typeText("bot", data.response);
+
+      // optional: speech
+      speakText(data.response);
+
+      if (data.session_id && data.session_id !== session_id) {
+        session_id = data.session_id;
+        localStorage.setItem("session_id", session_id);
+        await loadSessions();
+      }
+    } catch (err) {
+      // Remove thinking
+      const thinkingEl = document.getElementById("thinking");
+      if (thinkingEl) thinkingEl.remove();
+
+      appendMessage("bot", "❌ Server not responding.");
+    }
+
+    document.getElementById("loading-spinner").style.display = "none";
+  }
+
+  // New helper: type the bot response character by character
+  async function typeText(role, fullText, speed = 40) {
+    const chatBox = document.getElementById("chat-box");
+    const div = document.createElement("div");
+    div.className = role;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const prefix = (role === "user" ? "🧠 You: " : "🤖 Bot: ");
+    div.innerHTML = prefix;
+    for (let i = 0; i < fullText.length; i++) {
+      div.innerHTML = prefix + fullText.substring(0, i+1);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      await new Promise(resolve => setTimeout(resolve, speed));
+    }
+  }
+
 
   </script>
 </body>
