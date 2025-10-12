@@ -362,10 +362,12 @@ def widget_chat():
     domain = data.get('domain')
     message = data.get('message')
     session_id = data.get('session_id') or f"widget_{uuid.uuid4().hex[:8]}"
+    
     if not domain or not message:
         return jsonify({'error': 'Domain and message required'}), 400
 
     base_name = clean_domain_name(f"https://{domain}")
+    
     try:
         retrieved_chunks = retrieve_top_k_from_mongo(base_name, message, k=4)
         if not retrieved_chunks:
@@ -384,15 +386,37 @@ Context you can use:
 
 User’s Question: {message}
 """
-        ai_response = run_gemini(prompt)
 
-        log_message(base_name, user_id, session_id, "user", message)
-        log_message(base_name, user_id, session_id, "bot", ai_response)
-        return jsonify({'response': ai_response, 'session_id': session_id, 'domain': domain})
-    except Exception as e:
-        logging.exception("Widget chat error")
-        return jsonify({'error': 'Failed to process message'}), 500
+        # Generate response safely
+        try:
+            gen = run_gemini(prompt)
+            if isinstance(gen, str):
+                ai_response = gen
+            else:
+                ai_response = ""
+                for chunk in gen:
+                    if chunk is not None:
+                        ai_response += str(chunk)
+        except Exception:
+            logging.exception("Widget LLM generation error")
+            ai_response = "❌ Server not responding."
 
+        if not ai_response.strip():
+            ai_response = "❌ Server not responding."
+
+        # Log messages
+        try:
+            log_message(base_name, user_id, session_id, "user", message)
+            log_message(base_name, user_id, session_id, "bot", ai_response)
+        except Exception:
+            logging.exception("Widget message logging error")
+
+        return jsonify({'response': ai_response,'session_id': session_id,'domain': domain
+        })
+
+    except Exception:
+        logging.exception("Error generating")
+        return jsonify({'response': "❌ Server not responding.",'session_id': session_id,'domain': domain})
 
 @app.route('/api/widget/greet', methods=['POST'])
 def widget_greet():
@@ -414,6 +438,13 @@ def widget_greet():
         logging.exception("Widget greet error")
         return jsonify({'error': 'Failed to get greeting'}), 500
 
+@app.route('/widget.js')
+def serve_widget():
+    return render_template('widget.js')
+
+@app.route('/redirect-widget.js')
+def serve_redirect_widget():
+    return render_template('redirect-widget.js')
 
 @app.route('/generate-embed-code/<domain>')
 def generate_embed_code(domain):
@@ -454,8 +485,6 @@ def session_messages(session_id):
     except Exception as e:
         logging.exception("Session messages error")
         return jsonify({'error': 'Failed to fetch session messages'}), 500
-
-
 @app.route('/widget-demo')
 def widget_demo():
     if 'user_id' not in session:
@@ -467,7 +496,11 @@ def widget_demo():
     domain = user_email.split('@')[-1]
     title = get_title(base_name) or domain
     summary = get_summary(base_name) or f"Chatbot for {domain}"
-    samples_short = [(s[:200] + ("..." if len(s) > 200 else "")) for s in (get_chunks(base_name) or [])[:5]]
+    samples_short = [
+    ( (s.get("text", "") if isinstance(s, dict) else str(s))[:200] +
+      ("..." if len((s.get("text", "") if isinstance(s, dict) else str(s))) > 200 else "") )
+    for s in (get_chunks(base_name) or [])[:5]
+    ]
     chat_embed_code = f'''<!-- {domain.upper()} Chatbot Widget -->
 <script>
   (function() {{

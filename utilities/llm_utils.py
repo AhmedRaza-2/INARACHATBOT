@@ -29,7 +29,7 @@ def run_gemini(prompt: str):
         "stream": True,
         "keep_alive": "4h",  # ✅ stay warm
         "options": {
-            "temperature": 0.2,
+            "temperature": 0.5,
             "num_predict": 64,  # ✅ generate fewer tokens for faster start
             "top_p": 0.8,
             "num_ctx": 512,     # ✅ smaller context = faster
