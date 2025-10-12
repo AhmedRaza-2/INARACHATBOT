@@ -1,4 +1,4 @@
-import requests, re, time
+import requests, re, time, os
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 
@@ -9,6 +9,18 @@ def normalize_url(url: str) -> str:
     netloc = parsed.netloc
     path = parsed.path.rstrip('/')  # remove trailing slash
     return f"{scheme}://{netloc}{path}"
+def check_existing_data(base_name: str) -> bool:
+    """Check if FAISS index or chunks already exist in Mongo for this domain."""
+    from pymongo import MongoClient
+    client = MongoClient(os.getenv("MONGO_URI"))
+    db = client["chatbots"]
+    collection = db[base_name]
+
+    # if there are any chunks or index entries, we assume it's already trained
+    has_chunks = collection.count_documents({"chunks": {"$exists": True, "$ne": []}}) > 0
+    has_index = collection.count_documents({"faiss_index": {"$exists": True}}) > 0
+
+    return has_chunks or has_index
 
 def crawl_site(start_url, max_pages=4000, max_retries=3):
     """

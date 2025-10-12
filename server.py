@@ -5,7 +5,6 @@ from sentence_transformers import SentenceTransformer
 import os, uuid, logging
 from database.auth import validate_user, register_user
 from flask_cors import CORS
-
 from database.mongo_storage import (
     get_summary, get_title, get_chunks,
     save_chunks_and_index_to_mongo, retrieve_top_k_from_mongo
@@ -14,7 +13,7 @@ from database.db_utils import (
     get_context, log_message, create_session_if_missing,
     get_all_sessions, get_messages_for_session, create_session
 )
-from utilities.crawl_utils import crawl_site, clean_domain_name
+from utilities.crawl_utils import check_existing_data,crawl_site, clean_domain_name
 from utilities.faiss_utils import build_faiss_index, split_into_chunks
 from utilities.llm_utils import run_gemini, generate_website_context
 # Load embedding model once at startup
@@ -55,8 +54,11 @@ def index():
     if request.method == "POST":
         url = request.form.get("url")
         email = request.form.get("email")
+
         if not url or not email:
-            return render_template("url_input.html", error="Please provide both website URL and your email.", bot_name="bot")
+            return render_template("url_input.html",
+                                   error="Please provide both website URL and your email.",
+                                   bot_name="bot")
 
         parsed = urlparse(url)
         domain = (parsed.hostname or "").replace("www.", "").lower()
@@ -71,51 +73,51 @@ def index():
         session['user_email'] = email
 
         try:
-            existing_summary = get_summary(base_name)
-            existing_title = get_title(base_name)
-            if existing_summary and existing_title:
+            # 🧠 STEP 1: Check if data already exists (chunks or FAISS index)
+            if check_existing_data(base_name):
+                print(f"✅ Existing FAISS/chunk data found for {base_name}, skipping crawl.")
                 return redirect(url_for('login'))
 
+            # 🌐 STEP 2: Crawl since no data found
+            print(f"🌐 Crawling and generating new data for {base_name}...")
             website_text, website_title = crawl_site(url)
             if not website_text:
                 return render_template("url_input.html", error="Website content could not be extracted.", bot_name="bot")
-# normalize: put everything in a single chunk
-            texts_only = [website_text]
 
-            all_combined = "\n\n".join([t for t in texts_only if t.strip()])
+            # Normalize into one combined text
+            all_combined = "\n\n".join([website_text])
             if not all_combined.strip():
                 return render_template("url_input.html", error="Website yielded no textual content.", bot_name="bot")
-            # Summarize (index-level summary)
+
+            # Generate summary
             summary_context = generate_website_context(all_combined)
-            website_title = website_title or (get_title(base_name) or url)
+            website_title = website_title or url
+
             # Split into chunks
             chunks = split_into_chunks(all_combined, chunk_size=1000, overlap=200)
             if not chunks:
                 return render_template("url_input.html", error="Failed to split website text into chunks.", bot_name="bot")
 
-# Normalize chunks into dicts (ensures FAISS + Mongo can handle them consistently)
-            normalized_chunks = []
-            for c in chunks:
-                if isinstance(c, dict):
-                    normalized_chunks.append(c)
-                else:
-                    normalized_chunks.append({
-                        "text": str(c),
-                        "title": website_title or ""
-                    }
-                )
-# Extract texts for FAISS embeddings
-            texts_only = [nc["text"] for nc in normalized_chunks]
-# normalized_chunks = [{"text": "...", "title": "..."}, ...]
+            # Normalize for FAISS/Mongo
+            normalized_chunks = [
+                {"text": str(c), "title": website_title} if not isinstance(c, dict) else c
+                for c in chunks
+            ]
+
+            # Build FAISS
             index_obj, mapping = build_faiss_index(embedding_model, normalized_chunks)
 
-# Save normalized chunks + serialized index to mongo
+            # Save to Mongo
             save_chunks_and_index_to_mongo(base_name, website_title, summary_context, normalized_chunks, index_obj)
+
+            print(f"✅ Data for {base_name} saved successfully!")
             return redirect(url_for('login'))
 
         except Exception as e:
             logging.exception("❌ Processing error while indexing website")
-            return render_template("url_input.html", error="Failed to process website. Please try again.", bot_name="bot")
+            return render_template("url_input.html",
+                                   error="Failed to process website. Please try again.",
+                                   bot_name="bot")
 
     return render_template("url_input.html", bot_name="bot")
 
