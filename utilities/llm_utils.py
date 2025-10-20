@@ -1,10 +1,4 @@
-import requests
-import json
-import logging
-import shutil
-import subprocess
-import time
-
+import requests,json,logging,shutil,subprocess,time
 def run_gemini(prompt: str):
     """
     ⚡ Ultra-fast Ollama version — optimized for instant response.
@@ -71,12 +65,3 @@ def run_gemini(prompt: str):
 
     elapsed = round(time.time() - start, 1)
     logging.info(f"✅ Ollama responded in {elapsed}s (model: {model}, GPU: {has_gpu})")
-
-
-def generate_website_context(text):
-    prompt = f"Summarize this website in 3–5 concise sentences: {text[:8000]}"
-    try:
-        ai_response = run_gemini(prompt)
-    except Exception as e:
-        print(f"Summary error: {e}")
-        return "No summary available."

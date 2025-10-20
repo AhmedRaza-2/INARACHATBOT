@@ -6,16 +6,12 @@ import os, uuid, logging
 from database.auth import validate_user, register_user
 from flask_cors import CORS
 from database.mongo_storage import (
-    get_summary, get_title, get_chunks,
-    save_chunks_and_index_to_mongo, retrieve_top_k_from_mongo
-)
-from database.db_utils import (
-    get_context, log_message, create_session_if_missing,
+    get_summary, get_title, get_chunks,save_chunks_and_index_to_mongo, retrieve_top_k_from_mongo,get_context, log_message, create_session_if_missing,
     get_all_sessions, get_messages_for_session, create_session
 )
 from utilities.crawl_utils import check_existing_data,crawl_site, clean_domain_name
 from utilities.faiss_utils import build_faiss_index, split_into_chunks
-from utilities.llm_utils import run_gemini, generate_website_context
+from utilities.llm_utils import run_gemini
 # Load embedding model once at startup
 EMBED_MODEL = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
 embedding_model = SentenceTransformer(EMBED_MODEL)
@@ -28,11 +24,8 @@ CORS(app, origins=['*'])
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 # helper to safely build prompt pieces
-def make_snippets_text(retrieved_chunks, max_chars=1500):
-    """
-    Convert retrieved_chunks (list of dicts or strings) into a truncated,
-    prompt-safe string. Avoid dumping entire pages into the prompt.
-    """
+def make_snippets_text(retrieved_chunks, max_chars=1500): 
+    #Convert retrieved_chunks (list of dicts or strings) into a truncated,prompt-safe string. Avoid dumping entire pages into the prompt.
     texts = []
     for c in retrieved_chunks:
         if isinstance(c, dict):
@@ -42,7 +35,6 @@ def make_snippets_text(retrieved_chunks, max_chars=1500):
         t = t.strip()
         if not t:
             continue
-        # take first ~600 chars of each snippet to avoid huge prompts
         snippet = t[:600]
         texts.append(snippet + ("..." if len(t) > 600 else ""))
         if sum(len(s) for s in texts) > max_chars:
@@ -67,48 +59,32 @@ def index():
             return render_template("url_input.html",
                                    error=f"Email domain ({email_domain}) must match website domain ({domain}).",
                                    bot_name="bot")
-
         base_name = clean_domain_name(url)
         session['base_name'] = base_name
         session['user_email'] = email
 
         try:
-            # 🧠 STEP 1: Check if data already exists (chunks or FAISS index)
             if check_existing_data(base_name):
                 print(f"✅ Existing FAISS/chunk data found for {base_name}, skipping crawl.")
                 return redirect(url_for('login'))
 
-            # 🌐 STEP 2: Crawl since no data found
             print(f"🌐 Crawling and generating new data for {base_name}...")
             website_text, website_title = crawl_site(url)
             if not website_text:
                 return render_template("url_input.html", error="Website content could not be extracted.", bot_name="bot")
-
-            # Normalize into one combined text
             all_combined = "\n\n".join([website_text])
             if not all_combined.strip():
                 return render_template("url_input.html", error="Website yielded no textual content.", bot_name="bot")
-
-            # Generate summary
-            summary_context = generate_website_context(all_combined)
             website_title = website_title or url
 
-            # Split into chunks
             chunks = split_into_chunks(all_combined, chunk_size=1000, overlap=200)
             if not chunks:
                 return render_template("url_input.html", error="Failed to split website text into chunks.", bot_name="bot")
-
-            # Normalize for FAISS/Mongo
             normalized_chunks = [
                 {"text": str(c), "title": website_title} if not isinstance(c, dict) else c
-                for c in chunks
-            ]
-
-            # Build FAISS
+                for c in chunks            ]
             index_obj, mapping = build_faiss_index(embedding_model, normalized_chunks)
-
-            # Save to Mongo
-            save_chunks_and_index_to_mongo(base_name, website_title, summary_context, normalized_chunks, index_obj)
+            save_chunks_and_index_to_mongo(base_name, website_title, normalized_chunks, index_obj)
 
             print(f"✅ Data for {base_name} saved successfully!")
             return redirect(url_for('login'))
@@ -118,9 +94,7 @@ def index():
             return render_template("url_input.html",
                                    error="Failed to process website. Please try again.",
                                    bot_name="bot")
-
     return render_template("url_input.html", bot_name="bot")
-
 
 @app.route('/homee')
 def homee():
