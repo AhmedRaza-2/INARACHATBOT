@@ -7,7 +7,7 @@ import requests
 import time
 
 # 👇 PASTE YOUR GROQ API KEY HERE
-GROQ_API_KEY = "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"
+GROQ_API_KEY = ""
 
 def test_groq():
     """Test Groq API with a simple question."""
