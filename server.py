@@ -6,33 +6,46 @@ import os, uuid, logging
 from database.auth import validate_user, register_user
 from flask_cors import CORS
 from database.mongo_storage import (
-    get_summary, get_title, get_chunks,
-    save_chunks_and_index_to_mongo, retrieve_top_k_from_mongo
-)
-from database.db_utils import (
-    get_context, log_message, create_session_if_missing,
-    get_all_sessions, get_messages_for_session, create_session
+    get_summary, get_title, get_chunks,save_chunks_and_index_to_mongo, retrieve_top_k_from_mongo,get_context, log_message, create_session_if_missing,
+    get_all_sessions, get_messages_for_session, create_session, delete_all_data, add_custom_chunks, get_data_stats
 )
 from utilities.crawl_utils import check_existing_data,crawl_site, clean_domain_name
 from utilities.faiss_utils import build_faiss_index, split_into_chunks
-from utilities.llm_utils import run_gemini, generate_website_context
+from utilities.llm_utils import run_gemini
 # Load embedding model once at startup
 EMBED_MODEL = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
 embedding_model = SentenceTransformer(EMBED_MODEL)
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
-CORS(app, origins=['*'])
+
+# Enable CORS for widget to work on any hosted website
+CORS(app, resources={
+    r"/api/*": {"origins": "*"},
+    r"/widget.js": {"origins": "*"},
+    r"/redirect-widget.js": {"origins": "*"}
+}, supports_credentials=True)
 
 # logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
+# Request logging middleware
+@app.before_request
+def log_request():
+    """Log all incoming requests for testing purposes"""
+    logging.info(f"🌐 {request.method} {request.path} - {request.remote_addr}")
+
+@app.after_request
+def log_response(response):
+    """Log response status"""
+    status_emoji = "✅" if response.status_code < 400 else "❌"
+    logging.info(f"{status_emoji} {request.method} {request.path} - Status: {response.status_code}")
+    return response
+
+
 # helper to safely build prompt pieces
-def make_snippets_text(retrieved_chunks, max_chars=1500):
-    """
-    Convert retrieved_chunks (list of dicts or strings) into a truncated,
-    prompt-safe string. Avoid dumping entire pages into the prompt.
-    """
+def make_snippets_text(retrieved_chunks, max_chars=1500): 
+    #Convert retrieved_chunks (list of dicts or strings) into a truncated,prompt-safe string. Avoid dumping entire pages into the prompt.
     texts = []
     for c in retrieved_chunks:
         if isinstance(c, dict):
@@ -42,7 +55,6 @@ def make_snippets_text(retrieved_chunks, max_chars=1500):
         t = t.strip()
         if not t:
             continue
-        # take first ~600 chars of each snippet to avoid huge prompts
         snippet = t[:600]
         texts.append(snippet + ("..." if len(t) > 600 else ""))
         if sum(len(s) for s in texts) > max_chars:
@@ -67,48 +79,32 @@ def index():
             return render_template("url_input.html",
                                    error=f"Email domain ({email_domain}) must match website domain ({domain}).",
                                    bot_name="bot")
-
         base_name = clean_domain_name(url)
         session['base_name'] = base_name
         session['user_email'] = email
 
         try:
-            # 🧠 STEP 1: Check if data already exists (chunks or FAISS index)
             if check_existing_data(base_name):
                 print(f"✅ Existing FAISS/chunk data found for {base_name}, skipping crawl.")
                 return redirect(url_for('login'))
 
-            # 🌐 STEP 2: Crawl since no data found
             print(f"🌐 Crawling and generating new data for {base_name}...")
             website_text, website_title = crawl_site(url)
             if not website_text:
                 return render_template("url_input.html", error="Website content could not be extracted.", bot_name="bot")
-
-            # Normalize into one combined text
             all_combined = "\n\n".join([website_text])
             if not all_combined.strip():
                 return render_template("url_input.html", error="Website yielded no textual content.", bot_name="bot")
-
-            # Generate summary
-            summary_context = generate_website_context(all_combined)
             website_title = website_title or url
 
-            # Split into chunks
             chunks = split_into_chunks(all_combined, chunk_size=1000, overlap=200)
             if not chunks:
                 return render_template("url_input.html", error="Failed to split website text into chunks.", bot_name="bot")
-
-            # Normalize for FAISS/Mongo
             normalized_chunks = [
                 {"text": str(c), "title": website_title} if not isinstance(c, dict) else c
-                for c in chunks
-            ]
-
-            # Build FAISS
+                for c in chunks            ]
             index_obj, mapping = build_faiss_index(embedding_model, normalized_chunks)
-
-            # Save to Mongo
-            save_chunks_and_index_to_mongo(base_name, website_title, summary_context, normalized_chunks, index_obj)
+            save_chunks_and_index_to_mongo(base_name, website_title, "", normalized_chunks, index_obj)
 
             print(f"✅ Data for {base_name} saved successfully!")
             return redirect(url_for('login'))
@@ -118,9 +114,7 @@ def index():
             return render_template("url_input.html",
                                    error="Failed to process website. Please try again.",
                                    bot_name="bot")
-
     return render_template("url_input.html", bot_name="bot")
-
 
 @app.route('/homee')
 def homee():
@@ -191,17 +185,29 @@ def login():
     base_name = session.get("base_name", "bot")
     mode = request.args.get("mode", "login")
     if request.method == 'POST':
-        username = request.form.get("username")
-        password = request.form.get("password")
-        success, msg = (
-            register_user(base_name, username, password) if mode == "signup"
-            else validate_user(base_name, username, password)
-        )
-        if success:
-            session.permanent = True
-            session["user_id"] = username
-            return redirect(url_for('homee'))
-        return render_template("login.html", error=msg, mode=mode, bot_name=base_name)
+        try:
+            username = request.form.get("username")
+            password = request.form.get("password")
+            
+            success, msg = (
+                register_user(base_name, username, password) if mode == "signup"
+                else validate_user(base_name, username, password)
+            )
+            
+            if success:
+                session.permanent = True
+                session["user_id"] = username
+                logging.info(f"✅ User {'registered' if mode == 'signup' else 'logged in'}: {username}")
+                return redirect(url_for('homee'))
+            
+            logging.warning(f"⚠️ Authentication failed for {username}: {msg}")
+            return render_template("login.html", error=msg, mode=mode, bot_name=base_name)
+        
+        except Exception as e:
+            logging.exception(f"❌ Unexpected error during {'signup' if mode == 'signup' else 'login'}")
+            error_msg = "❌ An unexpected error occurred. Please try again."
+            return render_template("login.html", error=error_msg, mode=mode, bot_name=base_name)
+    
     return render_template("login.html", mode=mode, bot_name=base_name)
 
 
@@ -244,6 +250,91 @@ from flask import Response
 
 from flask import Response, jsonify
 
+@app.route('/chat/stream', methods=['POST'])
+def chat_stream():
+    """Streaming chat endpoint using Server-Sent Events for real-time responses."""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    base_name = session.get('base_name')
+    if not base_name:
+        return jsonify({'error': 'No base_name found'}), 400
+
+    data = request.json or {}
+    user_input = (data.get('message') or "").strip()
+    session_id = data.get('session_id') or f"sess_{uuid.uuid4().hex[:8]}"
+    user_id = session['user_id']
+
+    if not user_input:
+        return jsonify({'error': 'Please send a question.'}), 400
+
+    def generate():
+        """Generator function for SSE streaming."""
+        try:
+            # Retrieve context - INCREASED for better accuracy
+            retrieved_chunks = retrieve_top_k_from_mongo(base_name, user_input, k=10)
+            if not retrieved_chunks:
+                yield f"data: {json.dumps({'error': 'No data found'})}\n\n"
+                return
+
+            snippets_text = make_snippets_text(retrieved_chunks, max_chars=1500)
+            summary_context = get_summary(base_name) or ""
+            context = get_context(base_name, user_id, session_id) or ""
+
+            # Session handling
+            is_new = create_session_if_missing(base_name, user_id, session_id)
+            if is_new:
+                create_session(user_id, session_id, base_name)
+                greeting_msg = "👋 Hi! I'm your assistant for this website. How may I help you today?"
+                log_message(base_name, user_id, session_id, "bot", greeting_msg)
+
+            # Build prompt - STRENGTHENED to prevent hallucinations
+            prompt = f"""You are a helpful assistant for {base_name}.
+
+IMPORTANT RULES:
+1. Answer ONLY using information from the "Website Content" below
+2. If the answer is NOT in the content, say "I don't have that information in my knowledge base"
+3. Be specific - mention exact prices, product names, details from the content
+4. Do NOT make up or guess information
+
+Website Content:
+{snippets_text}
+
+User Question: {user_input}
+
+Answer (based ONLY on the content above):"""
+
+            # Stream LLM response
+            full_response = ""
+            try:
+                gen = run_gemini(prompt)
+                for chunk in gen:
+                    if chunk is None:
+                        continue
+                    chunk_str = str(chunk)
+                    full_response += chunk_str
+                    # Send chunk to frontend
+                    yield f"data: {json.dumps({'chunk': chunk_str})}\n\n"
+            except Exception as e:
+                logging.exception("LLM streaming error")
+                yield f"data: {json.dumps({'error': 'Generation failed'})}\n\n"
+                return
+
+            # Log messages
+            try:
+                log_message(base_name, user_id, session_id, "user", user_input)
+                log_message(base_name, user_id, session_id, "bot", full_response)
+            except Exception:
+                logging.exception("Failed to log messages")
+
+            # Send completion signal
+            yield f"data: {json.dumps({'done': True, 'session_id': session_id})}\n\n"
+
+        except Exception as e:
+            logging.exception("Chat stream error")
+            yield f"data: {json.dumps({'error': 'Processing failed'})}\n\n"
+
+    return Response(generate(), mimetype='text/event-stream')
+
 @app.route('/chat', methods=['POST'])
 def chat():
     if 'user_id' not in session:
@@ -277,20 +368,18 @@ def chat():
             greeting_msg = "👋 Hi! I'm your assistant for this website. How may I help you today?"
             log_message(base_name, user_id, session_id, "bot", greeting_msg)
 
-        # Build compact prompt
-        prompt = f"""
-You are Inara, a professional AI assistant for {base_name}.
-Use this context:
-- Company Info: {summary_context}
-- Website Snippets: {snippets_text}
-- Recent Chat: {context}
-User Question: {user_input}
-Instructions:
-- Answer in 2-3 short sentences.
-- Use company info if relevant.
-- Ask for clarification if unsure.
-- End by asking if user needs more help.
-"""
+        # Build optimized prompt - concise but maintains quality
+        prompt = f"""You are AURA, AI assistant for {base_name}.
+
+Context: {summary_context[:300] if summary_context else 'General assistant'}
+
+Relevant info: {snippets_text[:600]}
+
+Recent conversation: {context[:300] if context else 'First message'}
+
+User: {user_input}
+
+Respond in 2-3 helpful sentences. Be professional and friendly."""
 
         # Generate a full response (support both streaming generator or plain string)
         partial_response = ""
@@ -378,7 +467,7 @@ def widget_chat():
         user_id = f"widget_user_{session_id}"
         context = get_context(base_name, user_id, session_id, limit=3) or ""
 
-        prompt = f"""You are Inara, a friendly and professional AI assistant for {domain}.
+        prompt = f"""You are AURA, a friendly and professional AI assistant for {domain}.
 Context you can use:
 - Company Background: {summary_context}
 - Relevant Website Snippets: {snippets_text}
@@ -535,6 +624,144 @@ def widget_demo():
                            chat_embed_code=chat_embed_code,
                            redirect_embed_code=redirect_embed_code,
                            api_base=request.host_url)
+
+
+@app.route('/settings')
+def settings():
+    """Settings page for data management"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    base_name = session.get('base_name')
+    if not base_name:
+        return redirect(url_for('index'))
+    
+    # Get data statistics
+    stats = get_data_stats(base_name)
+    user_email = session.get('user_email', '')
+    domain = user_email.split('@')[-1] if user_email else 'unknown'
+    
+    return render_template('settings.html',
+                         username=session.get('user_id'),
+                         domain=domain,
+                         base_name=base_name,
+                         stats=stats)
+
+
+@app.route('/retrain', methods=['POST'])
+def retrain():
+    """Complete retrain - delete and re-crawl website"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    base_name = session.get('base_name')
+    user_email = session.get('user_email')
+    
+    if not base_name or not user_email:
+        return jsonify({'error': 'Missing session data'}), 400
+    
+    try:
+        # Get URL from session or reconstruct
+        domain = user_email.split('@')[-1]
+        url = f"https://{domain}"
+        
+        logging.info(f"🔄 Starting retrain for {base_name}")
+        
+        # Delete existing data
+        if not delete_all_data(base_name):
+            return jsonify({'error': 'Failed to delete existing data'}), 500
+        
+        # Re-crawl website
+        website_text, website_title = crawl_site(url)
+        if not website_text:
+            return jsonify({'error': 'Failed to crawl website'}), 500
+        
+        # Process and index
+        chunks = split_into_chunks(website_text, chunk_size=1000, overlap=200)
+        if not chunks:
+            return jsonify({'error': 'Failed to create chunks'}), 500
+        
+        normalized_chunks = [
+            {"text": str(c), "title": website_title} if not isinstance(c, dict) else c
+            for c in chunks
+        ]
+        
+        from utilities.faiss_utils import build_faiss_index
+        index_obj, mapping = build_faiss_index(embedding_model, normalized_chunks)
+        save_chunks_and_index_to_mongo(base_name, website_title, "", normalized_chunks, index_obj)
+        
+        logging.info(f"✅ Retrain completed for {base_name}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Data retrained successfully',
+            'chunks_count': len(normalized_chunks)
+        })
+        
+    except Exception as e:
+        logging.exception(f"❌ Retrain failed for {base_name}")
+        return jsonify({'error': f'Retrain failed: {str(e)}'}), 500
+
+
+@app.route('/add-custom-data', methods=['POST'])
+def add_custom_data_route():
+    """Add custom FAQs/data to knowledge base"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    base_name = session.get('base_name')
+    if not base_name:
+        return jsonify({'error': 'No base_name found'}), 400
+    
+    data = request.json or {}
+    custom_text = data.get('custom_text', '').strip()
+    custom_title = data.get('title', 'Custom Data').strip()
+    
+    if not custom_text:
+        return jsonify({'error': 'Custom text is required'}), 400
+    
+    # Limit size to 50KB
+    if len(custom_text) > 50000:
+        return jsonify({'error': 'Custom text too large (max 50KB)'}), 400
+    
+    try:
+        logging.info(f"📝 Adding custom data to {base_name}")
+        
+        success, count = add_custom_chunks(base_name, custom_text, custom_title)
+        
+        if not success:
+            return jsonify({'error': 'Failed to add custom data'}), 500
+        
+        logging.info(f"✅ Added {count} custom chunks to {base_name}")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Successfully added {count} custom chunks',
+            'chunks_added': count
+        })
+        
+    except Exception as e:
+        logging.exception(f"❌ Add custom data failed for {base_name}")
+        return jsonify({'error': f'Failed to add custom data: {str(e)}'}), 500
+
+
+@app.route('/data-stats')
+def data_stats():
+    """Get current data statistics"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    base_name = session.get('base_name')
+    if not base_name:
+        return jsonify({'error': 'No base_name found'}), 400
+    
+    try:
+        stats = get_data_stats(base_name)
+        return jsonify(stats)
+    except Exception as e:
+        logging.exception("Stats error")
+        return jsonify({'error': 'Failed to get stats'}), 500
+
 
 
 if __name__ == "__main__":

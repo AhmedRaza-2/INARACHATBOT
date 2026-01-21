@@ -1,127 +1,773 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>{{ bot_name }} – Instantly Build Your AI Chatbot</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura AI – Transform Your Website with AI-Powered Chat</title>
+  <link rel="stylesheet" href="/static/modern.css">
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(to right, #2e3a59, #1f263b);
-      color: white;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+      background: #ffffff;
+      color: #1a202c;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e9ecef;
+      padding: 16px 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
       display: flex;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
+      gap: 12px;
+      text-decoration: none;
     }
 
-    .auth-wrapper {
-      width: 100%;
-      max-width: 400px;
-      padding: 30px;
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      text-align: center;
-      backdrop-filter: blur(10px);
+    .nav-logo {
+      width: 200px;
+      height: auto;
     }
 
-    h2 {
-      font-size: 1.8rem;
-      margin-bottom: 15px;
-      color: #ffffff;
+    .nav-title {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #25D366 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    p {
-      font-size: 0.95rem;
-      color: #dddddd;
-      margin-bottom: 25px;
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
     }
 
-    input[type="text"],
-    input[type="email"] {
-      width: 100%;
-      padding: 12px 15px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
+    .nav-link {
+      text-decoration: none;
+      color: #1a202c;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+      color: #667eea;
+    }
+
+    .nav-cta {
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      font-size: 0.9rem;
-    }
-
-    input::placeholder {
-      color: #cccccc;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #4ade80; /* Tailwind's green-400 */
-      border: none;
-      border-radius: 8px;
-      color: #1f263b;
+      border-radius: 10px;
+      text-decoration: none;
       font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
 
-    button:hover {
-      background-color: #22c55e; /* Tailwind's green-500 */
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     }
 
-    #loading-spinner {
-      display: none;
-      margin-top: 20px;
-      text-align: center;
+    /* Sections */
+    section {
+      padding: 100px 24px;
+      position: relative;
     }
 
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+    .container {
+      max-width: 1200px;
       margin: 0 auto;
     }
 
-    .loading-text {
-      margin-top: 10px;
-      font-weight: bold;
-      color: #f5f5f5;
-      font-size: 0.95rem;
+    /* Hero Section */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-shapes .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.4;
+    }
+
+    .shape-1 {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #a8b5ff 0%, #c5b3ff 100%);
+      top: -100px;
+      right: -100px;
+      border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    }
+
+    .shape-2 {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, #ffb3ba 0%, #ffcccb 100%);
+      bottom: 10%;
+      left: -80px;
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      color: #1a202c;
+    }
+
+    .hero-title .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #25D366 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 20px;
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 36px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+    }
+
+    /* Problem Section */
+    #problem {
+      background: white;
+    }
+
+    .section-title {
+      font-size: 42px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+      color: #1a202c;
+    }
+
+    .section-subtitle {
+      font-size: 18px;
+      text-align: center;
+      color: #718096;
+      max-width: 700px;
+      margin: 0 auto 60px;
+      line-height: 1.6;
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+
+    .problem-card {
+      padding: 32px;
+      background: #f8f9fa;
+      border-radius: 16px;
+      border-left: 4px solid #dc3545;
+    }
+
+    .problem-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .problem-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1a202c;
+    }
+
+    .problem-text {
+      color: #718096;
+      line-height: 1.6;
+    }
+
+    /* Solution Section */
+    #solution {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    #solution .section-title,
+    #solution .section-subtitle {
+      color: white;
+    }
+
+    .solution-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 32px;
+    }
+
+    .solution-card {
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .solution-card:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .solution-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .solution-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .solution-text {
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    /* How It Works */
+    #how {
+      background: white;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+
+    .step-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1a202c;
+    }
+
+    .step-text {
+      color: #718096;
+      line-height: 1.6;
+    }
+
+    /* Features */
+    #features {
+      background: #f8f9fa;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+
+    .feature-card {
+      padding: 32px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .feature-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1a202c;
+    }
+
+    .feature-text {
+      color: #718096;
+      line-height: 1.6;
+    }
+
+    /* CTA Section */
+    #cta {
+      background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+      color: white;
+      text-align: center;
+    }
+
+    #cta .section-title,
+    #cta .section-subtitle {
+      color: white;
+    }
+
+    .cta-form {
+      max-width: 500px;
+      margin: 40px auto 0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #25D366;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .cta-button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #25D366 0%, #20c997 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
+    }
+
+    /* Footer */
+    footer {
+      background: #1a202c;
+      color: white;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .footer-text {
+      opacity: 0.7;
+    }
+
+    /* Loading Spinner */
+    #loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: 36px;
+      }
+
+      .section-title {
+        font-size: 32px;
+      }
+
+      section {
+        padding: 60px 24px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="auth-wrapper">
-    <h2>🤖 Build Your AI Chatbot Instantly</h2>
-    <p>
-      Just drop your website URL and email — we’ll create a smart, fully-trained chatbot for your business in seconds.
-    </p>
-    <form method="POST" onsubmit="showSpinner()">
-      <input type="text" name="url" placeholder="https://yourwebsite.com" required>
-      <input type="email" name="email" placeholder="you@yourcompany.com" required>
-      <button type="submit">🚀 Launch My Chatbot</button>
-    </form>
-    <div id="loading-spinner">
-      <div class="spinner"></div>
-      <div class="loading-text">Hang tight! We’re building your custom chatbot...</div>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-brand">
+        <img src="/static/logo.png" alt="Aura AI" class="nav-logo">
+        <span class="nav-title">Aura AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="#problem" class="nav-link">Problem</a>
+        <a href="#solution" class="nav-link">Solution</a>
+        <a href="#how" class="nav-link">How It Works</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#cta" class="nav-cta">Get Started Free</a>
+      </div>
     </div>
-  </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="hero-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <span class="hero-badge">🚀 AI-Powered Customer Support</span>
+        <h1 class="hero-title">
+          Transform Your Website with <span class="gradient-text">Intelligent AI Chat</span>
+        </h1>
+        <p class="hero-subtitle">
+          What if your website could answer every customer question instantly? Aura AI makes it possible.
+          Train a smart chatbot on your content in seconds—no coding required.
+        </p>
+        <a href="#cta" class="hero-cta">
+          Start Building Free →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem Section -->
+  <section id="problem">
+    <div class="container">
+      <h2 class="section-title">The Challenge Every Business Faces</h2>
+      <p class="section-subtitle">
+        Your customers have questions. But answering them manually is expensive, slow, and doesn't scale.
+      </p>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="problem-icon">⏰</div>
+          <h3 class="problem-title">24/7 Support is Expensive</h3>
+          <p class="problem-text">
+            Hiring support teams for round-the-clock coverage costs thousands per month. Most businesses can't afford
+            it.
+          </p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">😤</div>
+          <h3 class="problem-title">Customers Hate Waiting</h3>
+          <p class="problem-text">
+            Long response times lead to frustrated customers and lost sales. 67% of customers abandon purchases due to
+            poor support.
+          </p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">📉</div>
+          <h3 class="problem-title">Repetitive Questions Waste Time</h3>
+          <p class="problem-text">
+            Your team answers the same questions over and over. This drains resources that could be spent growing your
+            business.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solution Section -->
+  <section id="solution">
+    <div class="container">
+      <h2 class="section-title">Meet Aura AI: Your Intelligent Assistant</h2>
+      <p class="section-subtitle">
+        An AI chatbot that knows your business inside-out, answers questions instantly, and works 24/7.
+      </p>
+      <div class="solution-grid">
+        <div class="solution-card">
+          <div class="solution-icon">⚡</div>
+          <h3 class="solution-title">Instant Answers</h3>
+          <p class="solution-text">
+            Respond to customer questions in milliseconds, not hours. Keep visitors engaged and convert more leads.
+          </p>
+        </div>
+        <div class="solution-card">
+          <div class="solution-icon">🧠</div>
+          <h3 class="solution-title">Trained on YOUR Content</h3>
+          <p class="solution-text">
+            Aura AI learns from your website automatically. It provides accurate, context-aware answers every time.
+          </p>
+        </div>
+        <div class="solution-card">
+          <div class="solution-icon">💰</div>
+          <h3 class="solution-title">Save Thousands Monthly</h3>
+          <p class="solution-text">
+            Replace expensive support teams with AI that never sleeps, never takes breaks, and scales infinitely.
+          </p>
+        </div>
+        <div class="solution-card">
+          <div class="solution-icon">🎯</div>
+          <h3 class="solution-title">Zero Setup Required</h3>
+          <p class="solution-text">
+            No coding, no training data, no complexity. Just enter your URL and you're live in 60 seconds.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">
+        From zero to AI-powered support in 3 simple steps
+      </p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3 class="step-title">Enter Your Website</h3>
+          <p class="step-text">
+            Just provide your website URL and email. Our AI crawler will scan your entire site automatically.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3 class="step-title">AI Learns Your Content</h3>
+          <p class="step-text">
+            Aura AI reads and understands your pages, products, FAQs, and documentation in seconds.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3 class="step-title">Embed & Go Live</h3>
+          <p class="step-text">
+            Copy one line of code to your website. Your AI chatbot is now answering questions 24/7.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="container">
+      <h2 class="section-title">Powerful Features, Simple Experience</h2>
+      <p class="section-subtitle">
+        Everything you need to deliver exceptional customer support
+      </p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3 class="feature-title">Advanced AI Engine</h3>
+          <p class="feature-text">
+            Powered by state-of-the-art language models for human-like conversations.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3 class="feature-title">Customizable Design</h3>
+          <p class="feature-text">
+            Match your brand with custom colors, logos, and positioning options.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3 class="feature-title">Analytics Dashboard</h3>
+          <p class="feature-text">
+            Track conversations, popular questions, and customer satisfaction metrics.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3 class="feature-title">Auto-Updates</h3>
+          <p class="feature-text">
+            Retrain your chatbot anytime to keep it synced with your latest content.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h3 class="feature-title">Multi-Language Support</h3>
+          <p class="feature-text">
+            Serve global customers with automatic language detection and translation.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3 class="feature-title">Secure & Private</h3>
+          <p class="feature-text">
+            Enterprise-grade security with encrypted data and GDPR compliance.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section id="cta">
+    <div class="container">
+      <h2 class="section-title">Ready to Transform Your Customer Support?</h2>
+      <p class="section-subtitle">
+        Join hundreds of businesses using Aura AI to delight customers and save time
+      </p>
+      <div class="cta-form">
+        <form method="POST" onsubmit="showSpinner()">
+          <div class="form-group">
+            <label class="form-label">Website URL</label>
+            <input type="text" name="url" class="form-input" placeholder="https://yourwebsite.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-input" placeholder="you@yourcompany.com" required>
+          </div>
+          <button type="submit" class="cta-button">
+            🚀 Create My AI Chatbot - Free
+          </button>
+        </form>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner">
+          <div class="spinner"></div>
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Creating your chatbot...</div>
+          <div style="opacity: 0.8;">We're crawling your website and training the AI. This takes about a minute.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="footer-text">© 2026 Aura AI. Intelligent customer support for modern businesses.</p>
+    </div>
+  </footer>
 
   <script>
     function showSpinner() {
+      document.querySelector('form').style.display = 'none';
       document.getElementById("loading-spinner").style.display = "block";
     }
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   </script>
 </body>
+
 </html>

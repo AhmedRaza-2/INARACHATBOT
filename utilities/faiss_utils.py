@@ -48,12 +48,13 @@ def build_faiss_index(embedding_model, chunks: list):
     )
 
     # Create FAISS index
-    import faiss
     dimension = embeddings.shape[1]
-    index = faiss.IndexFlatIP(dimension)  # cosine similarity
-    index.add(embeddings)
+    index = faiss.IndexFlatL2(dimension)
+    index.add(embeddings.astype('float32'))
 
+    print(f"✅ Built FAISS index with {len(texts)} chunks")
     return index, mapping
+
 
 # ---------- Persistence ----------
 def faiss_index_to_bytes(index: faiss.Index) -> bytes:
@@ -86,31 +87,3 @@ def load_index_from_bytes(index_bytes: bytes) -> faiss.Index:
                 os.unlink(tmp_name)
         except Exception:
             pass
-
-# ---------- Retrieval ----------
-def retrieve_faiss(
-    query: str,
-    embedding_model,
-    index: faiss.Index,
-    mapping: List[Dict[str, str]],
-    k: int = 3
-) -> List[Dict[str, str]]:
-    """
-    Retrieve top-k chunks using FAISS similarity search.
-    Returns:
-        [{"text": "...", "title": "..."}]
-    """
-    q_emb = embedding_model.encode(
-        [query],
-        convert_to_numpy=True,
-        normalize_embeddings=True
-    )
-
-    D, I = index.search(q_emb, k)
-
-    results = []
-    for idx in I[0]:
-        if idx < len(mapping):
-            results.append(mapping[idx])
-
-    return results

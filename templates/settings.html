@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - {{ base_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+    <style>
+        .settings-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 32px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .settings-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: #718096;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .custom-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #1a202c;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+
+        .custom-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #1a202c;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #25D366 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .warning-box strong {
+            color: #856404;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 13px;
+            color: #718096;
+            margin-top: -12px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body style="background: #f8f9fa;">
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1 class="settings-title">⚙️ Settings</h1>
+            <a href="{{ url_for('homee') }}" class="back-btn">← Back to Chat</a>
+        </div>
+
+        <!-- Data Statistics -->
+        <div class="settings-card">
+            <h2 class="card-title">📊 Knowledge Base Statistics</h2>
+            <p class="card-description">Current data overview for {{ domain }}</p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Total Chunks</div>
+                    <div class="stat-value">{{ stats.total_chunks }}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Crawled Data</div>
+                    <div class="stat-value">{{ stats.crawled_chunks }}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Custom Data</div>
+                    <div class="stat-value">{{ stats.custom_chunks }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Retrain Section -->
+        <div class="settings-card">
+            <h2 class="card-title">🔄 Complete Retrain</h2>
+            <p class="card-description">Re-crawl your website and replace all existing data. Chat history will be
+                preserved.</p>
+
+            <div class="warning-box">
+                <strong>⚠️ Warning:</strong> This will delete all existing crawled and custom data. This action cannot
+                be undone.
+            </div>
+
+            <div id="retrain-alert" class="alert"></div>
+
+            <button id="retrain-btn" class="btn btn-danger" onclick="confirmRetrain()">
+                🔄 Retrain Data
+            </button>
+        </div>
+
+        <!-- Add Custom Data Section -->
+        <div class="settings-card">
+            <h2 class="card-title">➕ Add Custom Information</h2>
+            <p class="card-description">Add FAQs, product details, or any custom information to your knowledge base.</p>
+
+            <div id="custom-alert" class="alert"></div>
+
+            <label for="custom-title" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a202c;">
+                Title (Optional)
+            </label>
+            <input type="text" id="custom-title" class="custom-input" placeholder="e.g., Product FAQs, Pricing Info"
+                maxlength="100">
+
+            <label for="custom-data" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a202c;">
+                Custom Information *
+            </label>
+            <textarea id="custom-data" class="custom-textarea"
+                placeholder="Enter your custom data here...&#10;&#10;Examples:&#10;- FAQs in Q&A format&#10;- Product descriptions&#10;- Company policies&#10;- Any text-based information"
+                maxlength="50000" oninput="updateCharCount()"></textarea>
+            <div class="char-count">
+                <span id="char-count">0</span> / 50,000 characters
+            </div>
+
+            <button id="add-custom-btn" class="btn btn-primary" onclick="addCustomData()">
+                ➕ Add to Knowledge Base
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function updateCharCount() {
+            const textarea = document.getElementById('custom-data');
+            const count = document.getElementById('char-count');
+            count.textContent = textarea.value.length;
+        }
+
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        function confirmRetrain() {
+            if (!confirm('⚠️ Are you sure you want to retrain?\n\nThis will:\n- Delete all existing data\n- Re-crawl your website\n- Rebuild the knowledge base\n\nChat history will be preserved.')) {
+                return;
+            }
+
+            const btn = document.getElementById('retrain-btn');
+            btn.disabled = true;
+            btn.innerHTML = '🔄 Retraining... <span class="loading"></span>';
+
+            fetch('/retrain', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = '🔄 Retrain Data';
+
+                    if (data.success) {
+                        showAlert('retrain-alert', `✅ ${data.message} (${data.chunks_count} chunks created)`, 'success');
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showAlert('retrain-alert', `❌ ${data.error || 'Retrain failed'}`, 'error');
+                    }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.innerHTML = '🔄 Retrain Data';
+                    showAlert('retrain-alert', '❌ Network error. Please try again.', 'error');
+                });
+        }
+
+        function addCustomData() {
+            const customText = document.getElementById('custom-data').value.trim();
+            const customTitle = document.getElementById('custom-title').value.trim() || 'Custom Data';
+
+            if (!customText) {
+                showAlert('custom-alert', '❌ Please enter some custom data', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('add-custom-btn');
+            btn.disabled = true;
+            btn.innerHTML = '➕ Adding... <span class="loading"></span>';
+
+            fetch('/add-custom-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    custom_text: customText,
+                    title: customTitle
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = '➕ Add to Knowledge Base';
+
+                    if (data.success) {
+                        showAlert('custom-alert', `✅ ${data.message}`, 'success');
+                        document.getElementById('custom-data').value = '';
+                        document.getElementById('custom-title').value = '';
+                        updateCharCount();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showAlert('custom-alert', `❌ ${data.error || 'Failed to add data'}`, 'error');
+                    }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.innerHTML = '➕ Add to Knowledge Base';
+                    showAlert('custom-alert', '❌ Network error. Please try again.', 'error');
+                });
+        }
+    </script>
+</body>
+
+</html>
