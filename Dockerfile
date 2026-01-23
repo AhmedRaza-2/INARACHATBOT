@@ -19,11 +19,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire application
 COPY . .
 
-# Expose port (most platforms use 8080 or 5000)
+# Make startup script executable
+RUN chmod +x start.sh
+
+# Expose port
 EXPOSE 8080
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV PORT=8080
+ENV FLASK_APP=server.py
 
-# Run the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "server:app"]
+# Run the application
+CMD ["./start.sh"]
