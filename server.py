@@ -18,6 +18,8 @@ embedding_model = SentenceTransformer(EMBED_MODEL)
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
+app.config['JSON_AS_ASCII'] = False  # Ensure UTF-8 encoding for JSON responses
+app.config['JSONIFY_MIMETYPE'] = 'application/json; charset=utf-8'
 
 # Enable CORS for widget to work on any hosted website
 CORS(app, resources={
@@ -66,6 +68,7 @@ def index():
     if request.method == "POST":
         url = request.form.get("url")
         email = request.form.get("email")
+        force_retrain = request.form.get("force_retrain") == "true"
 
         if not url or not email:
             return render_template("url_input.html",
@@ -84,11 +87,18 @@ def index():
         session['user_email'] = email
 
         try:
+            # Check if data already exists
             if check_existing_data(base_name):
-                print(f"✅ Existing FAISS/chunk data found for {base_name}, skipping crawl.")
-                return redirect(url_for('login'))
-
-            print(f"🌐 Crawling and generating new data for {base_name}...")
+                if not force_retrain:
+                    # User wants to use existing data - redirect to login
+                    print(f"✅ Using existing data for {base_name}")
+                    return redirect(url_for('login'))
+                else:
+                    # User wants to retrain
+                    print(f"🔄 User requested retrain for {base_name}")
+                    delete_all_data(base_name)
+            
+            print(f"🌐 Crawling and generating data for {base_name}...")
             website_text, website_title = crawl_site(url)
             if not website_text:
                 return render_template("url_input.html", error="Website content could not be extracted.", bot_name="bot")
@@ -115,6 +125,7 @@ def index():
                                    error="Failed to process website. Please try again.",
                                    bot_name="bot")
     return render_template("url_input.html", bot_name="bot")
+
 
 @app.route('/homee')
 def homee():

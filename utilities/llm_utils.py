@@ -49,6 +49,10 @@ def _run_groq_api(prompt: str, api_key: str):
     data = response.json()
     text = data["choices"][0]["message"]["content"]
     
+    # Ensure proper UTF-8 encoding
+    if isinstance(text, bytes):
+        text = text.decode('utf-8', errors='replace')
+    
     elapsed = round(time.time() - start, 1)
     logging.info(f"✅ Groq API responded in {elapsed}s (model: llama-3.1-8b-instant)")
     
@@ -74,10 +78,32 @@ def _run_gemini_api(prompt: str, api_key: str):
     
     start = time.time()
     response = requests.post(url, headers=headers, json=payload, timeout=10)
+    
+    # Better error handling - log the actual error response
+    if response.status_code != 200:
+        try:
+            error_data = response.json()
+            logging.error(f"Gemini API error ({response.status_code}): {error_data}")
+        except:
+            logging.error(f"Gemini API error ({response.status_code}): {response.text}")
+    
     response.raise_for_status()
     
     data = response.json()
+    
+    # Check if response has the expected structure
+    if "candidates" not in data or not data["candidates"]:
+        logging.error(f"Gemini API returned unexpected response: {data}")
+        # Check for safety ratings or other issues
+        if "promptFeedback" in data:
+            logging.error(f"Prompt feedback: {data['promptFeedback']}")
+        raise ValueError("No candidates in Gemini response - content may have been blocked")
+    
     text = data["candidates"][0]["content"]["parts"][0]["text"]
+    
+    # Ensure proper UTF-8 encoding
+    if isinstance(text, bytes):
+        text = text.decode('utf-8', errors='replace')
     
     elapsed = round(time.time() - start, 1)
     logging.info(f"✅ Gemini API responded in {elapsed}s (model: gemini-1.5-flash)")

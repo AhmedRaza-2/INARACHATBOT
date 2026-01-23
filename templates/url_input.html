@@ -4,41 +4,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aura AI – Transform Your Website with AI-Powered Chat</title>
-  <link rel="stylesheet" href="/static/modern.css">
+  <title>Aura AI - AI Customer Support Made Simple</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+
+    html {
       scroll-behavior: smooth;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: #ffffff;
-      color: #1a202c;
-      overflow-x: hidden;
+      color: #0f172a;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Navbar */
-    .navbar {
+    /* Floating Shapes */
+    .bg-shapes {
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #e9ecef;
-      padding: 16px 0;
-      z-index: 1000;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
     }
 
-    .nav-container {
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.15;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .shape-1 {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      top: -100px;
+      right: 10%;
+      animation-delay: 0s;
+    }
+
+    .shape-2 {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #25D366, #20c997);
+      bottom: -150px;
+      left: -100px;
+      animation-delay: 5s;
+    }
+
+    .shape-3 {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      top: 40%;
+      left: 5%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      33% {
+        transform: translate(30px, -50px) rotate(120deg);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) rotate(240deg);
+      }
+    }
+
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0;
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    nav.scrolled {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-content {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 16px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -51,17 +122,13 @@
       text-decoration: none;
     }
 
-    .nav-logo {
-      width: 200px;
-      height: auto;
+    .logo {
+      height: 48px;
+      transition: transform 0.2s;
     }
 
-    .nav-title {
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #25D366 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .logo:hover {
+      transform: scale(1.05);
     }
 
     .nav-links {
@@ -71,10 +138,11 @@
     }
 
     .nav-link {
+      color: #64748b;
       text-decoration: none;
-      color: #1a202c;
       font-weight: 500;
-      transition: color 0.3s ease;
+      font-size: 15px;
+      transition: color 0.2s;
     }
 
     .nav-link:hover {
@@ -83,402 +151,446 @@
 
     .nav-cta {
       padding: 10px 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #667eea;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+    }
+
+    /* Hero Section */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 140px 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content h1 {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+    }
+
+    .hero-content .highlight {
+      color: #667eea;
+    }
+
+    .hero-content p {
+      font-size: 20px;
+      color: #64748b;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-primary {
+      padding: 16px 32px;
+      background: #667eea;
       color: white;
       border-radius: 10px;
       text-decoration: none;
       font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      font-size: 16px;
+      transition: all 0.2s;
+      display: inline-block;
     }
 
-    .nav-cta:hover {
+    .cta-primary:hover {
+      background: #5568d3;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
     }
 
-    /* Sections */
-    section {
-      padding: 100px 24px;
+    .cta-secondary {
+      padding: 16px 32px;
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: color 0.2s;
+    }
+
+    .cta-secondary:hover {
+      color: #0f172a;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
       position: relative;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* Hero Section */
-    #hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    .demo-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
       position: relative;
       overflow: hidden;
     }
 
-    .hero-shapes .shape {
+    .demo-box::before {
+      content: '';
       position: absolute;
-      border-radius: 50%;
-      opacity: 0.4;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
     }
 
-    .shape-1 {
-      width: 400px;
-      height: 400px;
-      background: linear-gradient(135deg, #a8b5ff 0%, #c5b3ff 100%);
-      top: -100px;
-      right: -100px;
-      border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
     }
 
-    .shape-2 {
-      width: 300px;
-      height: 300px;
-      background: linear-gradient(135deg, #ffb3ba 0%, #ffcccb 100%);
-      bottom: 10%;
-      left: -80px;
-      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    }
-
-    .hero-content {
+    .chat-preview {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
       position: relative;
       z-index: 1;
-      max-width: 700px;
     }
 
-    .hero-badge {
-      display: inline-block;
-      padding: 8px 20px;
-      background: rgba(102, 126, 234, 0.1);
-      color: #667eea;
-      border-radius: 50px;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 24px;
-    }
-
-    .hero-title {
-      font-size: 56px;
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 24px;
-      color: #1a202c;
-    }
-
-    .hero-title .gradient-text {
-      background: linear-gradient(135deg, #667eea 0%, #25D366 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: 20px;
-      color: #718096;
-      line-height: 1.6;
-      margin-bottom: 40px;
-    }
-
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 18px 36px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+    .chat-message {
+      background: #f1f5f9;
+      padding: 12px 16px;
       border-radius: 12px;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: 600;
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-      transition: all 0.3s ease;
-    }
-
-    .hero-cta:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
-    }
-
-    /* Problem Section */
-    #problem {
-      background: white;
-    }
-
-    .section-title {
-      font-size: 42px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 16px;
-      color: #1a202c;
-    }
-
-    .section-subtitle {
-      font-size: 18px;
-      text-align: center;
-      color: #718096;
-      max-width: 700px;
-      margin: 0 auto 60px;
-      line-height: 1.6;
-    }
-
-    .problem-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 32px;
-    }
-
-    .problem-card {
-      padding: 32px;
-      background: #f8f9fa;
-      border-radius: 16px;
-      border-left: 4px solid #dc3545;
-    }
-
-    .problem-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    .problem-title {
-      font-size: 20px;
-      font-weight: 600;
       margin-bottom: 12px;
-      color: #1a202c;
+      font-size: 14px;
+      color: #475569;
+      animation: slideIn 0.5s ease-out;
     }
 
-    .problem-text {
-      color: #718096;
-      line-height: 1.6;
-    }
-
-    /* Solution Section */
-    #solution {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .chat-message.bot {
+      background: #667eea;
       color: white;
+      margin-left: 20px;
     }
 
-    #solution .section-title,
-    #solution .section-subtitle {
-      color: white;
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .solution-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 32px;
-    }
-
-    .solution-card {
-      padding: 32px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
+    /* Time Estimator Section */
+    .estimator {
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 40px;
+      background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
       border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
     }
 
-    .solution-card:hover {
-      transform: translateY(-8px);
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .solution-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    .solution-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .solution-text {
-      opacity: 0.9;
-      line-height: 1.6;
-    }
-
-    /* How It Works */
-    #how {
-      background: white;
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 40px;
-      margin-top: 60px;
-    }
-
-    .step {
-      text-align: center;
-      position: relative;
-    }
-
-    .step-number {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .estimator h3 {
       font-size: 24px;
       font-weight: 700;
-      margin: 0 auto 20px;
-      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+      margin-bottom: 24px;
+      color: #0f172a;
+      text-align: center;
     }
 
-    .step-title {
-      font-size: 20px;
-      font-weight: 600;
+    .slider-container {
+      margin-bottom: 32px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 12px;
-      color: #1a202c;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
     }
 
-    .step-text {
-      color: #718096;
-      line-height: 1.6;
+    .slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      outline: none;
+      -webkit-appearance: none;
     }
 
-    /* Features */
-    #features {
-      background: #f8f9fa;
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+      transition: all 0.2s;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+
+    .time-display {
+      text-align: center;
+      padding: 24px;
+      background: white;
+      border-radius: 12px;
+      border: 2px solid #667eea;
+    }
+
+    .time-display .time {
+      font-size: 48px;
+      font-weight: 800;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .time-display .label {
+      font-size: 16px;
+      color: #64748b;
+    }
+
+    /* Stats Section */
+    .stats {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      text-align: center;
+    }
+
+    .stat h3 {
+      font-size: 48px;
+      font-weight: 800;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .stat p {
+      font-size: 16px;
+      color: #64748b;
+    }
+
+    /* Features Section */
+    .features {
+      background: #f8fafc;
+      padding: 100px 24px;
+    }
+
+    .features-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-header h2 {
+      font-size: 40px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+
+    .section-header p {
+      font-size: 18px;
+      color: #64748b;
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 32px;
     }
 
-    .feature-card {
-      padding: 32px;
+    .feature {
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s ease;
+      padding: 32px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s;
     }
 
-    .feature-card:hover {
+    .feature:hover {
+      border-color: #667eea;
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
     }
 
     .feature-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
     }
 
-    .feature-title {
+    .feature h3 {
       font-size: 20px;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 12px;
-      color: #1a202c;
+      color: #0f172a;
     }
 
-    .feature-text {
-      color: #718096;
+    .feature p {
+      color: #64748b;
+      font-size: 15px;
       line-height: 1.6;
     }
 
     /* CTA Section */
-    #cta {
-      background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-      color: white;
+    .cta-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 100px 24px;
       text-align: center;
     }
 
-    #cta .section-title,
-    #cta .section-subtitle {
-      color: white;
+    .cta-section h2 {
+      font-size: 40px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #0f172a;
     }
 
-    .cta-form {
-      max-width: 500px;
-      margin: 40px auto 0;
+    .cta-section p {
+      font-size: 18px;
+      color: #64748b;
+      margin-bottom: 40px;
+    }
+
+    .form-container {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .form-group {
       margin-bottom: 20px;
-    }
-
-    .form-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
       text-align: left;
     }
 
-    .form-input {
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 14px;
+    }
+
+    .form-group input {
       width: 100%;
-      padding: 16px 20px;
-      font-size: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      transition: all 0.3s ease;
+      padding: 14px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
     }
 
-    .form-input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .form-input:focus {
+    .form-group input:focus {
       outline: none;
-      border-color: #25D366;
-      background: rgba(255, 255, 255, 0.15);
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-    .cta-button {
+    .submit-btn {
       width: 100%;
-      padding: 18px;
-      background: linear-gradient(135deg, #25D366 0%, #20c997 100%);
+      padding: 16px;
+      background: #667eea;
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 18px;
+      border-radius: 8px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
     }
 
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
+    .submit-btn:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
     }
 
-    /* Footer */
-    footer {
-      background: #1a202c;
-      color: white;
-      padding: 40px 24px;
-      text-align: center;
+    .trust-badge {
+      margin-top: 24px;
+      font-size: 14px;
+      color: #94a3b8;
     }
 
-    .footer-text {
-      opacity: 0.7;
-    }
-
-    /* Loading Spinner */
-    #loading-spinner {
+    /* Loading */
+    #loading {
       display: none;
       text-align: center;
       padding: 40px;
     }
 
     .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      border-top: 4px solid white;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #667eea;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
     }
 
     @keyframes spin {
@@ -487,277 +599,282 @@
       }
     }
 
+    /* Footer */
+    footer {
+      background: #0f172a;
+      color: white;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    footer p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
     /* Mobile */
     @media (max-width: 768px) {
       .nav-links {
         display: none;
       }
 
-      .hero-title {
-        font-size: 36px;
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 100px;
       }
 
-      .section-title {
-        font-size: 32px;
+      .hero-content h1 {
+        font-size: 40px;
       }
 
-      section {
-        padding: 60px 24px;
+      .stats {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .cta-primary,
+      .cta-secondary {
+        width: 100%;
+        text-align: center;
       }
     }
   </style>
 </head>
 
 <body>
+  <!-- Floating Background Shapes -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
   <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-container">
+  <nav id="navbar">
+    <div class="nav-content">
       <a href="#hero" class="nav-brand">
-        <img src="/static/logo.png" alt="Aura AI" class="nav-logo">
-        <span class="nav-title">Aura AI</span>
+        <img src="/static/logo.png" alt="Aura AI" class="logo">
       </a>
       <div class="nav-links">
-        <a href="#problem" class="nav-link">Problem</a>
-        <a href="#solution" class="nav-link">Solution</a>
-        <a href="#how" class="nav-link">How It Works</a>
+        <a href="#estimator" class="nav-link">Time Estimator</a>
         <a href="#features" class="nav-link">Features</a>
-        <a href="#cta" class="nav-cta">Get Started Free</a>
+        <a href="#get-started" class="nav-cta">Get Started Free</a>
       </div>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <section id="hero">
-    <div class="hero-shapes">
-      <div class="shape shape-1"></div>
-      <div class="shape shape-2"></div>
-    </div>
-    <div class="container">
-      <div class="hero-content">
-        <span class="hero-badge">🚀 AI-Powered Customer Support</span>
-        <h1 class="hero-title">
-          Transform Your Website with <span class="gradient-text">Intelligent AI Chat</span>
-        </h1>
-        <p class="hero-subtitle">
-          What if your website could answer every customer question instantly? Aura AI makes it possible.
-          Train a smart chatbot on your content in seconds—no coding required.
-        </p>
-        <a href="#cta" class="hero-cta">
-          Start Building Free →
-        </a>
+  <section id="hero" class="hero">
+    <div class="hero-content">
+      <h1>AI Customer Support <span class="highlight">Made Simple</span></h1>
+      <p>Train an intelligent chatbot on your website content. Answer every customer question instantly, 24/7—no coding
+        required.</p>
+      <div class="cta-group">
+        <a href="#get-started" class="cta-primary">Start Free Trial →</a>
+        <a href="#estimator" class="cta-secondary">Estimate Setup Time</a>
       </div>
     </div>
-  </section>
-
-  <!-- Problem Section -->
-  <section id="problem">
-    <div class="container">
-      <h2 class="section-title">The Challenge Every Business Faces</h2>
-      <p class="section-subtitle">
-        Your customers have questions. But answering them manually is expensive, slow, and doesn't scale.
-      </p>
-      <div class="problem-grid">
-        <div class="problem-card">
-          <div class="problem-icon">⏰</div>
-          <h3 class="problem-title">24/7 Support is Expensive</h3>
-          <p class="problem-text">
-            Hiring support teams for round-the-clock coverage costs thousands per month. Most businesses can't afford
-            it.
-          </p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">😤</div>
-          <h3 class="problem-title">Customers Hate Waiting</h3>
-          <p class="problem-text">
-            Long response times lead to frustrated customers and lost sales. 67% of customers abandon purchases due to
-            poor support.
-          </p>
-        </div>
-        <div class="problem-card">
-          <div class="problem-icon">📉</div>
-          <h3 class="problem-title">Repetitive Questions Waste Time</h3>
-          <p class="problem-text">
-            Your team answers the same questions over and over. This drains resources that could be spent growing your
-            business.
-          </p>
+    <div class="hero-visual">
+      <div class="demo-box">
+        <div class="chat-preview">
+          <div class="chat-message">What are your business hours?</div>
+          <div class="chat-message bot">We're open Monday-Friday, 9 AM - 6 PM EST. Our AI chatbot is available 24/7 to
+            help you!</div>
+          <div class="chat-message">Do you offer refunds?</div>
+          <div class="chat-message bot">Yes! We offer a 30-day money-back guarantee on all plans.</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Solution Section -->
-  <section id="solution">
-    <div class="container">
-      <h2 class="section-title">Meet Aura AI: Your Intelligent Assistant</h2>
-      <p class="section-subtitle">
-        An AI chatbot that knows your business inside-out, answers questions instantly, and works 24/7.
-      </p>
-      <div class="solution-grid">
-        <div class="solution-card">
-          <div class="solution-icon">⚡</div>
-          <h3 class="solution-title">Instant Answers</h3>
-          <p class="solution-text">
-            Respond to customer questions in milliseconds, not hours. Keep visitors engaged and convert more leads.
-          </p>
-        </div>
-        <div class="solution-card">
-          <div class="solution-icon">🧠</div>
-          <h3 class="solution-title">Trained on YOUR Content</h3>
-          <p class="solution-text">
-            Aura AI learns from your website automatically. It provides accurate, context-aware answers every time.
-          </p>
-        </div>
-        <div class="solution-card">
-          <div class="solution-icon">💰</div>
-          <h3 class="solution-title">Save Thousands Monthly</h3>
-          <p class="solution-text">
-            Replace expensive support teams with AI that never sleeps, never takes breaks, and scales infinitely.
-          </p>
-        </div>
-        <div class="solution-card">
-          <div class="solution-icon">🎯</div>
-          <h3 class="solution-title">Zero Setup Required</h3>
-          <p class="solution-text">
-            No coding, no training data, no complexity. Just enter your URL and you're live in 60 seconds.
-          </p>
-        </div>
+  <!-- Time Estimator -->
+  <section id="estimator" class="estimator">
+    <h3>⏱️ How long will it take to set up my chatbot?</h3>
+    <div class="slider-container">
+      <div class="slider-label">
+        <span>Number of pages on your website:</span>
+        <span id="pageCount">100</span>
       </div>
+      <input type="range" min="10" max="1000" value="100" class="slider" id="pageSlider">
+    </div>
+    <div class="time-display">
+      <div class="time" id="estimatedTime">~2 min</div>
+      <div class="label">Estimated setup time</div>
     </div>
   </section>
 
-  <!-- How It Works -->
-  <section id="how">
-    <div class="container">
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-subtitle">
-        From zero to AI-powered support in 3 simple steps
-      </p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <h3 class="step-title">Enter Your Website</h3>
-          <p class="step-text">
-            Just provide your website URL and email. Our AI crawler will scan your entire site automatically.
-          </p>
-        </div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <h3 class="step-title">AI Learns Your Content</h3>
-          <p class="step-text">
-            Aura AI reads and understands your pages, products, FAQs, and documentation in seconds.
-          </p>
-        </div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <h3 class="step-title">Embed & Go Live</h3>
-          <p class="step-text">
-            Copy one line of code to your website. Your AI chatbot is now answering questions 24/7.
-          </p>
-        </div>
-      </div>
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stat">
+      <h3 id="stat1">0</h3>
+      <p>Websites Powered</p>
+    </div>
+    <div class="stat">
+      <h3>24/7</h3>
+      <p>Always Available</p>
+    </div>
+    <div class="stat">
+      <h3 id="stat3">0%</h3>
+      <p>Accuracy Rate</p>
     </div>
   </section>
 
   <!-- Features -->
-  <section id="features">
-    <div class="container">
-      <h2 class="section-title">Powerful Features, Simple Experience</h2>
-      <p class="section-subtitle">
-        Everything you need to deliver exceptional customer support
-      </p>
+  <section id="features" class="features">
+    <div class="features-content">
+      <div class="section-header">
+        <h2>Everything You Need</h2>
+        <p>Powerful features, simple setup</p>
+      </div>
       <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🤖</div>
-          <h3 class="feature-title">Advanced AI Engine</h3>
-          <p class="feature-text">
-            Powered by state-of-the-art language models for human-like conversations.
-          </p>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h3>Instant Answers</h3>
+          <p>Respond to questions in milliseconds. Keep visitors engaged and convert more leads.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature">
+          <div class="feature-icon">🧠</div>
+          <h3>Learns Your Content</h3>
+          <p>Automatically trained on your website. Accurate, context-aware answers every time.</p>
+        </div>
+        <div class="feature">
           <div class="feature-icon">🎨</div>
-          <h3 class="feature-title">Customizable Design</h3>
-          <p class="feature-text">
-            Match your brand with custom colors, logos, and positioning options.
-          </p>
+          <h3>Fully Customizable</h3>
+          <p>Match your brand with custom colors, logos, and positioning options.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature">
           <div class="feature-icon">📊</div>
-          <h3 class="feature-title">Analytics Dashboard</h3>
-          <p class="feature-text">
-            Track conversations, popular questions, and customer satisfaction metrics.
-          </p>
+          <h3>Analytics Dashboard</h3>
+          <p>Track conversations, popular questions, and customer satisfaction.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔄</div>
-          <h3 class="feature-title">Auto-Updates</h3>
-          <p class="feature-text">
-            Retrain your chatbot anytime to keep it synced with your latest content.
-          </p>
-        </div>
-        <div class="feature-card">
+        <div class="feature">
           <div class="feature-icon">🌍</div>
-          <h3 class="feature-title">Multi-Language Support</h3>
-          <p class="feature-text">
-            Serve global customers with automatic language detection and translation.
-          </p>
+          <h3>Multi-Language</h3>
+          <p>Automatic language detection and translation for global customers.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature">
           <div class="feature-icon">🔒</div>
-          <h3 class="feature-title">Secure & Private</h3>
-          <p class="feature-text">
-            Enterprise-grade security with encrypted data and GDPR compliance.
-          </p>
+          <h3>Secure & Private</h3>
+          <p>Enterprise-grade security with encrypted data and GDPR compliance.</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- CTA Section -->
-  <section id="cta">
-    <div class="container">
-      <h2 class="section-title">Ready to Transform Your Customer Support?</h2>
-      <p class="section-subtitle">
-        Join hundreds of businesses using Aura AI to delight customers and save time
-      </p>
-      <div class="cta-form">
-        <form method="POST" onsubmit="showSpinner()">
-          <div class="form-group">
-            <label class="form-label">Website URL</label>
-            <input type="text" name="url" class="form-input" placeholder="https://yourwebsite.com" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" name="email" class="form-input" placeholder="you@yourcompany.com" required>
-          </div>
-          <button type="submit" class="cta-button">
-            🚀 Create My AI Chatbot - Free
-          </button>
-        </form>
+  <section id="get-started" class="cta-section">
+    <h2>Ready to Get Started?</h2>
+    <p>Create your AI chatbot in minutes</p>
 
-        <!-- Loading Spinner -->
-        <div id="loading-spinner">
-          <div class="spinner"></div>
-          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Creating your chatbot...</div>
-          <div style="opacity: 0.8;">We're crawling your website and training the AI. This takes about a minute.</div>
+    <div class="form-container">
+      <form method="POST" onsubmit="showLoading()">
+        <div class="form-group">
+          <label>Website URL</label>
+          <input type="url" name="url" placeholder="https://yourwebsite.com" required>
         </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="you@company.com" required>
+        </div>
+        <button type="submit" class="submit-btn">Create My Chatbot →</button>
+      </form>
+
+      <div id="loading">
+        <div class="spinner"></div>
+        <p style="color: #64748b; font-weight: 600;">Training your AI chatbot...</p>
+        <p style="color: #94a3b8; font-size: 14px; margin-top: 8px;">Crawling your website and building the knowledge
+          base</p>
       </div>
+
+      <p class="trust-badge">🔒 Free forever. No credit card required.</p>
     </div>
   </section>
 
   <!-- Footer -->
   <footer>
-    <div class="container">
-      <p class="footer-text">© 2026 Aura AI. Intelligent customer support for modern businesses.</p>
-    </div>
+    <p>© 2026 Aura AI · Empowering businesses with intelligent customer support 🇵🇰</p>
   </footer>
 
   <script>
-    function showSpinner() {
-      document.querySelector('form').style.display = 'none';
-      document.getElementById("loading-spinner").style.display = "block";
+    // Page slider and time estimator
+    const slider = document.getElementById('pageSlider');
+    const pageCount = document.getElementById('pageCount');
+    const estimatedTime = document.getElementById('estimatedTime');
+
+    function updateEstimate() {
+      const pages = parseInt(slider.value);
+      pageCount.textContent = pages;
+
+      // Calculate time: ~0.5 seconds per page
+      const seconds = Math.ceil(pages * 0.5);
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+
+      if (minutes === 0) {
+        estimatedTime.textContent = `~${seconds} sec`;
+      } else if (remainingSeconds === 0) {
+        estimatedTime.textContent = `~${minutes} min`;
+      } else {
+        estimatedTime.textContent = `~${minutes}m ${remainingSeconds}s`;
+      }
     }
 
-    // Smooth scroll for nav links
+    slider.addEventListener('input', updateEstimate);
+    updateEstimate();
+
+    // Animated counter for stats
+    function animateCounter(id, target, suffix = '') {
+      const element = document.getElementById(id);
+      let current = 0;
+      const increment = target / 50;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          element.textContent = target + suffix;
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(current) + suffix;
+        }
+      }, 30);
+    }
+
+    // Trigger animation when stats section is visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter('stat1', 500);
+          animateCounter('stat3', 95, '%');
+          observer.unobserve(entry.target);
+        }
+      });
+    });
+
+    observer.observe(document.querySelector('.stats'));
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    function showLoading() {
+      document.querySelector('form').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+    }
+
+    // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();

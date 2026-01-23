@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import requests, re, time, os,certifi
+import requests, re, time, os,certifi, xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -10,6 +10,46 @@ def normalize_url(url: str) -> str:
     netloc = parsed.netloc
     path = parsed.path.rstrip('/')
     return f"{scheme}://{netloc}{path}"
+
+def fetch_sitemap_urls(start_url):
+    """Fetch all URLs from sitemap.xml if it exists."""
+    parsed = urlparse(start_url)
+    sitemap_url = f"{parsed.scheme}://{parsed.netloc}/sitemap.xml"
+    
+    try:
+        print(f"🗺️  Checking for sitemap at: {sitemap_url}")
+        resp = requests.get(sitemap_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        
+        if resp.status_code == 200:
+            # Parse XML sitemap
+            root = ET.fromstring(resp.content)
+            
+            # Handle both with and without namespace
+            urls = set()
+            # Try with namespace
+            for url_elem in root.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc'):
+                if url_elem.text:
+                    urls.add(normalize_url(url_elem.text))
+            
+            # Try without namespace (fallback)
+            if not urls:
+                for url_elem in root.findall('.//loc'):
+                    if url_elem.text:
+                        urls.add(normalize_url(url_elem.text))
+            
+            if urls:
+                print(f"✅ Found {len(urls)} URLs in sitemap")
+                return urls
+            else:
+                print(f"⚠️  Sitemap found but no URLs extracted")
+                return set()
+        else:
+            print(f"ℹ️  No sitemap found (status {resp.status_code})")
+            return set()
+    except Exception as e:
+        print(f"ℹ️  Could not fetch sitemap: {e}")
+        return set()
+
 def crawl_single_page(url, start_url, timeout=15, max_retries=3):
     """Fetch and extract text + links from one page."""
     for attempt in range(max_retries):
@@ -33,17 +73,20 @@ def crawl_single_page(url, start_url, timeout=15, max_retries=3):
                 if parsed_link.netloc == urlparse(start_url).netloc:
                     links.add(link)
 
+            # Log successful crawl
+            print(f"✅ Crawled: {url}")
             return raw_text, maybe_title, links
 
         except Exception as e:
-            print(f"⚠️ Failed {url} (attempt {attempt+1}): {e}")
+            if attempt == max_retries - 1:
+                print(f"❌ Failed {url} after {max_retries} attempts: {e}")
             time.sleep(0.5)
     return "", "", set()
 
 
 def crawl_site(start_url, max_pages=4000, max_workers=20):
     """
-    Crawl a website concurrently.
+    Crawl a website concurrently. First checks sitemap.xml for all URLs.
     Returns:
         (website_text, website_title)
     """
@@ -53,7 +96,20 @@ def crawl_site(start_url, max_pages=4000, max_workers=20):
     extracted_title = None
     count = 0
 
-    print(f"🚀 Starting parallel crawl for: {start_url}")
+    print(f"\n{'='*80}")
+    print(f"🚀 Starting crawl for: {start_url}")
+    print(f"📊 Max pages: {max_pages} | Workers: {max_workers}")
+    print(f"{'='*80}\n")
+    
+    # Try to fetch sitemap URLs first
+    sitemap_urls = fetch_sitemap_urls(start_url)
+    if sitemap_urls:
+        # Add sitemap URLs to the queue
+        for url in sitemap_urls:
+            if len(to_visit) + len(visited) < max_pages:
+                to_visit.add(url)
+        print(f"📋 Added {len(sitemap_urls)} URLs from sitemap to crawl queue\n")
+    
     start_time = time.time()
 
     while to_visit and count < max_pages:
@@ -73,19 +129,31 @@ def crawl_site(start_url, max_pages=4000, max_workers=20):
                     all_texts.append(raw_text)
                     count += 1
 
+                    # Show progress
+                    print(f"📄 [{count}/{max_pages}] Pages crawled so far | Queue: {len(to_visit)} remaining")
+
                     if not extracted_title and maybe_title:
                         extracted_title = maybe_title
+                        print(f"📌 Website title: {maybe_title}")
 
                     # Add new links (not yet visited)
+                    new_links_added = 0
                     for link in new_links:
                         if link not in visited and len(visited) + len(to_visit) < max_pages:
                             to_visit.add(link)
+                            new_links_added += 1
+                    
+                    if new_links_added > 0:
+                        print(f"🔗 Found {new_links_added} new links to crawl")
 
                 except Exception as e:
                     print(f"❌ Error for {url}: {e}")
 
     total_time = round(time.time() - start_time, 2)
-    print(f"✅ Crawled {count} pages in {total_time}s using {max_workers} threads")
+    print(f"\n{'='*80}")
+    print(f"✅ Crawl completed!")
+    print(f"📊 Total pages: {count} | Time: {total_time}s | Avg: {round(total_time/count, 2)}s/page")
+    print(f"{'='*80}\n")
 
     website_text = "\n\n".join(all_texts)
     return website_text, extracted_title or ""

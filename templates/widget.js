@@ -74,7 +74,7 @@
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     padding: 10px;
                 ">
-                    <img src="${apiBase}/static/logo.png" alt="Chat" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+                    <img src="${apiBase}/static/logo.png" alt="Chat" style="width: 70px; height: auto; border-radius: 8px;">
                 </div>
                 
                 <!-- Chat Window -->
@@ -100,7 +100,7 @@
                         align-items: center;
                     ">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="${apiBase}/static/logo.png" alt="Aura AI" style="width: 50px; height: auto; border-radius: 8px;">
+                            <img src="${apiBase}/static/logo.png" alt="Aura AI" style="width: 100px; height: auto; border-radius: 8px;">
                             <div>
                                 <h3 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.3px;">Chat Support</h3>
                                 <p style="margin: 8px 0 0 0; opacity: 0.93; font-size: 14px; font-weight: 400; color: #ffffff;">
@@ -173,7 +173,7 @@
                             "
                         />
                         <button id="send-button" style="
-                            padding: 14px 24px;
+                            padding: 14px 20px;
                             background: linear-gradient(135deg, ${primaryColor} 0%, ${darkenColor(primaryColor, 12)} 100%);
                             color: white;
                             border: none;
@@ -183,6 +183,9 @@
                             font-size: 15px;
                             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                            min-width: 70px;
+                            max-width: 80px;
+                            flex-shrink: 0;
                         ">Send</button>
                     </div>
                 </div>
@@ -326,8 +329,14 @@
             z-index: 1;
         `;
 
-        // Format content with better spacing and structure
+        // Ensure proper UTF-8 text handling and format content
         var formattedContent = text
+            // Decode any HTML entities first
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
             // Handle numbered lists (1. 2. 3.)
             .replace(/(\d+\.\s)/g, '<br><strong>$1</strong>')
             // Handle bullet points

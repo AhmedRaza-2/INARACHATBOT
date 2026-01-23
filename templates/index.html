@@ -170,7 +170,13 @@
 
       const div = document.createElement("div");
       div.className = `message ${role}`;
-      div.innerHTML = linkify(text);
+      
+      // Use textContent to preserve proper text encoding, then linkify
+      const tempDiv = document.createElement('div');
+      tempDiv.textContent = text;
+      const safeText = tempDiv.innerHTML; // This will properly encode the text
+      div.innerHTML = linkify(safeText);
+      
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
