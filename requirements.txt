@@ -1,4 +1,5 @@
 Flask
+flask-cors
 pymongo
 python-dotenv
 dnspython
@@ -13,4 +14,5 @@ tokenizers
 selenium
 beautifulsoup4
 requests
+certifi
 --extra-index-url https://download.pytorch.org/whl/cpu
