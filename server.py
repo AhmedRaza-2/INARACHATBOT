@@ -12,9 +12,17 @@ from database.mongo_storage import (
 from utilities.crawl_utils import check_existing_data,crawl_site, clean_domain_name
 from utilities.faiss_utils import build_faiss_index, split_into_chunks
 from utilities.llm_utils import run_gemini
-# Load embedding model once at startup
+# Load embedding model lazily to prevent startup timeout/OOM
 EMBED_MODEL = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
-embedding_model = SentenceTransformer(EMBED_MODEL)
+_embedding_model = None
+
+def get_embedding_model():
+    global _embedding_model
+    if _embedding_model is None:
+        print(f"⏳ Loading embedding model: {EMBED_MODEL}...")
+        _embedding_model = SentenceTransformer(EMBED_MODEL)
+        print("✅ Embedding model loaded.")
+    return _embedding_model
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
@@ -113,7 +121,7 @@ def index():
             normalized_chunks = [
                 {"text": str(c), "title": website_title} if not isinstance(c, dict) else c
                 for c in chunks            ]
-            index_obj, mapping = build_faiss_index(embedding_model, normalized_chunks)
+            index_obj, mapping = build_faiss_index(get_embedding_model(), normalized_chunks)
             save_chunks_and_index_to_mongo(base_name, website_title, "", normalized_chunks, index_obj)
 
             print(f"✅ Data for {base_name} saved successfully!")
@@ -698,7 +706,7 @@ def retrain():
         ]
         
         from utilities.faiss_utils import build_faiss_index
-        index_obj, mapping = build_faiss_index(embedding_model, normalized_chunks)
+        index_obj, mapping = build_faiss_index(get_embedding_model(), normalized_chunks)
         save_chunks_and_index_to_mongo(base_name, website_title, "", normalized_chunks, index_obj)
         
         logging.info(f"✅ Retrain completed for {base_name}")

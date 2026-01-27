@@ -12,6 +12,7 @@ if [ -z "$GEMINI_API_KEY" ]; then
 fi
 
 # Start gunicorn
+echo "🚀 Starting app on port ${PORT:-8080}..."
 exec gunicorn --bind 0.0.0.0:${PORT:-8080} \
     --workers 1 \
     --threads 2 \
