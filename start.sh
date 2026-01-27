@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "🔵 script started..."
 
 # Check if required environment variables are set
 if [ -z "$MONGO_URI" ]; then

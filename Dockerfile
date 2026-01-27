@@ -19,8 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire application
 COPY . .
 
-# Make startup script executable
-RUN chmod +x start.sh
+# Make startup script executable and fix line endings
+RUN chmod +x start.sh && sed -i 's/\r$//' start.sh
 
 # Expose port
 EXPOSE 8080
