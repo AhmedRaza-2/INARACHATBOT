@@ -15,4 +15,5 @@ selenium
 beautifulsoup4
 requests
 certifi
+langchain-text-splitters
 --extra-index-url https://download.pytorch.org/whl/cpu

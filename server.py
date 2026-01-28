@@ -1,7 +1,7 @@
 # server.py (updated)
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from urllib.parse import urlparse
-
+from sentence_transformers import SentenceTransformer
 import os, uuid, logging
 from database.auth import validate_user, register_user
 from flask_cors import CORS
@@ -20,7 +20,6 @@ def get_embedding_model():
     global _embedding_model
     if _embedding_model is None:
         print(f"⏳ Loading embedding model: {EMBED_MODEL}...")
-        from sentence_transformers import SentenceTransformer
         _embedding_model = SentenceTransformer(EMBED_MODEL)
         print("✅ Embedding model loaded.")
     return _embedding_model
